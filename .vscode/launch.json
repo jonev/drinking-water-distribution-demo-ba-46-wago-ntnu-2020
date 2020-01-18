@@ -4,16 +4,17 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        {"name":"PLC2",
-            "type":"python",
-            "request":"launch",
-            "module":"plc2_pressure"
+        {
+            "name": "PLC2",
+            "type": "python",
+            "request": "launch",
+            "module": "plc2_pressure"
         },
         {
-            "name":"PLC3",
-            "type":"python",
-            "request":"launch",
-            "module":"plc3_flood"
+            "name": "PLC3",
+            "type": "python",
+            "request": "launch",
+            "module": "plc3_flood"
         }
     ]
 }

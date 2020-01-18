@@ -16,5 +16,10 @@
         "**/CVS": true,
         "**/.DS_Store": true,
         "**/__pycache__": true
-    }
+    },
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": false,
+    "python.linting.pylintArgs": [
+        "--max-line-length=120"
+    ]
 }
