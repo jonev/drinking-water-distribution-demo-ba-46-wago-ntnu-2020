@@ -7,12 +7,12 @@ class MotorControl:
         self.__controlValueCommand = False
         self.__interlock = True
 
-    def start(self):
+    def startCommand(self):
         """Start the motor
         """
         self.__controlValueCommand = True
 
-    def stop(self):
+    def stopCommand(self):
         """Stop the motor
         """
         self.__controlValueCommand = False

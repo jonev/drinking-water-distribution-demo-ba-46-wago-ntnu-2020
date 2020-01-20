@@ -22,6 +22,7 @@ RUN apt-get update \
     # Install black
     && pip --disable-pip-version-check --no-cache-dir install pylint \
     && pip --disable-pip-version-check --no-cache-dir install black \
+    && pip --disable-pip-version-check --no-cache-dir install rope \
     # Update Python environment based on requirements.txt
     # && pip --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
     # && rm -rf /tmp/pip-tmp \
