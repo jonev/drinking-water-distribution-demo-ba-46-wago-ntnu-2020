@@ -2,10 +2,14 @@ from plclib.motor_control import MotorControl
 
 
 def run():
+    # Proposed structure
+    # Init instances
     m = MotorControl("P2")
-    print(m.tag)
-    print(m.out)
-    m.start()
-    print(m.out)
-    m.stop()
-    print(m.out)
+
+    # Read inputs
+    
+    # Run alarm logic 
+    
+    # Run control logic
+
+    # Write outputs

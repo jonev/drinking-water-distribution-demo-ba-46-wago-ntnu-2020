@@ -19,9 +19,9 @@ RUN apt-get update \
     # Verify git, process tools, lsb-release (common in install instructions for CLIs) installed
     && apt-get -y install git iproute2 procps lsb-release \
     #
-    # Install pylint
+    # Install black
     && pip --disable-pip-version-check --no-cache-dir install pylint \
-    #
+    && pip --disable-pip-version-check --no-cache-dir install black \
     # Update Python environment based on requirements.txt
     # && pip --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
     # && rm -rf /tmp/pip-tmp \
