@@ -1,24 +1,35 @@
 import time
 
+from plclib.timer import Timer
+
 
 class AlarmDigital:
     """Standard digital alarm
     """
 
-    def __init__(self, alarmDelayOn, alarmDelayOff):
-        self.__alarmDelayOn = alarmDelayOn
-        self.__alarmDelayOff = alarmDelayOff
+    def __init__(self, timer):
+        self.__timer = timer
         self.__alarmSignal = False
+        self.__acknowledge = True
+        self.__acknowledgeCommand = False
 
-    def input(self, *alarmSignals):
-        self.__alarmSignal = False
-        for alarmSignal in alarmSignals:
-            if alarmSignal:
-                if not self.__alarmSignal:
-                    self.__alarmOnTime = time.time()
-                self.__alarmSignal = True
-                break
+    def input(self, alarmSignal):
+        self.__alarmSignal = alarmSignal
+        self.__timer.input(alarmSignal)
+
+    def acknowledgeCommand(self):
+        self.__acknowledge = True
+        self.__acknowledgeCommand = True
 
     @property
     def alarm(self):
-        return self.__alarmSignal & ((self.__alarmDelayOn + self.__alarmDelayOn) < time.time())
+        return self.__timer.output
+
+    @property
+    def acknowledge(self):
+        if self.alarm and not self.__acknowledgeCommand:
+            self.__acknowledge = False
+        if not self.alarm and self.__acknowledgeCommand:
+            self.__acknowledgeCommand = False
+
+        return self.__acknowledge

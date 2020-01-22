@@ -4,43 +4,48 @@ from plclib.motor_control import MotorControl
 
 
 class MotorControlTest(unittest.TestCase):
-    def test_start(self):
+    def test_auto_start(self):
         instance = MotorControl("testtag")
+        instance.setAuto(True)
         self.assertFalse(instance.controlValue)
-        instance.startCommand()
+        instance.startCommandAuto()
         self.assertTrue(instance.controlValue)
 
-    def test_stop(self):
+    def test_auto_stop(self):
         instance = MotorControl("testtag")
+        instance.setAuto(True)
         self.assertFalse(instance.controlValue)
-        instance.startCommand()
+        instance.startCommandAuto()
         self.assertTrue(instance.controlValue)
-        instance.stopCommand()
+        instance.stopCommandAuto()
         self.assertFalse(instance.controlValue)
 
     def test_interlock_isTrue(self):
         instance = MotorControl("testtag")
-        instance.startCommand()
+        instance.setAuto(True)
+        instance.startCommandAuto()
         self.assertTrue(instance.controlValue)
-        instance.interlock(True, True, True)
+        instance.interlock(True)
         self.assertTrue(instance.controlValue)
 
     def test_interlock_isFalse(self):
         instance = MotorControl("testtag")
-        instance.startCommand()
+        instance.setAuto(True)
+        instance.startCommandAuto()
         self.assertTrue(instance.controlValue)
-        instance.interlock(True, False, True)
-        instance.startCommand()
+        instance.interlock(False)
+        instance.startCommandAuto()
         self.assertFalse(instance.controlValue)
 
     def test_interlock_isFalseThenTrue(self):
         instance = MotorControl("testtag")
-        instance.startCommand()
+        instance.setAuto(True)
+        instance.startCommandAuto()
         self.assertTrue(instance.controlValue)
-        instance.interlock(True, False, True)
+        instance.interlock(False)
         self.assertFalse(instance.controlValue)
-        instance.interlock(True, True, True)
+        instance.interlock(True)
         self.assertFalse(instance.controlValue)
-        instance.startCommand()
+        instance.startCommandAuto()
         self.assertTrue(instance.controlValue)
 

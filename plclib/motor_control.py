@@ -4,30 +4,31 @@ class MotorControl:
 
     def __init__(self, tag):
         self.__tag = tag
-        self.__controlValueCommand = False
+        self.__autoControlValueCommand = False
         self.__interlock = True
+        self.__auto = False
 
-    def startCommand(self):
-        """Start the motor
+    def setAuto(self, value):
+        self.__auto = value
+
+    def startCommandAuto(self):
+        """Start the motor in auto
         """
-        self.__controlValueCommand = True
+        self.__autoControlValueCommand = True
 
-    def stopCommand(self):
-        """Stop the motor
+    def stopCommandAuto(self):
+        """Stop the motor in auto
         """
-        self.__controlValueCommand = False
+        self.__autoControlValueCommand = False
 
-    def interlock(self, *interlocks):
-        self.__interlock = True
-        for interlock in interlocks:
-            if not interlock:
-                self.__interlock = False
-                self.__controlValueCommand = False
-                break
+    def interlock(self, interlock):
+        self.__interlock = interlock
+        if not interlock:
+            self.__autoControlValueCommand = False
 
     @property
     def controlValue(self):
-        return self.__controlValueCommand & self.__interlock
+        return (self.__auto and self.__autoControlValueCommand) and self.__interlock
 
     @property
     def tag(self):
