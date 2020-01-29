@@ -1,8 +1,3 @@
-import time
-
-from plclib.timer import Timer
-
-
 class AlarmDigital:
     """Standard digital alarm
     """

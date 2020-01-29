@@ -9,6 +9,14 @@ Use vs code Test menu
 ## Run PLC 2 or 3
 Use vs code rund and debug menu, choose plc from the dropdown
 
+## Code Documentation with Sphinx
+### New files *.py
+- New files need to be added to `docs/modules.rst`, and `*.rst` file need to be added for each file
+### Create/Update
+To create/update the documentation, run `make html`from /docs.
+### View
+To view the documentation open `docs/_build/html/index.html` in a browser.
+
 ### Sources:
 Documentation: https://medium.com/@eikonomega/getting-started-with-sphinx-autodoc-part-1-2cebbbca5365
 

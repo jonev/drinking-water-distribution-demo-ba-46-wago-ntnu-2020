@@ -297,6 +297,9 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+_build
+_static
+_templates
 
 # Cake - Uncomment if you are using it
 # tools/**
