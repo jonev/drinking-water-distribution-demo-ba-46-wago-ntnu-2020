@@ -25,6 +25,7 @@ RUN apt-get update \
     && pip --disable-pip-version-check --no-cache-dir install rope \
     && pip --disable-pip-version-check --no-cache-dir install sphinx \
     && pip --disable-pip-version-check --no-cache-dir install sphinx-rtd-theme \
+    && pip --disable-pip-version-check --no-cache-dir install ddt \
     # Update Python environment based on requirements.txt
     # && pip --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
     # && rm -rf /tmp/pip-tmp \
