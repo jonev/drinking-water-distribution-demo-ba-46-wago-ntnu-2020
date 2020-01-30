@@ -1,5 +1,10 @@
 class MotorControlDigital:
     """Standard control of a motor.
+
+    :Version:
+        1.0
+    :Authors:
+        Jone Vassbø
     """
 
     def __init__(self, tag="no tag", alarmDigitalStartFailed=None, alarmDigitalStopFailed=None):

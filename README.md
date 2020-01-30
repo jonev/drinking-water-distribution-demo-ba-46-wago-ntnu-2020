@@ -1,25 +1,21 @@
 # README
 ## Start develoopment environment
 Prerequisites: Docker and Visual Studio Code (With remote development extension)
-Open root folder in container with VS code.
+- Open root folder in container with VS code.
 
 ## Run tests
-Use vs code Test menu
+- Use vs code Test menu
 
 ## Run PLC 2 or 3
-Use vs code rund and debug menu, choose plc from the dropdown
+- Use vs code rund and debug menu, choose plc from the dropdown
 
 ## Code Documentation with Sphinx
 ### New files *.py
 - New files need to be added to `docs/modules.rst`, and `*.rst` file need to be added for each file
 ### Create/Update
-To create/update the documentation, run `make html`from /docs.
+To create/update the documentation, run `make html`from /docs directory.
 ### View
 To view the documentation open `docs/_build/html/index.html` in a browser.
 
-### Sources:
-Documentation: https://medium.com/@eikonomega/getting-started-with-sphinx-autodoc-part-1-2cebbbca5365
-
 ### TODO
-- add sphinx to dockerfile
 - set up travis

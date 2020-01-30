@@ -1,13 +1,13 @@
 import unittest
 
-from plclib.motor_control import MotorControlDigitalDigital
+from plclib.motor_control import MotorControlDigital
 from plclib.alarm_digital import AlarmDigital
 from plclib.timer import Timer
 
 
 class MotorControlDigitalTest(unittest.TestCase):
     def test_auto_start(self):
-        instance = MotorControlDigitalDigital("testtag")
+        instance = MotorControlDigital("testtag")
         instance.setAuto(True)
         self.assertFalse(instance.controlValue)
         instance.startCommandAuto()
