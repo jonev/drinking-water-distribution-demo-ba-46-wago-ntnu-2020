@@ -1,4 +1,4 @@
-motor\_control module
+Motor control
 =====================
 
 .. automodule:: motor_control

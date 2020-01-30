@@ -1,4 +1,4 @@
-timer module
+Timer
 ============
 
 .. automodule:: timer

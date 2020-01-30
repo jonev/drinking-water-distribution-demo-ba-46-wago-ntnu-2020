@@ -1,4 +1,4 @@
-valve\_analog module
+Valve Analog
 ====================
 
 .. automodule:: valve_analog

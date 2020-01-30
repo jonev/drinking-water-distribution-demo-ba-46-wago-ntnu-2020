@@ -1,20 +1,20 @@
 import unittest
 
-from plclib.motor_control import MotorControl
+from plclib.motor_control import MotorControlDigitalDigital
 from plclib.alarm_digital import AlarmDigital
 from plclib.timer import Timer
 
 
-class MotorControlTest(unittest.TestCase):
+class MotorControlDigitalTest(unittest.TestCase):
     def test_auto_start(self):
-        instance = MotorControl("testtag")
+        instance = MotorControlDigitalDigital("testtag")
         instance.setAuto(True)
         self.assertFalse(instance.controlValue)
         instance.startCommandAuto()
         self.assertTrue(instance.controlValue)
 
     def test_auto_stop(self):
-        instance = MotorControl("testtag")
+        instance = MotorControlDigital("testtag")
         instance.setAuto(True)
         self.assertFalse(instance.controlValue)
         instance.startCommandAuto()
@@ -23,7 +23,7 @@ class MotorControlTest(unittest.TestCase):
         self.assertFalse(instance.controlValue)
 
     def test_auto_interlock_isTrue(self):
-        instance = MotorControl("testtag")
+        instance = MotorControlDigital("testtag")
         instance.setAuto(True)
         instance.startCommandAuto()
         self.assertTrue(instance.controlValue)
@@ -31,7 +31,7 @@ class MotorControlTest(unittest.TestCase):
         self.assertTrue(instance.controlValue)
 
     def test_auto_interlock_isFalse(self):
-        instance = MotorControl("testtag")
+        instance = MotorControlDigital("testtag")
         instance.setAuto(True)
         instance.startCommandAuto()
         self.assertTrue(instance.controlValue)
@@ -40,7 +40,7 @@ class MotorControlTest(unittest.TestCase):
         self.assertFalse(instance.controlValue)
 
     def test_auto_interlock_isFalseThenTrue(self):
-        instance = MotorControl("testtag")
+        instance = MotorControlDigital("testtag")
         instance.setAuto(True)
         instance.startCommandAuto()
         self.assertTrue(instance.controlValue)
@@ -52,13 +52,13 @@ class MotorControlTest(unittest.TestCase):
         self.assertTrue(instance.controlValue)
 
     def test_manual_start(self):
-        instance = MotorControl("testtag")
+        instance = MotorControlDigital("testtag")
         self.assertFalse(instance.controlValue)
         instance.startCommandManual()
         self.assertTrue(instance.controlValue)
 
     def test_manual_stop(self):
-        instance = MotorControl("testtag")
+        instance = MotorControlDigital("testtag")
         self.assertFalse(instance.controlValue)
         instance.startCommandManual()
         self.assertTrue(instance.controlValue)
@@ -66,14 +66,14 @@ class MotorControlTest(unittest.TestCase):
         self.assertFalse(instance.controlValue)
 
     def test_manual_interlock_isTrue(self):
-        instance = MotorControl("testtag")
+        instance = MotorControlDigital("testtag")
         instance.startCommandManual()
         self.assertTrue(instance.controlValue)
         instance.interlock(True)
         self.assertTrue(instance.controlValue)
 
     def test_manual_interlock_isFalse(self):
-        instance = MotorControl("testtag")
+        instance = MotorControlDigital("testtag")
         instance.startCommandManual()
         self.assertTrue(instance.controlValue)
         instance.interlock(False)
@@ -81,7 +81,7 @@ class MotorControlTest(unittest.TestCase):
         self.assertFalse(instance.controlValue)
 
     def test_manual_interlock_isFalseThenTrue(self):
-        instance = MotorControl("testtag")
+        instance = MotorControlDigital("testtag")
         instance.startCommandManual()
         self.assertTrue(instance.controlValue)
         instance.interlock(False)
@@ -92,7 +92,7 @@ class MotorControlTest(unittest.TestCase):
         self.assertTrue(instance.controlValue)
 
     def test_manual_alarmStartFailed(self):
-        instance = MotorControl(
+        instance = MotorControlDigital(
             tag="testtag", alarmDigitalStartFailed=AlarmDigital(Timer(0.0, 0.0))
         )
         self.assertFalse(instance.controlValue)
@@ -106,7 +106,9 @@ class MotorControlTest(unittest.TestCase):
         self.assertFalse(instance.alarmStartFailed.alarm)
 
     def test_manual_alarmStoppedFailed(self):
-        instance = MotorControl(tag="testtag", alarmDigitalStopFailed=AlarmDigital(Timer(0.0, 0.0)))
+        instance = MotorControlDigital(
+            tag="testtag", alarmDigitalStopFailed=AlarmDigital(Timer(0.0, 0.0))
+        )
         instance.setStoppedFeedback(True)
         self.assertFalse(instance.controlValue)
         self.assertFalse(instance.alarmStopFailed.alarm)
@@ -119,10 +121,11 @@ class MotorControlTest(unittest.TestCase):
         self.assertFalse(instance.alarmStopFailed.alarm)
 
     def test_alarmStoppedFailed_exception_on_missing_AlarmDigital_instance(self):
-        instance = MotorControl(tag="testtag")
+        instance = MotorControlDigital(tag="testtag")
         with self.assertRaises(AttributeError):
             instance.alarmStartFailed.alarm
+
     def test_alarmStartFailed_exception_on_missing_AlarmDigital_instance(self):
-        instance = MotorControl(tag="testtag")
+        instance = MotorControlDigital(tag="testtag")
         with self.assertRaises(AttributeError):
             instance.alarmStartFailed.alarm
