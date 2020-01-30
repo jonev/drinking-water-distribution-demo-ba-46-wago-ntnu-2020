@@ -2,29 +2,22 @@
 """
 
 
-def simulatorMethod(simlock, runflag, digitalInputs):
+def simulatorMethod(simlock, runflag, digitalInputs, analogInputs):
     print("Starting Simulator")
     while runflag[0]:
-        inputFromUser = input("Key 0 to exit, Key 1 to 9 is digital inputs, please provide input: ")
+        inputFromUser = input("Key x to exit, Digital input - di, Analog input - ai: ")
         with simlock:
-            if inputFromUser == "0":
+            if inputFromUser == "x":
                 runflag[0] = False
-            if inputFromUser == "1":
-                digitalInputs[0] = not digitalInputs[0]
-            if inputFromUser == "2":
-                digitalInputs[1] = not digitalInputs[1]
-            if inputFromUser == "3":
-                digitalInputs[2] = not digitalInputs[2]
-            if inputFromUser == "4":
-                digitalInputs[3] = not digitalInputs[3]
-            if inputFromUser == "5":
-                digitalInputs[4] = not digitalInputs[4]
-            if inputFromUser == "6":
-                digitalInputs[5] = not digitalInputs[5]
-            if inputFromUser == "7":
-                digitalInputs[6] = not digitalInputs[6]
-            if inputFromUser == "8":
-                digitalInputs[7] = not digitalInputs[7]
-            if inputFromUser == "9":
-                digitalInputs[8] = not digitalInputs[8]
+
+            if inputFromUser == "di":
+                nr = int(input("Number: "))
+                digitalInputs[nr] = not digitalInputs[nr]
+            if inputFromUser == "ai+":
+                nr = int(input("Number: "))
+                analogInputs[nr] = analogInputs[nr] + 10
+            if inputFromUser == "ai-":
+                nr = int(input("Number: "))
+                analogInputs[nr] = analogInputs[nr] - 10
+
     print("Stopping Simulator")
