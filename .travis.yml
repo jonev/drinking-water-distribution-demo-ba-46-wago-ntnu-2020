@@ -1,13 +1,27 @@
-brances:
-    only:
-        - develop
-        - master
+stages:
+  - name: Unit Tests
+    if: branch = master OR branch = develop
+  - name: Deploy
+    if: branch = master
 
-language: python
-python:
-  - "3.8"
-cache: pip
-install:
-  - pip install -r requirements.txt
-script:
-  - python -m unittest discover test -p '*_test.py'
+
+
+
+  jobs:
+    include:
+      - stage: Unit Tests
+        language: python
+        python:
+          - "3.8"
+        cache: pip
+        install:
+          - pip install -r requirements.txt
+        script:
+          - python -m unittest discover test -p '*_test.py'
+  
+      #TODO
+        #- stage: Deploy
+        #name: Deploy to staging
+        #env: ENVIRONMENT=staging
+        #install: ./install_deployment_dependencies
+        #script: ./deploy
