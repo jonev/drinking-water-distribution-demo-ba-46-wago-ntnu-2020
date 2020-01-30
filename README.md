@@ -5,6 +5,10 @@ Prerequisites: Docker and Visual Studio Code (With remote development extension)
 
 ## Run tests
 - Use vs code Test menu
+- Or from root:
+```
+python -m unittest discover test -p '*_test.py'
+```
 
 ## Run PLC 2 or 3
 - Use vs code rund and debug menu, choose plc from the dropdown
