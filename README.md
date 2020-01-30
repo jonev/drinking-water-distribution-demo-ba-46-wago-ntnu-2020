@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/jonev/wago-demo-plc-python.svg?branch=develop)](https://travis-ci.com/jonev/wago-demo-plc-python)
+
+[![Build Status](https://travis-ci.com/jonev/wago-demo-plc-python.svg?branch=master)](https://travis-ci.com/jonev/wago-demo-plc-python)
 # README
 ## Start develoopment environment
 Prerequisites: Docker and Visual Studio Code (With remote development extension)
@@ -5,6 +8,10 @@ Prerequisites: Docker and Visual Studio Code (With remote development extension)
 
 ## Run tests
 - Use vs code Test menu
+- Or from root:
+```
+python -m unittest discover test -p '*_test.py'
+```
 
 ## Run PLC 2 or 3
 - Use vs code rund and debug menu, choose plc from the dropdown
