@@ -19,5 +19,9 @@
   // Comment out next line to run as root
   //"remoteUser": "vscode",
   // Add the IDs of extensions you want installed when the container is created in the array below.
-  "extensions": ["ms-python.python"]
+  "extensions": [
+    "ms-python.python",
+    "njpwerner.autodocstring",
+    "streetsidesoftware.code-spell-checker"
+  ]
 }

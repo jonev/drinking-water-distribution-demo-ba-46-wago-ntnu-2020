@@ -1,6 +1,9 @@
 {
   "python.formatting.provider": "black",
-  "python.formatting.blackArgs": ["--line-length", "100"],
+  "python.formatting.blackArgs": [
+    "--line-length",
+    "100"
+  ],
   "python.linting.pylintEnabled": true,
   "python.linting.flake8Enabled": false,
   "python.linting.enabled": true,
@@ -23,5 +26,7 @@
   "editor.formatOnPaste": false,
   "python.testing.pytestEnabled": false,
   "python.testing.nosetestsEnabled": false,
-  "python.testing.unittestEnabled": true
+  "python.testing.unittestEnabled": true,
+  "autoDocstring.docstringFormat": "sphinx",
+  "autoDocstring.guessTypes": true
 }
