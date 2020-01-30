@@ -1,6 +1,6 @@
 from threading import Lock, Thread
 import time
-from plclib.motor_control import MotorControl
+from plclib.motor_control import MotorControlDigital
 from plclib.alarm_digital import AlarmDigital
 from plclib.timer import Timer
 from plc_simulator import simulator
@@ -21,7 +21,7 @@ def run():
 
     # Proposed structure
     # Init instances
-    m1 = MotorControl("M1")
+    m1 = MotorControlDigital("M1")
     m1AlarmStart = AlarmDigital(
         Timer(5.0, 5.0)
     )  # Alarm if open command is sat and open feedback is not received and visa versa
