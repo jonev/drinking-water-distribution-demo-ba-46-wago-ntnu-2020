@@ -1,6 +1,7 @@
 brances:
     only:
-        - travis-setup
+        - develop
+        - master
 
 language: python
 python:

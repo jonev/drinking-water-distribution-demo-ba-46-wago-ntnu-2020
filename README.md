@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/jonev/wago-demo-plc-python.svg?branch=develop)](https://travis-ci.com/jonev/wago-demo-plc-python)
+
+[![Build Status](https://travis-ci.com/jonev/wago-demo-plc-python.svg?branch=master)](https://travis-ci.com/jonev/wago-demo-plc-python)
 # README
 ## Start develoopment environment
 Prerequisites: Docker and Visual Studio Code (With remote development extension)
