@@ -1,6 +1,6 @@
 brances:
     only:
-        - develop
+        - travis-setup
 
 language: python
 python:
