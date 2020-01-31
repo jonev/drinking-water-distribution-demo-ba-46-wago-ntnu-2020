@@ -1,4 +1,4 @@
-class ValveAnalog:
+class ValveDigital:
     """
     Regner med han får info fra HMI om det skal kjøres i manuel eller auto. Dvs to variabler.
     Deretter en variabel til fra HMI som setter manuelåpning. Dvs en variabel
@@ -21,36 +21,48 @@ class ValveAnalog:
     ControlValue
     """
 
-    def controlLogic(self):  # Bør klare oss uten en slik
-        # Check for alarm etc
-        pass
+    def __init__(self, tag="no tag"):
+        """Init with first run"""
 
-    def __init__(self, tag): "Dette settes bare ved første kjøring?"
-        self.__tag = tag  "# TODO Hva gjør tag?
-        self.__autoCommand = True "Starter allitid i auto"
-        self.__manuelValue = 0 "Må være verdi som kommer fra HMI"
-        self.__autoValue = 0 "Verdi som kommer fra logic"
+        self.__tag = tag
+        self.__auto = False
+        self.__autoControlValueCommand = False
+        self.__manualControlValueCommand = False
 
-    def interlock(self, *interlocks):"Usikker på dette"
-        pass  # TODO
+    def setAuto(self, value):
+        self.__auto = value
+        """Set the control mode to automatic - True, or manual - False.
+        :param value: True or False, automatic or manual
+        :type value: bool
+        """
 
-    def valveControl(self): "Set manuel or auto mode. Always start in automode"
-        if self.__autoCommand == True:
-            self.__manualCommand = False
-        elif self.__autoCommand == False: 
-            self.__manualCommand = True
+    def openCommandAuto(self):
+        """Open valve in auto mode
+        """
+        self.__autoControlValueCommand = True
 
-    def manualControl(self):
-        if self.__manualCommand == True and self.__autoCommand == False: "Sjekker om den står i manuell"
-        self.__valveValue=self.__manuelValue
+    def closeCommandAuto(self):
+        """Close valve in auto mode
+        """
+        self.__autoControlValueCommand = False
 
-    def autoControl(self):
-        if self.__autoCommand == True and self.__autoCommand == False: "Sjekker om den står i auto"
-            self.__valveValue=self.__autoValue
+    def openCommandManual(self):
+        """Open valve in manual mode
+        """
+        self.__manuelControlValueCommand = True
+
+    def closeCommandManual(self):
+        """Close valve in manual mode
+        """
+        self.__manuelControlValueCommand = False
+
     @property
-    def controlValue(self):"Aner ikke hva dette gjør"
-        return 0.0  # TODO
+    def controlValue(self):
+        # Du har jo ikke lagt til auto modus?
+        return (self.__auto and self.__autoControlValueCommand) or (
+            not self.__auto and self.__manualControlValueCommand
+        )
 
     @property
-    def tag(self):"Aner ikke hva dette gjør"
+    def tag(self):
         return self.__tag
