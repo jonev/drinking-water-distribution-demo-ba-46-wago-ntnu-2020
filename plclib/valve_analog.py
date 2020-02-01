@@ -49,12 +49,12 @@ class ValveDigital:
     def openCommandManual(self):
         """Open valve in manual mode
         """
-        self.__manuelControlValueCommand = True
+        self.__manualControlValueCommand = True
 
     def closeCommandManual(self):
         """Close valve in manual mode
         """
-        self.__manuelControlValueCommand = False
+        self.__manualControlValueCommand = False
 
     @property
     def controlValue(self):
