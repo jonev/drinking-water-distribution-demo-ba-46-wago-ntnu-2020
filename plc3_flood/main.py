@@ -1,11 +1,11 @@
-from plclib.motor_control import MotorControl
+from plclib.motor_control import MotorControlDigital
 
 
 def run():
-    instance = MotorControl("P3")
+    instance = MotorControlDigital("P3")
     print(instance.tag)
     print(instance.controlValue)
-    instance.start()
+    instance.startCommandAuto()
     print(instance.controlValue)
-    instance.stop()
+    instance.stopCommandAuto()
     print(instance.controlValue)

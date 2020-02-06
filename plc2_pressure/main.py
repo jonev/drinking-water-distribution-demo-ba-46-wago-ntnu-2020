@@ -7,7 +7,9 @@ from plclib.timer import Timer
 from plc_simulator import simulator
 from plclib.utils import Scaling
 import os
+from plclib.mqtt_client import MQTTClient
 
+mqtt = MQTTClient("broker.hivemq.com", 1883, 60, ["ba/wago/plc2"])
 dev = True
 runflag = [True]
 digitalInputs = [False, False, False, False, False, False, False, False, False, False]
@@ -15,6 +17,8 @@ analogInputs = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 digitalOutputs = [False, False, False, False, False, False, False, False, False, False]
 analogOutputs = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 simlock = Lock()
+simulatorThread = 0
+mqttThread = 0
 
 
 def run():
@@ -24,6 +28,8 @@ def run():
             target=simulator.simulatorMethod, args=(simlock, runflag, digitalInputs, analogInputs)
         )
         simulatorThread.start()
+    mqttThread = Thread(target=mqtt.loopForever, args=())
+    mqttThread.start()
 
     # Proposed structure
     # Init instances
@@ -34,6 +40,8 @@ def run():
         scaling=Scaling(0.0, 1.0, 0.0, 100.0),
     )
     motorControlDigitalTest = MotorControlDigital(tag="Motor control digital test")
+    # Time to startup
+    time.sleep(2)
 
     while runflag[0]:
 
@@ -65,8 +73,10 @@ def run():
         print("digitalInputs:", digitalInputs)
         print("analogInputs:", analogInputs)
         print("digitalOutputs:", digitalOutputs)
+        mqtt.publish("ba/wago/plc2/ut", digitalInputs)
         time.sleep(2)  # Sampletime 2 sec
-
+    mqtt.disconnect()
+    mqttThread.join()
     if dev:
         print("Waiting for simulator thread to stop....")
         simulatorThread.join()

@@ -1,0 +1,11 @@
+### TODO
+- set up travis
+    - push docker image (NB: do not dump database content)
+- Hvordan blir det med real-time? Når man kjører docker oppå linux?
+- Lagring av state til mongo db
+    - oppstarts logikk
+    - Kan mongo db feile ved strømbrudd?
+    - Finnes den som filbasert?
+- Trykke data fra python inn i wago cloud
+- Oppdatere kode uten å stoppe
+    - mistes staten?? Må det kanskje leses fra db?
