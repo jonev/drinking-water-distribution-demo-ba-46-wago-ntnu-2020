@@ -1,9 +1,10 @@
 FROM python:3.8
 
-RUN pip --disable-pip-version-check --no-cache-dir install paho-mqtt
+RUN pip --disable-pip-version-check --no-cache-dir install pymodbus
 
-COPY mqtt_test.py .
 
-CMD ["python", "mqtt_test.py"]
+COPY modbus_test_slave.py .
+
+CMD ["python", "modbus_test_slave.py"]
 
 

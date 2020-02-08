@@ -1,3 +1,6 @@
+import json
+
+
 class AnalogSignal:
     """Standard block for analog signal, possibilities for alarms, simulation and scaling.
 
@@ -114,4 +117,17 @@ class AnalogSignal:
         :rtype: str
         """
         return self.__tag
+
+    class Encoder(json.JSONEncoder):
+        def default(self, z):  # pylint: disable=E0202
+            if isinstance(z, AnalogSignal):
+                return (
+                    z._AnalogSignal__output,
+                    z._AnalogSignal__simulationValue,
+                )  # TODO this is not done
+            else:
+                return super().default(z)
+
+    def getBSON(self):
+        return {"output": self.__output, "simulationValue": self.__simulationValue}
 

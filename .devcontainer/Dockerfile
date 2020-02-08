@@ -28,6 +28,7 @@ RUN apt-get update \
     && pip --disable-pip-version-check --no-cache-dir install ddt \
     && pip --disable-pip-version-check --no-cache-dir install paho-mqtt \
     && pip --disable-pip-version-check --no-cache-dir install pymongo \
+    && pip --disable-pip-version-check --no-cache-dir install pymodbus \
     # Update Python environment based on requirements.txt
     # && pip --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
     # && rm -rf /tmp/pip-tmp \

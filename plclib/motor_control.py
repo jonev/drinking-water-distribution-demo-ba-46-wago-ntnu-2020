@@ -1,3 +1,6 @@
+from plclib.alarm_digital import AlarmDigital
+
+
 class MotorControlDigital:
     """Standard control of a motor.
 
@@ -124,3 +127,47 @@ class MotorControlDigital:
         """
         self.__alarmDigitalStopFailed.input(self.__stoppedFeedback and self.controlValue)
         return self.__alarmDigitalStopFailed
+
+    # TODO write unit-tests
+    def getBSON(self):
+        return {
+            "_id": self.__tag,
+            "type": MotorControlDigital.__module__,
+            "tag": self.__tag,
+            "autoControlValueCommand": self.__autoControlValueCommand,
+            "manualControlValueCommand": self.__manualControlValueCommand,
+            "interlock": self.__interlock,
+            "auto": self.__auto,
+            "alarmDigitalStartFailed": self.__alarmDigitalStartFailed.getBSON()
+            if self.__alarmDigitalStartFailed is not None
+            else None,
+            "alarmDigitalStopFailed": self.__alarmDigitalStopFailed.getBSON()
+            if self.__alarmDigitalStopFailed is not None
+            else None,
+            "startedFeedback": self.__startedFeedback,
+            "stoppedFeedback": self.__stoppedFeedback,
+        }
+
+    # TODO write unit-tests
+    @staticmethod
+    def getMotorControlDigital(bsonObject):
+        aStart = (
+            AlarmDigital.getAlarmDigital(bsonObject["alarmDigitalStartFailed"])
+            if bsonObject["alarmDigitalStartFailed"] is not None
+            else None
+        )
+        aStop = (
+            AlarmDigital.getAlarmDigital(bsonObject["alarmDigitalStopFailed"])
+            if bsonObject["alarmDigitalStopFailed"] is not None
+            else None
+        )
+        m = MotorControlDigital(
+            tag=bsonObject["tag"], alarmDigitalStartFailed=aStart, alarmDigitalStopFailed=aStop,
+        )
+        m.__autoControlValueCommand = bsonObject["autoControlValueCommand"]
+        m.__manualControlValueCommand = bsonObject["manualControlValueCommand"]
+        m.__interlock = bsonObject["interlock"]
+        m.__auto = bsonObject["auto"]
+        m.__startedFeedback = bsonObject["startedFeedback"]
+        m.__stoppedFeedback = bsonObject["stoppedFeedback"]
+        return m

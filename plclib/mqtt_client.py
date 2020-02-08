@@ -23,8 +23,8 @@ class MQTTClient:
     def on_message(self, client, userdata, msg):
         print(msg.topic + " " + str(msg.payload))
 
-    def publish(self, topic, payload):
-        self.__client.publish(topic, payload=json.dumps(payload))
+    def publish(self, topic, payload, jsonEncoder=None):
+        self.__client.publish(topic, payload=payload)
 
     def disconnect(self):
         self.__client.disconnect()

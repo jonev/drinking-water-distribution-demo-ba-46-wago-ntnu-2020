@@ -14,7 +14,7 @@ Prerequisites: Docker and Visual Studio Code (With remote development extension)
 python -m unittest discover test -p '*_test.py'
 ```
 
-## Run PLC 2 or 3
+## Run current file, PLC 2 or PLC 3
 - Use vs code run and debug menu, choose plc from the dropdown
 
 ## Code Documentation with Sphinx
@@ -56,3 +56,8 @@ E.g:
 `docker run -it username/imagename:tag`  
 E.g:  
 `docker run -it jonev/python-test:v6`
+
+## Tools
+### Simple mongodb client
+Docker:  
+`mongo-express -u user -p password -d database -H mongoDBHost -P mongoDBPort`
