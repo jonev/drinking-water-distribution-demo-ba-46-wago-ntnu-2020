@@ -1,7 +1,7 @@
 from plclib.motor_control import MotorControlDigital
 
 
-def run():
+def runLoop():
     instance = MotorControlDigital("P3")
     print(instance.tag)
     print(instance.controlValue)

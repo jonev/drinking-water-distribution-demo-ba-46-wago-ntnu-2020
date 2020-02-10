@@ -1,5 +1,5 @@
-from plc3_flood import main
+import plc3_flood.plc3_flood_main as m
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("Running PLC 3")
-    main.run()
+    m.runLoop()

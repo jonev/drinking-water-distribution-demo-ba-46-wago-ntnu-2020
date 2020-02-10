@@ -1,0 +1,12 @@
+FROM python:3.8
+
+RUN pip --disable-pip-version-check --no-cache-dir install paho-mqtt \
+    && pip --disable-pip-version-check --no-cache-dir install pymongo \
+    && pip --disable-pip-version-check --no-cache-dir install pymodbus
+
+COPY ./plc2_pressure ./plc2_pressure
+COPY ./plclib ./plclib
+
+CMD ["python",  "-m", "plc2_pressure"]
+
+

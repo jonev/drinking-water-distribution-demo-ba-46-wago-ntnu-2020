@@ -26,8 +26,6 @@ To create/update the documentation, run `make html`from /docs directory.
 To view the documentation open `docs/_build/html/index.html` in a browser.
 
 
-### Sources:
-- [Docker on PFC200 2. Gen](https://github.com/Wago-Norge/Docker-Support)
 
 ## Build to PLC [(source)](https://www.docker.com/blog/multi-arch-images/)
 ### Prerequisites: 
@@ -36,9 +34,9 @@ To view the documentation open `docs/_build/html/index.html` in a browser.
 - Add builder:  
 `docker buildx create --name builder-for-plc`
 ### Build (and push) from root:
-`docker buildx build --platform linux/arm/v7 -t username/imagename:tag --push .`  
+`docker buildx build -f dockerfile-name --platform linux/arm/v7 -t username/imagename:tag --push .`  
 E.g:  
-`docker buildx build --platform linux/arm/v7 -t jonev/python-test:v6 --push .`
+`docker buildx build -f Dockerfile-plc2-pressure --platform linux/arm/v7 -t jonev/python-test:v6 --push .`
 
 ### Common errors
 - "No space left on device", run `docker system prune` and delete also images with `docker image prune -a`
@@ -56,6 +54,9 @@ E.g:
 `docker run -it username/imagename:tag`  
 E.g:  
 `docker run -it jonev/python-test:v6`
+
+### Sources:
+- [Docker on PFC200 2. Gen](https://github.com/Wago-Norge/Docker-Support)
 
 ## Tools
 ### Simple mongodb client

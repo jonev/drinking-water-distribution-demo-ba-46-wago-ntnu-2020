@@ -1,11 +1,13 @@
+os: linux
+
+services:
+  - docker
+
 stages:
   - name: Unit Tests
     if: branch = master OR branch = develop
   - name: Deploy
-    if: branch = master
-
-
-
+    if: branch = master OR branch = develop
 
 jobs:
   include:
@@ -19,9 +21,9 @@ jobs:
       script:
         - python -m unittest discover test -p '*_test.py'
 
-    #TODO
-      #- stage: Deploy
-      #name: Deploy to staging
-      #env: ENVIRONMENT=staging
-      #install: ./install_deployment_dependencies
-      #script: ./deploy
+    #- stage: Deploy
+    #  name: Deploy to Docker hub
+    #  script:
+    #    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    #    - docker buildx create --name builder-for-plc
+    #    - docker buildx build -f Dockerfile-plc2-pressure --platform linux/arm/v7 -t #$DOCKER_USERNAME/python-test:v6 --push .
