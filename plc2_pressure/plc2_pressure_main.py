@@ -9,11 +9,10 @@ from plclib.motor_control import MotorControlDigital
 from plclib.alarm_digital import AlarmDigital
 from plclib.analog_signal import AnalogSignal
 from plclib.timer import Timer
-from plc_simulator import simulator
 from plclib.utils import Scaling
 
-mongodbClient = MongoClient(host="mongo", port=27017, username="root", password="example")
-db = mongodbClient.testdb
+# mongodbClient = MongoClient(host="mongo", port=27017, username="root", password="example")
+# db = mongodbClient.testdb
 mqtt = MQTTClient("broker.hivemq.com", 1883, 60, ["wago/ba/plc2/in/#"])
 UNIT = 0x1
 client = ModbusTcpClient("192.168.0.15", port=50200)
@@ -29,32 +28,36 @@ simulatorThread = 0
 mqttThread = 0
 
 
-def run():
+def runLoop():
+    mqttThread = Thread(target=mqtt.loopForever, args=())
+    mqttThread.start()
+    time.sleep(2)
+    mqtt.publish("wago/ba/plc2/out/logg", "Starting run method...")
     # if dev:
     #    # Starting simulator
     #    simulatorThread = Thread(
     #        target=simulator.simulatorMethod, args=(simlock, runflag, digitalInputs, analogInputs)
     #    )
     #    simulatorThread.start()
-    mqttThread = Thread(target=mqtt.loopForever, args=())
-    mqttThread.start()
     # Proposed structure
     # Init instances
     # Restore state, if exist
-    motorControlDigitalTest = []
-    readDbResult = db.testtable.find_one({"_id": "Motor control digital test"})
-    if readDbResult is None:
-        motorControlDigitalTest = MotorControlDigital(
-            tag="Motor control digital test", alarmDigitalStartFailed=AlarmDigital(Timer(10.0, 0.0))
-        )
-    else:
-        motorControlDigitalTest = MotorControlDigital.getMotorControlDigital(readDbResult)
+    # motorControlDigitalTest = []
+    # readDbResult = db.testtable.find_one({"_id": "Motor control digital test"})
+    # if readDbResult is None:
+    #    motorControlDigitalTest = MotorControlDigital(
+    motorControlDigitalTest = MotorControlDigital(
+        tag="Motor control digital test", alarmDigitalStartFailed=AlarmDigital(Timer(10.0, 0.0))
+    )
+    #    )
+    # else:
+    #    motorControlDigitalTest = MotorControlDigital.getMotorControlDigital(readDbResult)
 
     # Time to startup
-    time.sleep(2)
-
+    scanNr = 0
     while runflag[0]:
-
+        scanNr = scanNr + 1
+        mqtt.publish("wago/ba/plc2/out/logg", "Scan start nr: " + str(scanNr))
         # Read inputs
         with simlock:
             # Reading slot 2 - 8 Analog inputs
@@ -77,26 +80,26 @@ def run():
 
         # Write outputs
         digitalOutputs[0] = motorControlDigitalTest.controlValue
-
+        digitalOutputs[1] = not digitalOutputs[1]
         # Writing slot 1 - 8 Digital outputs
         result = client.write_registers(1, digitalOutputs, unit=0x01)
         print(result.isError())
 
         # Publishing states over mqtt
-        mqtt.publish(
-            "wago/ba/plc2/out/MotorControlDigital", motorControlDigitalTest.getBSON().__str__()
-        )
+        # mqtt.publish(
+        #    "wago/ba/plc2/out/MotorControlDigital", motorControlDigitalTest.getBSON().__str__()
+        # )
         print("digitalInputs:", digitalInputs)
-        mqtt.publish("wago/ba/plc2/out", digitalInputs.__str__())
+        # mqtt.publish("wago/ba/plc2/out/di", "Digital Input: " + digitalInputs.__str__())
         print("analogInputs:", analogInputs)
-        mqtt.publish("wago/ba/plc2/out", analogInputs.__str__())
+        # mqtt.publish("wago/ba/plc2/out/ai", "Analog Input: " + analogInputs.__str__())
         print("digitalOutputs:", digitalOutputs)
-        mqtt.publish("wago/ba/plc2/out", digitalOutputs.__str__())
+        mqtt.publish("wago/ba/plc2/out/do", "Digital Output: " + digitalOutputs.__str__())
 
         # Storing state in local db
-        result = db.testtable.replace_one(
-            {"_id": motorControlDigitalTest.tag}, motorControlDigitalTest.getBSON(), upsert=True
-        )
+        # result = db.testtable.replace_one(
+        #    {"_id": motorControlDigitalTest.tag}, motorControlDigitalTest.getBSON(), upsert=True
+        # )
         time.sleep(5)  # Sampletime 5 sec - for testing
 
     mqtt.disconnect()
