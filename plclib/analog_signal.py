@@ -1,3 +1,8 @@
+import json
+from plclib.alarm_digital import AlarmDigital
+from plclib.utils import Scaling
+
+
 class AnalogSignal:
     """Standard block for analog signal, possibilities for alarms, simulation and scaling.
 
@@ -16,6 +21,7 @@ class AnalogSignal:
         alarmLowLow=None,
         scaling=None,
     ):
+        self.__id = tag
         self.__tag = tag
         self.__alarmHigh = alarmHigh
         self.__alarmHighHigh = alarmHighHigh
@@ -115,3 +121,70 @@ class AnalogSignal:
         """
         return self.__tag
 
+    # TODO write unit-tests
+    def getBSON(self):
+        return {
+            "_id": self.__tag,
+            "type": AnalogSignal.__class__,
+            "tag": self.__tag,
+            "alarmHigh": self.__alarmHigh.getBSON() if self.__alarmHigh is not None else None,
+            "alarmHighHigh": self.__alarmHighHigh.getBSON()
+            if self.__alarmHighHigh is not None
+            else None,
+            "alarmLow": self.__alarmLow.getBSON() if self.__alarmLow is not None else None,
+            "alarmLowLow": self.__alarmLowLow.getBSON() if self.__alarmLowLow is not None else None,
+            "simulation": self.__simulation,
+            "output": self.__output,
+            "simulationValue": self.__simulationValue,
+            "alarmHighLimit": self.__alarmHighLimit,
+            "alarmHighHighLimit": self.__alarmHighHighLimit,
+            "alarmLowLimit": self.__alarmLowLimit,
+            "alarmLowLowLimit": self.__alarmLowLowLimit,
+            "rawInput": self.__rawInput,
+            "scaling": self.__scaling.getBSON() if self.__scaling is not None else None,
+        }
+
+    # TODO write unit-tests
+    @staticmethod
+    def getAnalogSignal(bsonObject):
+        ah = (
+            AlarmDigital.getAlarmDigital(bsonObject["alarmHigh"])
+            if bsonObject["alarmHigh"] is not None
+            else None
+        )
+        ahh = (
+            AlarmDigital.getAlarmDigital(bsonObject["alarmHighHigh"])
+            if bsonObject["alarmHighHigh"] is not None
+            else None
+        )
+        al = (
+            AlarmDigital.getAlarmDigital(bsonObject["alarmLow"])
+            if bsonObject["alarmLow"] is not None
+            else None
+        )
+        all = (
+            AlarmDigital.getAlarmDigital(bsonObject["alarmLowLow"])
+            if bsonObject["alarmLowLow"] is not None
+            else None
+        )
+        sc = (
+            Scaling.getScaling(bsonObject["scaling"]) if bsonObject["scaling"] is not None else None
+        )
+
+        a = AnalogSignal(
+            tag=bsonObject["tag"],
+            alarmHigh=ah,
+            alarmHighHigh=ahh,
+            alarmLow=al,
+            alarmLowLow=all,
+            scaling=sc,
+        )
+        a.__simulation = bsonObject["simulation"]
+        a.__output = bsonObject["__output"]
+        a.__simulationValue = bsonObject["simulationValue"]
+        a.__alarmHighLimit = bsonObject["alarmHighLimit"]
+        a.__alarmHighHighLimit = bsonObject["alarmHighHighLimit"]
+        a.__alarmLowLimit = bsonObject["alarmLowLimit"]
+        a.__alarmLowLowLimit = bsonObject["alarmLowLowLimit"]
+        a.__rawInput = bsonObject["rawInput"]
+        return a

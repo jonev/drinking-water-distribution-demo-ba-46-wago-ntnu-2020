@@ -37,3 +37,18 @@ class Scaling:
             1 - ((input - self.__inMin) / (self.__inMax - self.__inMin))
         ) + self.__outMax * ((input - self.__inMin) / (self.__inMax - self.__inMin))
 
+    # TODO write unit-tests
+    def getBSON(self):  # Made for further expansions
+        return {
+            "inMin": self.__inMin,
+            "inMax": self.__inMax,
+            "outMin": self.__outMin,
+            "outMax": self.__outMax,
+        }
+
+    # TODO write unit-tests
+    @staticmethod
+    def getScaling(bsonObject):
+        return Scaling(
+            bsonObject["inMin"], bsonObject["inMax"], bsonObject["outMin"], bsonObject["outMax"]
+        )
