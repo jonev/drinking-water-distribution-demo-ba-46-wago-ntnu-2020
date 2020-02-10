@@ -5,7 +5,7 @@ stages:
   - name: Unit Tests
     if: branch = master OR branch = develop
   - name: Deploy
-    if: branch = master
+    if: branch = master OR branch = develop
 
 jobs:
   include:
