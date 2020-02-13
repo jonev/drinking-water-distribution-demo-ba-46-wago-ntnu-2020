@@ -1,10 +1,9 @@
 FROM python:3.8
 
-RUN pip --disable-pip-version-check --no-cache-dir install pymodbus
+RUN pip --disable-pip-version-check --no-cache-dir install opcua
 
+COPY opc_ua_test.py .
 
-COPY modbus_test_slave.py .
-
-CMD ["python", "modbus_test_slave.py"]
+CMD ["python", "opc_ua_test.py"]
 
 

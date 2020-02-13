@@ -1,8 +1,9 @@
-FROM python:3.8
+FROM --platform=linux/arm/v7 python:3.8
 
 RUN pip --disable-pip-version-check --no-cache-dir install paho-mqtt \
     && pip --disable-pip-version-check --no-cache-dir install pymongo \
-    && pip --disable-pip-version-check --no-cache-dir install pymodbus
+    && pip --disable-pip-version-check --no-cache-dir install pymodbus \
+    && pip --disable-pip-version-check --no-cache-dir install opcua
 
 COPY ./plc2_pressure ./plc2_pressure
 COPY ./plclib ./plclib

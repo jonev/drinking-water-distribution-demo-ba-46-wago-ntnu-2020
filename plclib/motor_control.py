@@ -132,7 +132,7 @@ class MotorControlDigital:
     def getBSON(self):
         return {
             "_id": self.__tag,
-            "type": MotorControlDigital.__class__,
+            "type": MotorControlDigital.__name__,
             "tag": self.__tag,
             "autoControlValueCommand": self.__autoControlValueCommand,
             "manualControlValueCommand": self.__manualControlValueCommand,
