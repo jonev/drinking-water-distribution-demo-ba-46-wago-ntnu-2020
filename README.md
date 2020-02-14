@@ -63,3 +63,6 @@ E.g:
 ### Simple mongodb client
 Docker:  
 `mongo-express -u user -p password -d database -H mongoDBHost -P mongoDBPort`
+### Transfer files from Windows to Linux
+[WinSCP](https://winscp.net/eng/download.php)
+- Log inn and drag files between the two computers

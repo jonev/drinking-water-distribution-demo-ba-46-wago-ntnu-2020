@@ -14,7 +14,7 @@ from plclib.analog_signal import AnalogSignal
 from plclib.timer import Timer
 from plclib.utils import Scaling
 
-mongodbClient = MongoClient(host="mongo", port=27017, username="root", password="example")
+mongodbClient = MongoClient(host="mongo", port=27017)
 db = mongodbClient["states"]
 mqtt = MQTTClient("broker.hivemq.com", 1883, 60, ["wago/ba/plc2/in/#"])
 # UNIT = 0x1

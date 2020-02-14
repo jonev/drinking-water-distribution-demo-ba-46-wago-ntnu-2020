@@ -6,19 +6,17 @@ services:
         image: jonev/python-test:v6
         depends_on:
             - mongo
+        command: --cap-add SYS_NICE
 
     mongo:
         image: webhippie/mongodb
         ports:
         - 27017:27017
-        environment:
-            MONGO_INITDB_ROOT_USERNAME: root
-            MONGO_INITDB_ROOT_PASSWORD: example
 
     mongo-express:
         image: malaslt/mongo-express-arm
         ports:
             - 8888:8081
-        environment:
-            ME_CONFIG_MONGODB_ADMINUSERNAME: root
-            ME_CONFIG_MONGODB_ADMINPASSWORD: example
+        depends_on: 
+            - mongo
+            - pythonapp
