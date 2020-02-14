@@ -1,0 +1,22 @@
+version: '3.1'
+
+services:
+
+    pythonapp:
+        image: jonev/python-test:v6
+        depends_on:
+            - mongo
+        command: --cap-add SYS_NICE
+
+    mongo:
+        image: webhippie/mongodb
+        ports:
+        - 27017:27017
+
+    mongo-express:
+        image: malaslt/mongo-express-arm
+        ports:
+            - 8888:8081
+        depends_on: 
+            - mongo
+            - pythonapp

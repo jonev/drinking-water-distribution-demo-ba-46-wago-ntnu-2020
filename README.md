@@ -42,6 +42,7 @@ E.g:
 - "No space left on device", run `docker system prune` and delete also images with `docker image prune -a`
 
 ## Run on PLC
+- To avoid long pull-time, reuse image tag
 ### Prerequisites:
 - Download [.ipk file](https://github.com/WAGO/docker-ipk/releases)
 - Follow [this guide.](https://github.com/Wago-Norge/Docker-Support)
@@ -62,3 +63,6 @@ E.g:
 ### Simple mongodb client
 Docker:  
 `mongo-express -u user -p password -d database -H mongoDBHost -P mongoDBPort`
+### Transfer files from Windows to Linux
+[WinSCP](https://winscp.net/eng/download.php)
+- Log inn and drag files between the two computers

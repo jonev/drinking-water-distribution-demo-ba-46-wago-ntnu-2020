@@ -1,0 +1,6 @@
+FROM python:3.8
+
+RUN pip --disable-pip-version-check --no-cache-dir install paho-mqtt \
+    && pip --disable-pip-version-check --no-cache-dir install pymongo \
+    && pip --disable-pip-version-check --no-cache-dir install pymodbus \
+    && pip --disable-pip-version-check --no-cache-dir install opcua
