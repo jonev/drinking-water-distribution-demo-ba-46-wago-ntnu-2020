@@ -3,116 +3,94 @@ from threading import Thread
 from random import randint
 import time
 
-
-# from requests_html import HTMLSession
-
-# https://klimaservicesenter.no/faces/desktop/article.xhtml?uri=klimaservicesenteret/Klimanormaler
-
-mqtt = MQTTClient("broker.hivemq.com", 1883, 60, ["wago/ba/sim/out/#"])
-
+mqtt = MQTTClient("broker.hivemq.com", 1883, 60, ["wago/ba/sim/#"])
 mqttThread = Thread(target=mqtt.loopForever, args=())
 mqttThread.start()
 time.sleep(2)
 
 
-class WeatherForcast:
+class SimulatingValues:
+    """
+    This class make random weather, rain and find the waterlevel.  
+    """
+
     def __init__(self,):
-        self.weather = 0
-        self.rain = 0
-        self.level = 50
-        self.valve = 0
-        self.counter = 0
-        self.checklist = [0, 0, 0, 0, 0, 0]
-        self.sumrain = 0
-        self.weatherTypes = (
-            ["sun"]  # * 3
-            + ["partlycloudy"]  # * 3
-            + ["cloudy"]  # * 5
-            + ["drizzle"]  # * 5
-            + ["rainy"]  # * 5
-            + ["storm"]  # * 3
-        )
-        self.random = int(len(self.weatherTypes) / 2)  # Startvalue
+        """
+        Initialize the attributes of the class
+        """
+
+        self.outflow = 7  # Flow when emission valve is open
+        self.level = 80  # The water level to start with
+        self.weatherTypes = [
+            ("sun", -1, -1),
+            ("partlycloudy", 0, 0),
+            ("cloudy", 0, 0),
+            ("drizzle", 2, 3),
+            ("rainy", 4, 5),
+            ("storm", 6, 7),
+        ]  # List of weathertypes and the (min,max) rain for each weathertypes
+        self.random = int(len(self.weatherTypes) / 2)  # Startvalue for random weather
 
     def randomWeather(self,):
-        self.random = self.random + randint(-1, 1)  # Logic for at været ikke kan endres plutselig
-        if self.random >= len(self.weatherTypes):
+        """Find a random weather
+        
+        :return: [random weather from weathertypes]
+        :rtype: [str]
+        """
+        self.random = self.random + randint(-1, 2)  # Logic so the weather gradually change
+        if self.random >= len(self.weatherTypes):  # Avoid the number to go out of range
             self.random = len(self.weatherTypes) - 1
-        elif self.random < 0:
+        elif self.random < 0:  # Avoid the number to go out of range
             self.random = 0
-        self.weather = self.weatherTypes[self.random]
-        # print(self.random)
-        # print(self.weather)
+        self.weather = self.weatherTypes[self.random][0]  # Choose the weather from the random value
+        print(self.weather)
         return self.weather
 
     def rainWeather(self):
-        print(self.weather)
-        if self.weather == "drizzle":
-            self.rain = randint(1, 2)  # mm regn
-        elif self.weather == "rainy":
-            self.rain = randint(3, 4)  # mm regn
-        elif self.weather == "storm":
-            self.rain = randint(5, 6)  # mm regn
-        else:
-            self.rain = 0
-        self.sumrain = self.sumrain + self.rain
-        # print(self.sumrain)
+        """Find the amount of rain from the weathertype 
+        
+        :return: [rain in mm]
+        :rtype: [int]
+        """
+        mini = self.weatherTypes[self.random][1]
+        maxi = self.weatherTypes[self.random][2]
+        self.rain = randint(mini, maxi)
+        print(self.rain)
         return self.rain
 
-
-"""
-    def check(self):  # For og sjekke gjennomsnittlig vær over tid
-        if self.weather == "sun":
-            self.checklist[0] = self.checklist[0] + 1
-        elif self.weather == "partlycloudy":
-            self.checklist[1] = self.checklist[1] + 1
-        elif self.weather == "cloudy":
-            self.checklist[2] = self.checklist[2] + 1
-        elif self.weather == "drizzle":
-            self.checklist[3] = self.checklist[3] + 1
-        elif self.weather == "rainy":
-            self.checklist[4] = self.checklist[4] + 1
-        elif self.weather == "storm":
-            self.checklist[5] = self.checklist[5] + 1
-        print(self.checklist)
-
-
-
     def waterLevel(self):
-        if self.valve == 1:
-            self.level = self.level - 5
-        if self.rain == 0:
-            self.level = self.level - 2
-        else:
-            self.level = self.level + self.rain
+        """Find the waterlevel in the tank affected by the weather and rain
+        
+        :return: [water level]
+        :rtype: [int]
+        """
+        self.level = self.level + self.rain  # Water level increases if its raining
         print(self.level)
+        return self.level
 
-    def openValve(self):
-        if self.level > 80:
-            self.valve = 1
-            print("Valve open")
-        else:
-            self.valve = 0
-            print("Valve closed")
-
-"""
+    def valveOpen(self):
+        """Reduces the water level if the valve is open
+        """
+        if self.valve == 1:
+            self.level = self.level - self.outflow
 
 
-weatherForcast = WeatherForcast()
+simulationValues = SimulatingValues()
 while True:
+    """Sending values with MQTT to broker.
+    """
 
-    # for x in range(0, 876):  # På yr er ny varsling vær time. Mulig vi må ha det kontunuerlig
+    # randomWeather = simulationValues.randomWeather()
+    # rain = simulationValues.rainWeather()
+    # waterLevel = simulationValues.waterLevel()
+    simulationValues.randomWeather()
+    simulationValues.rainWeather()
+    simulationValues.waterLevel()
+    # simulationValues.valveOpen()
 
-    randomWeather = weatherForcast.randomWeather()
-    rain = weatherForcast.rainWeather()
+    # mqtt.publish("wago/ba/sim/out/randomWeather", randomWeather.__str__())
+    # mqtt.publish("wago/ba/sim/out/rain", rain.__str__())
+    # mqtt.publish("wago/ba/sim/out/waterLevel", waterLevel.__str__())
 
-    # weatherForcast.randomWeather()
-    # weatherForcast.check()
-    # weatherForcast.rainWeather()
-    # weatherForcast.openValve()
-    # weatherForcast.waterLevel()
-    mqtt.publish("wago/ba/sim/out/randomWeather", randomWeather.__str__())
-    mqtt.publish("wago/ba/sim/out/rain", rain.__str__())
-
-    time.sleep(1)
+    time.sleep(3)
 
