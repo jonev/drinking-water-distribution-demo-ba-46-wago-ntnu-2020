@@ -1,12 +1,14 @@
 from plclib.mqtt_client import MQTTClient
 from threading import Thread
 from random import randint
-import matplotlib.pyplot as plt
 import time
+
+
+# from requests_html import HTMLSession
 
 # https://klimaservicesenter.no/faces/desktop/article.xhtml?uri=klimaservicesenteret/Klimanormaler
 
-mqtt = MQTTClient("broker.hivemq.com", 1883, 60, ["wago/ba/sim/out"])
+mqtt = MQTTClient("broker.hivemq.com", 1883, 60, ["wago/ba/sim/out/#"])
 
 mqttThread = Thread(target=mqtt.loopForever, args=())
 mqttThread.start()
@@ -14,20 +16,16 @@ time.sleep(2)
 
 
 class WeatherForcast:
-    def __init__(
-        self, tag="no tag",
-    ):
+    def __init__(self,):
         self.weather = 0
         self.rain = 0
         self.level = 50
         self.valve = 0
         self.counter = 0
-        self.r = 11
+        self.random = 11  # Startvalue
         self.checklist = [0, 0, 0, 0, 0, 0]
         self.sumrain = 0
-
-    def randomWeather(self,):
-        weatherTypes = (
+        self.weatherTypes = (
             ["sun"] * 3
             + ["partlycloudy"] * 3
             + ["cloudy"] * 5
@@ -35,14 +33,17 @@ class WeatherForcast:
             + ["rainy"] * 5
             + ["storm"] * 3
         )
-        self.r = self.r + randint(-3, 3)  # Logic for at været ikke kan endres plutselig
-        if self.r >= len(weatherTypes):
-            self.r = len(weatherTypes) - 1
-        elif self.r < 0:
-            self.r = 0
-        self.weather = weatherTypes[self.r]
-        print(self.r)
-        print(self.weather)
+
+    def randomWeather(self,):
+        self.random = self.random + randint(-4, 5)  # Logic for at været ikke kan endres plutselig
+        if self.random >= len(self.weatherTypes):
+            self.random = len(self.weatherTypes) - 1
+        elif self.random < 0:
+            self.random = 0
+        self.weather = self.weatherTypes[self.random]
+        # print(self.random)
+        # print(self.weather)
+        return self.weather
 
     def rainWeather(self):
         print(self.weather)
@@ -55,8 +56,11 @@ class WeatherForcast:
         else:
             self.rain = 0
         self.sumrain = self.sumrain + self.rain
-        print(self.sumrain)
+        # print(self.sumrain)
+        return self.rain
 
+
+"""
     def waterLevel(self):
         if self.valve == 1:
             self.level = self.level - 5
@@ -89,16 +93,22 @@ class WeatherForcast:
         elif self.weather == "storm":
             self.checklist[5] = self.checklist[5] + 1
         print(self.checklist)
-
+"""
 
 weatherForcast = WeatherForcast()
-# while True:
-for x in range(0, 876):  # På yr er ny varsling vær time. Mulig vi må ha det kontunuerlig
+while True:
+
+    # for x in range(0, 876):  # På yr er ny varsling vær time. Mulig vi må ha det kontunuerlig
     # mqtt.publish("wago/ba/sim/waterlevel", "6")
-    weatherForcast.randomWeather()
-    weatherForcast.check()
-    weatherForcast.rainWeather()
+    randomWeather = weatherForcast.randomWeather()
+    rain = weatherForcast.rainWeather()
+    # print(randomWeather)
+    # weatherForcast.check()
+    # weatherForcast.rainWeather()
     # weatherForcast.openValve()
     # weatherForcast.waterLevel()
-    time.sleep(0.1)
+    mqtt.publish("wago/ba/sim/out/randomWeather", randomWeather.__str__())
+    mqtt.publish("wago/ba/sim/out/rain", rain.__str__())
+    # mqtt.publish("wago/ba/sim/waterlevel", "6")
+    time.sleep(3)
 
