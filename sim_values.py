@@ -18,7 +18,6 @@ class SimulatingValues:
         """
         Initialize the attributes of the class
         """
-
         self.outflow = 7  # Flow when emission valve is open
         self.level = 80  # The water level to start with
         self.weatherTypes = [
