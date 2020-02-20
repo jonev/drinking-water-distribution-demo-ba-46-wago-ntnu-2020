@@ -3,6 +3,7 @@ from threading import Thread
 from random import randint
 import time
 
+# http://www.hivemq.com/demos/websocket-client/
 mqtt = MQTTClient("broker.hivemq.com", 1883, 60, ["wago/ba/sim/#"])
 mqttThread = Thread(target=mqtt.loopForever, args=())
 mqttThread.start()
@@ -79,17 +80,17 @@ while True:
     """Sending values with MQTT to broker.
     """
 
-    # randomWeather = simulationValues.randomWeather()
-    # rain = simulationValues.rainWeather()
-    # waterLevel = simulationValues.waterLevel()
+    randomWeather = simulationValues.randomWeather()
+    rain = simulationValues.rainWeather()
+    waterLevel = simulationValues.waterLevel()
     simulationValues.randomWeather()
     simulationValues.rainWeather()
     simulationValues.waterLevel()
     # simulationValues.valveOpen()
-
     # mqtt.publish("wago/ba/sim/out/randomWeather", randomWeather.__str__())
     # mqtt.publish("wago/ba/sim/out/rain", rain.__str__())
-    # mqtt.publish("wago/ba/sim/out/waterLevel", waterLevel.__str__())
+    dict_ = {"waterLevel": waterLevel, "rain": rain, "randomWeather": randomWeather}
+    mqtt.publish("wago/ba/sim/out/waterLevel", dict_.__str__())
 
-    time.sleep(3)
+    time.sleep(5)
 
