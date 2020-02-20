@@ -2,6 +2,7 @@ from plclib.mqtt_client import MQTTClient
 from threading import Thread
 from random import randint
 import time
+import json
 
 # http://www.hivemq.com/demos/websocket-client/
 mqtt = MQTTClient("broker.hivemq.com", 1883, 60, ["wago/ba/sim/#"])
@@ -19,6 +20,7 @@ class SimulatingValues:
         """
         Initialize the attributes of the class
         """
+        self.valve = 0
         self.outflow = 7  # Flow when emission valve is open
         self.level = 80  # The water level to start with
         self.weatherTypes = [
@@ -90,7 +92,7 @@ while True:
     # mqtt.publish("wago/ba/sim/out/randomWeather", randomWeather.__str__())
     # mqtt.publish("wago/ba/sim/out/rain", rain.__str__())
     dict_ = {"waterLevel": waterLevel, "rain": rain, "randomWeather": randomWeather}
-    mqtt.publish("wago/ba/sim/out/waterLevel", dict_.__str__())
+    mqtt.publish("wago/ba/sim/out/waterLevel", json.dumps(dict_))
 
     time.sleep(5)
 
