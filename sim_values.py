@@ -91,8 +91,8 @@ while True:
     # simulationValues.valveOpen()
     # mqtt.publish("wago/ba/sim/out/randomWeather", randomWeather.__str__())
     # mqtt.publish("wago/ba/sim/out/rain", rain.__str__())
-    dict_ = {"waterLevel": waterLevel, "rain": rain, "randomWeather": randomWeather}
-    mqtt.publish("wago/ba/sim/out/waterLevel", json.dumps(dict_))
+    dict_ = {"waterLevel": waterLevel, "rain": rain, "randomWeather": randomWeather}  # Jone
+    mqtt.publish("wago/ba/sim/out/waterLevel", json.dumps(dict_))  # Jone
 
     time.sleep(5)
 
