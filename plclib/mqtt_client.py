@@ -9,6 +9,7 @@ class MQTTClient:
         self.__brokerKeepALive = brokerKeepALive
         self.__subscriptions = subscriptions
         self.__client = 0
+        self.__receivedData = {}
 
     # The callback for when the client receives a CONNACK response from the server.
     def __on_connect(self, client, userdata, flags, rc):
@@ -22,6 +23,13 @@ class MQTTClient:
     # The callback for when a PUBLISH message is received from the server.
     def on_message(self, client, userdata, msg):
         print(msg.topic + " " + str(msg.payload))
+        self.__receivedData[msg.topic] = msg.payload  # TODO Exception handling
+
+    def getData(self, topic):
+        if topic in self.__receivedData:
+            return self.__receivedData[topic]
+        else:
+            return None
 
     def publish(self, topic, payload, jsonEncoder=None):
         self.__client.publish(topic, payload=payload)

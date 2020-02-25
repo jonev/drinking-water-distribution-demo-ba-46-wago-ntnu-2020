@@ -88,11 +88,14 @@ while True:
     simulationValues.randomWeather()
     simulationValues.rainWeather()
     simulationValues.waterLevel()
+    # Denne må du ikke kalle før du vett at der er data som har blitt mottat
+    # Eller må du gjøre "getData" sikker mot at noen prøver å hente ut data som ikke fins
+
     # simulationValues.valveOpen()
     # mqtt.publish("wago/ba/sim/out/randomWeather", randomWeather.__str__())
     # mqtt.publish("wago/ba/sim/out/rain", rain.__str__())
     dict_ = {"waterLevel": waterLevel, "rain": rain, "randomWeather": randomWeather}  # Jone
     mqtt.publish("wago/ba/sim/out/waterLevel", json.dumps(dict_))  # Jone
-
+    # print(self.on_message)
     time.sleep(5)
 

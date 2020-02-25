@@ -1,6 +1,14 @@
-import time
-import random
+from plclib.mqtt_client import MQTTClient
+from threading import Thread
 from random import randint
+import random
+import time
+import json
+
+mqtt = MQTTClient("broker.hivemq.com", 1883, 60, ["wago/ba/sim/#"])
+mqttThread = Thread(target=mqtt.loopForever, args=())
+mqttThread.start()
+time.sleep(2)
 
 
 class SimValuesPLS2:
@@ -40,10 +48,12 @@ class SimValuesPLS2:
         self.water_usage = round(self.water_usage, 3)
         self.pressure_drop = 0.00005 * self.random_users
         self.waterusage_person_day = 200
+        return self.water_usage
 
     def pressureInPump(self,):
         self.p_in_pascal = self.tetthet_vann * self.tyngde_aks * (self.hoyde + self.level)
         self.p_in_bar = self.p_in_pascal / 100_000
+        return self.p_in_bar
 
     def manuelAuto(self,):
         self.p_missing = self.onsket_p + self.pressure_drop - self.p_out
@@ -74,6 +84,7 @@ class SimValuesPLS2:
 
     def pressureOutPump(self,):
         self.p_out = self.p_in_bar + (sum(self.pump_running_value) / 100) * self.pump_pressure
+        return self.p_out
 
     def flowOutPump(self,):
         self.flow_out = self.water_usage
@@ -81,11 +92,13 @@ class SimValuesPLS2:
     def currentDrawPump(self,):
         for p in range(0, self.pumps):
             self.pump_current_draw[p] = round(self.pump_running_value[p] * 0.05, 2)
+        return self.pump_current_draw
 
     def runtimePump(self,):
         for p in range(0, self.pumps):
             if self.pump_running[p] == 1:
                 self.pump_timer[p] += 1
+        return self.pump_timer
 
     def print(self,):
         print("Water usages: " + str(round(self.water_usage, 3)))
@@ -102,15 +115,28 @@ class SimValuesPLS2:
 
 sim = SimValuesPLS2()
 
-
 while True:
-    sim.waterUsage()
+    # MQTT IN
+    data = mqtt.getData("wago/ba/sim/inn/test")
+    objectJson = json.loads(data)
+
+    waterUsage = sim.waterUsage()
     sim.waterLevel()
-    sim.pressureInPump()
+    pressureInPump = sim.pressureInPump()
     sim.manuelAuto()
-    sim.pressureOutPump()
-    sim.currentDrawPump()
-    sim.runtimePump()
+    pressureOutPump = sim.pressureOutPump()
+    currentDrawPump = sim.currentDrawPump()
+    runtimePump = sim.runtimePump()
     sim.print()
 
-    time.sleep(0.5)
+    # MQTT OUT
+
+    dict_ = {
+        "waterUsage": waterUsage,
+        "pressureInPump": pressureInPump,
+        "pressureOutPump": pressureOutPump,
+        "pumpCurrent": currentDrawPump,
+        "runtimePump": runtimePump,
+    }
+    mqtt.publish("wago/ba/sim/out/PLS2", json.dumps(dict_))
+    time.sleep(2)
