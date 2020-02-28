@@ -9,14 +9,3 @@ services:
         volumes:
             - ..:/workspace
         command: sleep infinity
-
-
-    mongo:
-        image: mongo
-        ports:
-        - 27017:27017
-
-    mongo-express:
-        image: mongo-express
-        ports:
-            - 8888:8081
