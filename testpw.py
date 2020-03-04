@@ -1,23 +1,3 @@
-from random import randint
+list_verdier = [6, 4, 3, 2, 2, 3, 4, 5, 6, 8, 9, 10, 10, 10, 10, 11, 13, 15, 15, 15, 13, 11, 9, 6]
+list_tid = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
 
-weatherTypes = [
-    ("sun", -1),
-    ("partlycloudy", 0),
-    ("cloudy", 0),
-    ("drizzle", 2),
-    ("rainy", 4),
-    ("storm", 6),
-]
-
-random = int(len(weatherTypes) / 2)
-random = random + randint(-1, 1)
-if random >= len(weatherTypes):
-    random = len(weatherTypes) - 1
-elif random < 0:
-    random = 0
-weather = weatherTypes[4][0]
-print(weather)
-rain = weatherTypes[random][1]
-print(rain)
-randomm = randint(2, 2)
-print(randomm)

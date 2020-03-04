@@ -7,6 +7,7 @@ import time
 
 class SimValuesPLS3:
     def __init__(self,):
+        # Solar panel and battery
         self.solar_weather_factor = [1, 0.8, 0.3, 0.15, 0, 0, 0, 0]
         self.solar_effect = 150  # watt
         self.solar_voltage = 12  # voltage
@@ -15,7 +16,7 @@ class SimValuesPLS3:
         self.battery_state_of_charge = self.battery_amphour / 2  # Startvalue
         self.sampling_time = 1
         self.samplings_in_hour = (60 * 60) / self.sampling_time
-
+        # Weather
         self.symbol_equal_sun = ["Clear sky", "Fair"]  # 0
         self.symbol_equal_partly_cloudy = ["Partly cloudy"]  # 1
         self.symbol_equal_cloudy = ["Fog", "Cloudy"]  # 2
@@ -61,6 +62,66 @@ class SimValuesPLS3:
             "symbol_equal_snow and thunder",
             "Heavy symbol_equal_snow and thunder",
         ]  # 6
+        # FT values in pipes
+        self.list_normal_water_consumption_hours = [
+            8,
+            6,
+            5,
+            5,
+            5,
+            5,
+            5,
+            6,
+            7,
+            7,
+            8,
+            9,
+            9,
+            9,
+            9,
+            10,
+            11,
+            12,
+            12,
+            12,
+            11,
+            11,
+            10,
+            8,
+        ]
+        self.list_hours = [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+        ]
+        self.zones_residens = [30, 50, 40, 60]
+        self.pipes = [0, 0, 0, 0, 0, 0, 0]
+        self.leak_in_pipe = [0, 0, 0, 0, 0, 0, 0]
+        self.total_samples_every_hour = 10
+        self.list_randomized_ft_value = []
+        self.list_timestamp = []
+        self.sample_nr = 0
 
     def importJsonDayForcast(self,):
         weather_type = Yr(location_name="Norge/Telemark/Skien/Skien")
@@ -116,6 +177,62 @@ class SimValuesPLS3:
         print("Battery Value: " + str(round(self.battery_state_of_charge, 2)))
         print("Battery Value %: " + str(round(self.battery_value_persent, 2)))
 
+    def flowInPipes(self,):
+        for i in range(0, len(self.list_normal_water_consumption_hours)):
+            self.list_normal_water_consumption_hours[i] = self.list_normal_water_consumption_hours[
+                i
+            ] * random.uniform(0.95, 1.05)
+            self.ft_value = self.list_normal_water_consumption_hours[i]
+            for m in range(0, self.total_samples_every_hour):
+                if i < len(self.list_normal_water_consumption_hours) - 1:
+
+                    # Interpolaring
+                    self.start_ft_value_hour = self.list_normal_water_consumption_hours[i]
+                    self.end_ft_value_hour = self.list_normal_water_consumption_hours[i + 1]
+                    self.delta_ft_value_hour = self.end_ft_value_hour - self.start_ft_value_hour
+                    self.dif_ft_value = self.delta_ft_value_hour / self.total_samples_every_hour
+                    self.ft_value = self.ft_value + self.dif_ft_value
+                    #
+
+                    self.randomized_ft_value = self.ft_value * random.uniform(0.95, 1.05)
+
+                    self.list_randomized_ft_value.append(round(self.randomized_ft_value, 2))
+                    self.sample_nr = self.sample_nr + 1
+                    self.list_timestamp.append(self.sample_nr)
+
+                    # Plotting
+                    # plt.plot(self.list_timestamp, self.list_randomized_ft_value, c=numpy.random.rand(3,))
+                    # plt.show()
+
+                    # Ft in pipes
+                    self.pipes[0] = (
+                        round(self.zones_residens[0] * self.randomized_ft_value, 2)
+                        + self.leak_in_pipe[0]
+                    )
+                    self.pipes[1] = (
+                        round(self.zones_residens[1] * self.randomized_ft_value, 2)
+                        + self.leak_in_pipe[1]
+                    )
+                    self.pipes[2] = (
+                        round(self.zones_residens[2] * self.randomized_ft_value, 2)
+                        + self.leak_in_pipe[2]
+                    )
+                    self.pipes[3] = (
+                        round(self.zones_residens[3] * self.randomized_ft_value, 2)
+                        + self.leak_in_pipe[3]
+                    )
+                    self.pipes[4] = round(self.pipes[3] + self.pipes[2], 2) + self.leak_in_pipe[4]
+                    self.pipes[5] = round(self.pipes[4] + self.pipes[1], 2) + self.leak_in_pipe[5]
+                    self.pipes[6] = round(self.pipes[0] + self.pipes[5], 2) + self.leak_in_pipe[6]
+
+                    sim.importJsonDayForcast()
+                    sim.solarPanelOutput()
+                    sim.batteryStateOfCharge()
+
+                    print("Flow in pipes: " + str(self.pipes))
+                    print("Randomized flow value: " + str(round(self.randomized_ft_value, 2)))
+                    time.sleep(2)
+
     def samplingTime(self,):
         time.sleep(self.sampling_time)
 
@@ -123,9 +240,10 @@ class SimValuesPLS3:
 sim = SimValuesPLS3()
 while True:
     sim.importJsonDayForcast()
-    sim.solarPanelOutput()
-    sim.batteryStateOfCharge()
-    sim.samplingTime()
+    # sim.solarPanelOutput()
+    # sim.batteryStateOfCharge()
+    # sim.samplingTime()
+    sim.flowInPipes()
     """
     print(weather_type)
     print(weather_symbol_list)
