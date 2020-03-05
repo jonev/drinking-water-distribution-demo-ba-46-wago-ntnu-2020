@@ -9,3 +9,20 @@ services:
         volumes:
             - ..:/workspace
         command: sleep infinity
+
+    grafana:
+        build:
+            context: .
+            dockerfile: DockerfileGrafana
+        ports:
+            - 3000:3000
+    
+    db:
+        image: mysql
+        command: --default-authentication-plugin=mysql_native_password
+        environment:
+            MYSQL_ROOT_PASSWORD: example
+    adminer:
+        image: adminer
+        ports:
+            - 8080:8080

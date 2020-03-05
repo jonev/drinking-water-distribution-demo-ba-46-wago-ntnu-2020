@@ -30,6 +30,7 @@ RUN apt-get update \
     && pip --disable-pip-version-check --no-cache-dir install pymongo \
     && pip --disable-pip-version-check --no-cache-dir install pymodbus \
     && pip --disable-pip-version-check --no-cache-dir install opcua \
+    && pip --disable-pip-version-check --no-cache-dir install mysql-connector \
     # Update Python environment based on requirements.txt
     # && pip --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
     # && rm -rf /tmp/pip-tmp \

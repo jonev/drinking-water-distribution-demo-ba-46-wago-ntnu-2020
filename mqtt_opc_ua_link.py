@@ -2,6 +2,7 @@ from opcua import Client, ua
 import paho.mqtt.client as mqtt
 from threading import Thread, Lock
 import time
+import datetime
 import json
 import hashlib
 
@@ -19,9 +20,10 @@ opcUaIdPrefix = "|var|WAGO 750-8214 PFC200 G2 2ETH RS CAN.PFCx00_SmartCoupler.HM
 ## MQTT
 mqttBroker = "broker.hivemq.com"
 mqttPort = 1883
-mqttTopicPublishData = "ba/wago/opcua/test/plcpub"
-mqttTopicSubscribeData = "ba/wago/opcua/test/plcsub"
-mqttPublishSuffix = "Pv"  # Published every sample, other tags are pulished on data change
+mqttTopicPublishData = "ba/wago/opcua/plc3/plcpub"
+mqttTopicSubscribeData = "ba/wago/opcua/plc3/plcsub"
+mqttPublishPvSuffix = "Pv"  # Published every sample, other tags are pulished on data change
+mqttPublishPvFlag = True
 
 
 def on_connect(client, userdata, flags, rc):
@@ -94,56 +96,63 @@ def getTagname(node):
 
 
 try:
-    # Init
-    print("Connecting to Opc.")
-    clientPlc.connect()
-    if clientPlc is None:
-        raise Exception("Opc connection failed")
-    print("Connected")
-    nodesUnderPrefix = clientPlc.get_node("ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix)
+    while True:
+        try:
+            # Init
+            print("Connecting to Opc.")
+            clientPlc.connect()
+            if clientPlc is None:
+                raise Exception("Opc connection failed")
+            print("Connected")
+            nodesUnderPrefix = clientPlc.get_node("ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix)
 
-    print("Connecting to MQTT broker.")
-    mqttClient.connect(mqttBroker, mqttPort, 60)
-    mqttThread = Thread(target=mqttClient.loop_forever, args=())
-    mqttThread.start()
-    print("Waiting for MQTT to connect...")
-    time.sleep(2)
+            print("Connecting to MQTT broker.")
+            mqttClient.connect(mqttBroker, mqttPort, 60)
+            mqttThread = Thread(target=mqttClient.loop_forever, args=())
+            mqttThread.start()
+            print("Waiting for MQTT to connect...")
+            time.sleep(2)
 
-    while True:  # Read data from OPC UA and Publish data to MQTT loop
-        topLevelOpcNodes = (
-            nodesUnderPrefix.get_children()
-        )  # Nodes are initialized each loop -> no need for restart if there are new nodes
-        if len(topLevelOpcNodes) == 0:
-            raise Exception("No tags where found")
-        for topLevelOpcNode in topLevelOpcNodes:
-            tagname = getTagname(topLevelOpcNode)
-            pObject = {}  # Building python object, then converting to json before sending
-            getChildrenRecursive(pObject, topLevelOpcNode.get_children())
-            # Publishing
-            jsonStringOfObject = json.dumps(pObject)
-            if mqttPublishSuffix in tagname:
-                mqttClient.publish(mqttTopicPublishData, payload=jsonStringOfObject)
-            else:
-                # Hash
-                newValueHash = hashlib.md5(pObject.__str__().encode("utf-8")).hexdigest()
-                with hashsLock:
-                    if tagname in hashs:
-                        # Compare
-                        if hashs[tagname] != newValueHash:
-                            mqttClient.publish(mqttTopicPublishData, payload=jsonStringOfObject)
-                            # Publish and save hash
-                            hashs[tagname] = newValueHash
-                        # Or nothing
+            while True:  # Read data from OPC UA and Publish data to MQTT loop
+                topLevelOpcNodes = (
+                    nodesUnderPrefix.get_children()
+                )  # Nodes are initialized each loop -> no need for restart if there are new nodes
+                if len(topLevelOpcNodes) == 0:
+                    raise Exception("No tags where found")
+                for topLevelOpcNode in topLevelOpcNodes:
+                    tagname = getTagname(topLevelOpcNode)
+                    pObject = {}  # Building python object, then converting to json before sending
+                    getChildrenRecursive(pObject, topLevelOpcNode.get_children())
+                    # Publishing
+                    if mqttPublishPvSuffix in tagname:
+                        pObject["_timestamp"] = str(datetime.datetime.now())
+                        mqttClient.publish(mqttTopicPublishData, payload=json.dumps(pObject))
                     else:
-                        # Tagname does not exist in hashs
-                        # Save hash
-                        hashs[tagname] = newValueHash
-                        # Publish
-                        mqttClient.publish(mqttTopicPublishData, payload=jsonStringOfObject)
-        time.sleep(sampleTime)
-
-except Exception as e:
-    print(e)
+                        # Hash
+                        newValueHash = hashlib.md5(pObject.__str__().encode("utf-8")).hexdigest()
+                        pObject["_timestamp"] = str(datetime.datetime.now())
+                        with hashsLock:
+                            if tagname in hashs:
+                                # Compare
+                                if hashs[tagname] != newValueHash:
+                                    mqttClient.publish(
+                                        mqttTopicPublishData, payload=json.dumps(pObject)
+                                    )
+                                    # Publish and save hash
+                                    hashs[tagname] = newValueHash
+                                # Or nothing
+                            else:
+                                # Tagname does not exist in hashs
+                                # Save hash
+                                hashs[tagname] = newValueHash
+                                # Publish
+                                mqttClient.publish(
+                                    mqttTopicPublishData, payload=json.dumps(pObject)
+                                )
+                time.sleep(sampleTime)
+        except Exception as e:
+            print(e)
+        time.sleep(10)
 finally:
     if clientPlc is not None:
         clientPlc.disconnect()
