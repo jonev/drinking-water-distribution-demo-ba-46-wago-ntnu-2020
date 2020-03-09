@@ -1,7 +1,0 @@
-FROM jonev/python-test:template
-
-COPY mqtt_opc_ua_link.py .
-
-CMD ["python", "mqtt_opc_ua_link.py"]
-
-

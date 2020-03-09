@@ -1,29 +1,42 @@
 from opcua import Client, ua
 import paho.mqtt.client as mqtt
 from threading import Thread, Lock
+from dotenv import load_dotenv
 import time
 import datetime
 import json
 import hashlib
+import os
 
+load_dotenv()
 # Global variables
 variables = {}
 hashs = {}  # Storing a hash of the object to be able to compare two objects fast
 hashsLock = Lock()  # hashs are used in multiple threads
-sampleTime = 30  # For testing
+sampleTime = int(os.getenv("SAMPLE_TIME"))  # For testing
 ## Opc UA
-opcUaServer = "172.17.0.1"  # Host of docker
-opcUaServerUsername = "admin"
-opcUaServerPassword = "wago"
-opcUaNs = 4  # Address
-opcUaIdPrefix = "|var|WAGO 750-8214 PFC200 G2 2ETH RS CAN.PFCx00_SmartCoupler.HMI"
+opcUaServer = "192.168.0.15"  # os.getenv("OPC_UA_SERVER")  # Host of docker
+opcUaServerUsername = os.getenv("OPC_UA_SERVER_USERNAME")
+opcUaServerPassword = os.getenv("OPC_UA_SERVER_PASSWORD")
+opcUaNs = int(os.getenv("OPC_UA_NS"))  # Address
+opcUaIdPrefix = os.getenv("OPC_UA_ID_PREFIX")
 ## MQTT
-mqttBroker = "broker.hivemq.com"
-mqttPort = 1883
-mqttTopicPublishData = "ba/wago/opcua/plc3/plcpub"
-mqttTopicSubscribeData = "ba/wago/opcua/plc3/plcsub"
-mqttPublishPvSuffix = "Pv"  # Published every sample, other tags are pulished on data change
-mqttPublishPvFlag = True
+mqttBroker = os.getenv("MQTT_BROKER")
+mqttPort = int(os.getenv("MQTT_PORT"))
+mqttTopicPublishData = os.getenv("MQTT_TOPIC_PUBLISHDATA")
+mqttTopicSubscribeData = os.getenv("MQTT_TOPIC_SUBSCRIBEDATA")
+mqttPublishPvSuffix = os.getenv(
+    "MQTT_PUBLISH_PV_SUFFIX"
+)  # Published every sample, other tags are pulished on data change
+mqttPublishPvFlag = os.getenv("MQTT_PUBLISH_PV_FLAG")
+print(
+    "Evn: OpcUaServer: "
+    + opcUaServer
+    + ", OpcUaIdPrefix"
+    + opcUaIdPrefix
+    + ", MqttBroker: "
+    + mqttBroker
+)
 
 
 def on_connect(client, userdata, flags, rc):
@@ -125,8 +138,9 @@ try:
                     getChildrenRecursive(pObject, topLevelOpcNode.get_children())
                     # Publishing
                     if mqttPublishPvSuffix in tagname:
-                        pObject["_timestamp"] = str(datetime.datetime.now())
-                        mqttClient.publish(mqttTopicPublishData, payload=json.dumps(pObject))
+                        if mqttPublishPvFlag:
+                            pObject["_timestamp"] = str(datetime.datetime.now())
+                            mqttClient.publish(mqttTopicPublishData, payload=json.dumps(pObject))
                     else:
                         # Hash
                         newValueHash = hashlib.md5(pObject.__str__().encode("utf-8")).hexdigest()
