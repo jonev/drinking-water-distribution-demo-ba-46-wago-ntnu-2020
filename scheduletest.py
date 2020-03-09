@@ -6,11 +6,6 @@ logging.basicConfig(filename="example.log", level=logging.DEBUG)
 
 
 def dojob():
-    # global doneflag
-    # if not doneflag:
-    #    raise Exception("Last job was not done!")
-    # doneflag = False
-    # print("Doing job: " + str(time.time()))
     logging.debug(str(time.time()))
     for x in range(1, 100000):
         # if x % 100000 == 0:
@@ -18,7 +13,6 @@ def dojob():
         y = 2 + x ** 2 - x ** 10 - 15000
         z = y ** 15 - 15000 + (x - y)
     # print("Done")
-    # doneflag = True
 
 
 def dojob2():
