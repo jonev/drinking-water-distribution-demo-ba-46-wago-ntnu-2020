@@ -1,0 +1,12 @@
+FROM node
+USER root
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y git && \
+    git clone https://github.com/JamesOsgood/mongodb-grafana.git && \
+    cd mongodb-grafana && \
+    npm install
+
+WORKDIR /mongodb-grafana
+
+ENTRYPOINT ["npm", "run", "server"]

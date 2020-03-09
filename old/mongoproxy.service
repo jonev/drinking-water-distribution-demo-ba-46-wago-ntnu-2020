@@ -1,0 +1,13 @@
+[Unit]
+Description=mongoproxy demo service
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/var/lib/grafana/plugins/mongodb-grafana npm run server
+
+[Install]
+WantedBy=multi-user.target
