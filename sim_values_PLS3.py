@@ -3,6 +3,10 @@ import json
 from random import randint
 import random
 import time
+import mysql.connector
+from datetime import timedelta, datetime
+import paho.mqtt.client as mqtt
+from threading import Thread
 
 
 class SimValuesPLS3:
@@ -118,16 +122,81 @@ class SimValuesPLS3:
         self.zones_residens = [30, 50, 40, 60]
         self.pipes = [0, 0, 0, 0, 0, 0, 0]
         self.leak_in_pipe = [0, 0, 0, 0, 0, 0, 0]
-        self.total_samples_every_hour = 10
+        self.total_samples_every_hour = 6
         self.list_randomized_ft_value = []
         self.list_timestamp = []
         self.sample_nr = 0
+        self.day_counter = 1
+        self.first_timestamp = 0
+        # Timestamp
+        self.timestamp_sample = datetime.strptime(str(datetime.now().date()), "%Y-%m-%d")
+
+        # DB SETUP
+        self.dbName = "processvalues"
+        self.db = mysql.connector.connect(host="db", user="root", passwd="example",)
+        self.cursor = self.db.cursor()
+
+        try:  # Add if not exist
+            self.cursor.execute("CREATE DATABASE " + self.dbName)
+        except Exception as ex:
+            print(ex)
+
+        self.flowValueTableName = "flowValueValues"
+        self.flowValueTableFormat = "(id INT AUTO_INCREMENT PRIMARY KEY, metric VARCHAR(3), timestamp DATETIME, daycounter INT,samplenr VARCHAR(5), FlowValue FLOAT)"
+        self.flowValueTableInsert = (
+            "INSERT INTO "
+            + self.flowValueTableName
+            + " (metric, timestamp, daycounter, samplenr, FlowValue) VALUES (%s, %s,  %s, %s, %s)"
+        )
+
+        try:  # Create table if not exist
+            self.cursor.execute(
+                "SELECT * FROM information_schema.tables WHERE table_name='"
+                + self.flowValueTableName
+                + "'"
+            )
+            all = self.cursor.fetchall()
+            self.db = mysql.connector.connect(
+                host="db", user="root", passwd="example", database=self.dbName
+            )
+            self.cursor = self.db.cursor()
+            if len(all) == 0:
+                self.cursor.execute(
+                    "CREATE TABLE " + self.flowValueTableName + " " + self.flowValueTableFormat
+                )
+        except Exception as ex:
+            print(ex)
+
+        # MQTT Setup
+
+        mqttBroker = "broker.hivemq.com"
+        mqttPort = 1883
+        self.mqttTopicSubscribe = "wago/ba/sim/out/PLS2"
+        self.mqttTopicPublish = "wago/ba/sim/out/PLS2"
+        self.mqttClient = mqtt.Client()
+        self.mqttClient.connect(mqttBroker, mqttPort, 60)
+        self.mqttClient.on_connect = self.on_connect
+        self.mqttClient.on_message = self.on_message
+        self.mqttThread = Thread(target=self.mqttClient.loop_forever, args=())
+        self.mqttThread.start()
+        time.sleep(2)
+        self.mqttClient.publish(self.mqttTopicPublish, payload="MQTT Leakdetection is running...")
+
+    def on_connect(self, client, userdata, flags, rc):
+        print("MQTT Connected with result code " + str(rc))
+        self.mqttClient.subscribe(self.mqttTopicSubscribe)
+
+    def on_message(self, client, userdata, msg):
+        # print(msg.topic + str(msg.payload))
+        # TODO not thread safe
+        self.receivedObject = json.loads(str(msg.payload, encoding="utf-8"))
+        # print(self.receivedObject)
 
     def importJsonDayForcast(self,):
         weather_type = Yr(location_name="Norge/Telemark/Skien/Skien")
         now = weather_type.now(as_json=True)
         forecast = json.loads(now)
-        print(forecast)
+        # print(forecast)
         self.weather_symbol_list = int(forecast["@period"])
         self.from_time = forecast["@from"]
         self.to_time = forecast["@to"]
@@ -181,20 +250,24 @@ class SimValuesPLS3:
         for i in range(0, len(self.list_normal_water_consumption_hours)):
             self.list_normal_water_consumption_hours[i] = self.list_normal_water_consumption_hours[
                 i
-            ] * random.uniform(0.95, 1.05)
+            ]  # * random.uniform(1, 1)
             self.ft_value = self.list_normal_water_consumption_hours[i]
             for m in range(0, self.total_samples_every_hour):
-                if i < len(self.list_normal_water_consumption_hours) - 1:
+                if i < len(self.list_normal_water_consumption_hours):
 
                     # Interpolaring
-                    self.start_ft_value_hour = self.list_normal_water_consumption_hours[i]
-                    self.end_ft_value_hour = self.list_normal_water_consumption_hours[i + 1]
+                    if i == 23:
+                        self.start_ft_value_hour = self.list_normal_water_consumption_hours[i]
+                        self.end_ft_value_hour = self.list_normal_water_consumption_hours[0]
+                    else:
+                        self.start_ft_value_hour = self.list_normal_water_consumption_hours[i]
+                        self.end_ft_value_hour = self.list_normal_water_consumption_hours[i + 1]
                     self.delta_ft_value_hour = self.end_ft_value_hour - self.start_ft_value_hour
                     self.dif_ft_value = self.delta_ft_value_hour / self.total_samples_every_hour
                     self.ft_value = self.ft_value + self.dif_ft_value
                     #
 
-                    self.randomized_ft_value = self.ft_value * random.uniform(0.95, 1.05)
+                    self.randomized_ft_value = self.ft_value  # * random.uniform(1, 1)
 
                     self.list_randomized_ft_value.append(round(self.randomized_ft_value, 2))
                     self.sample_nr = self.sample_nr + 1
@@ -225,25 +298,60 @@ class SimValuesPLS3:
                     self.pipes[5] = round(self.pipes[4] + self.pipes[1], 2) + self.leak_in_pipe[5]
                     self.pipes[6] = round(self.pipes[0] + self.pipes[5], 2) + self.leak_in_pipe[6]
 
+                    print("Flow in pipes: " + str(self.pipes))
+                    print("Randomized flow value: " + str(round(self.randomized_ft_value, 2)))
+
                     sim.importJsonDayForcast()
                     sim.solarPanelOutput()
                     sim.batteryStateOfCharge()
-
-                    print("Flow in pipes: " + str(self.pipes))
-                    print("Randomized flow value: " + str(round(self.randomized_ft_value, 2)))
-                    time.sleep(2)
+                    sim.simTimeStamp()
+                    sim.sendValuesToDb()
+                    sim.sendValuesToMQTT()
+                    sim.samplingTime()
 
     def samplingTime(self,):
-        time.sleep(self.sampling_time)
+        # time.sleep(self.sampling_time)
+        # time.sleep(0.2)
+        pass
+
+    def simTimeStamp(self,):  # Lager timestamp for hver sample
+        self.total_samples_one_day = self.total_samples_every_hour * len(self.list_hours)
+        self.sec_between_samples = 24 * 60 * 60 / self.total_samples_one_day
+        if self.sample_nr > self.total_samples_one_day * self.day_counter:
+            self.day_counter = self.day_counter + 1
+        self.timestamp_sample = self.timestamp_sample + timedelta(seconds=self.first_timestamp)
+        self.first_timestamp = (
+            self.sec_between_samples
+        )  # Endrer til sec between samples etter første sample
+
+    def sendValuesToDb(self,):
+        # Skriver til database
+        self.val = (
+            "na",
+            self.timestamp_sample,
+            self.day_counter,
+            self.sample_nr,
+            self.randomized_ft_value,
+        )
+        self.cursor.execute(self.flowValueTableInsert, self.val)
+        self.db.commit()
+
+    def sendValuesToMQTT(self,):
+        dict_ = {
+            "dayCounter": self.day_counter,
+        }
+        self.mqttClient.publish(self.mqttTopicPublish, json.dumps(dict_))
+        print("MQTT send: " + json.dumps(dict_))
+        # time.sleep(1)
 
 
 sim = SimValuesPLS3()
 while True:
-    sim.importJsonDayForcast()
+    sim.flowInPipes()
     # sim.solarPanelOutput()
     # sim.batteryStateOfCharge()
     # sim.samplingTime()
-    sim.flowInPipes()
+
     """
     print(weather_type)
     print(weather_symbol_list)

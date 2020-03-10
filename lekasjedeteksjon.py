@@ -9,6 +9,11 @@ import random
 from random import randint
 import matplotlib.pyplot as plt
 import numpy
+import paho.mqtt.client as mqtt
+from threading import Thread
+import json
+import mysql.connector
+from datetime import timedelta, datetime
 
 
 class PLS3:
@@ -40,27 +45,142 @@ class PLS3:
         # Testing
         self.compare_01_command = False
         self.flag = True
-        self.new_day = False
 
-    def simLeak(self,):
+        # DB Setup
+
+        # DB SETUP
+
+        # self.dbName = "processvalues"
+        self.db = mysql.connector.connect(
+            host="db", user="root", passwd="example", database="processvalues"
+        )
+
+        self.cursor = self.db.cursor()
+        """
+        try:  # Add if not exist
+            self.cursor.execute("CREATE DATABASE " + self.dbName)
+        except Exception as ex:
+            print(ex)
+
+        self.flowValueTableName = "flowValueValues"
+        self.flowValueTableFormat = "(id INT AUTO_INCREMENT PRIMARY KEY, metric VARCHAR(3), timestamp TIMESTAMP,daycounter INT,samplenr INT, FlowValue FLOAT)"
+        self.flowValueTableInsert = (
+            "INSERT INTO "
+            + self.flowValueTableName
+            + " (metric, timestamp,daycounter, samplenr, FlowValue) VALUES (%s, %s, %s,%s, %s)"
+        )
+
+        try:  # Create table if not exist
+            self.cursor.execute(
+                "SELECT * FROM information_schema.tables WHERE table_name='"
+                + self.flowValueTableName
+                + "'"
+            )
+            all = self.cursor.fetchall()
+            self.db = mysql.connector.connect(
+                host="db", user="root", passwd="example", database=self.dbName
+            )
+            self.cursor = self.db.cursor()
+            if len(all) == 0:
+                self.cursor.execute(
+                    "CREATE TABLE " + self.flowValueTableName + " " + self.flowValueTableFormat
+                )
+        except Exception as ex:
+            print(ex)
+        """
+
+        # MQTT Setup
+        mqttBroker = "broker.hivemq.com"
+        mqttPort = 1883
+        self.mqttTopicSubscribe = "wago/ba/sim/out/PLS2"
+        self.mqttTopicPublish = "wago/ba/sim/out/PLS2"
+        self.mqttClient = mqtt.Client()
+        self.mqttClient.connect(mqttBroker, mqttPort, 60)
+        self.mqttClient.on_connect = self.on_connect
+        self.mqttClient.on_message = self.on_message
+        self.mqttThread = Thread(target=self.mqttClient.loop_forever, args=())
+        self.mqttThread.start()
+        time.sleep(2)
+
+        self.mqttClient.publish(self.mqttTopicPublish, payload="MQTT Leakdetection is running...")
+        self.today_date = datetime.now().date() + timedelta(
+            days=3
+        )  # Grunnet feil dato fra datetime
+        self.current_day = self.receivedObject["dayCounter"]
+
+    def on_connect(self, client, userdata, flags, rc):
+        print("MQTT Connected with result code " + str(rc))
+        self.mqttClient.subscribe(self.mqttTopicSubscribe)
+
+    def on_message(self, client, userdata, msg):
+        # print(msg.topic + str(msg.payload))
+        # TODO not thread safe
+        self.receivedObject = json.loads(str(msg.payload, encoding="utf-8"))
+
+    def reciveValuesFromMQTT(self,):
+        MQTT_recived = self.receivedObject
+        self.day_counter = MQTT_recived["dayCounter"]
+        print(self.day_counter)
+
+    def newDay(self):
+        self.new_day = False
+        if self.current_day != self.day_counter:
+            self.new_day = True
+            self.current_day = self.current_day + 1
+            print(self.new_day)
+
+    def reciveFtValuesDB(self,):
+        date1 = self.day_counter
+        date2 = date1 + timedelta(days=5)
+        print("Mellom " + str(date1) + " og " + str(date2))
+        mycursor = mydb.cursor()
+        mycursor.execute(
+            "SELECT * FROM flowValueValues WHERE timestamp >= %s AND timestamp <%s", (date1, date2)
+        )
+
+        day_ft_values = self.cursor.fetchall()
+
+        for ft_value in day_ft_values:
+            print(ft_value[5])
+
+    def simLeak(self):
         if self.new_day == True:
             self.gradual_leak_value_for_every_day = self.gradual_leak_value_for_every_day + 0.2
         if self.day_counter == 17:  # Når lekkasjen skal slå inn
             self.constant_leak_value = 0  # Mengde lekkasje
         self.new_day = False
 
-    def ftValueToDayList(self,):
+    def randomFTvalue(self,):
         self.ft_value = round(
             10 * random.uniform(0.9, 1.1)
             + self.constant_leak_value
             + self.gradual_leak_value_for_every_day,
             2,
         )  # Random ft verdi
-        self.ft_values_day_list.append(self.ft_value)  # Ft verdi blir lagt til i liste
-        self.timestamp_list.append(self.sample_nr)  # Sample nr blir lagt til i liste
-        self.sample_nr = (
-            self.sample_nr + 1
-        )  # Øker sample nummer for vær runde kjørt, altså for vær nye ft verdi
+
+    def ftValueToDayList(self,):
+        if self.new_day == True:
+
+            date1 = self.today_date + (timedelta(days=self.day_counter))
+            date2 = date1 + timedelta(days=1)
+            print("Mellom " + str(date1) + " og " + str(date2))
+            self.cursor = self.db.cursor()
+            self.cursor.execute(
+                "SELECT * FROM flowValueValues WHERE timestamp >= %s AND timestamp <%s",
+                (date1, date2),
+            )
+            day_ft_values = self.cursor.fetchall()
+
+            for self.ft_value in day_ft_values:
+                # print(self.ft_value[5])
+                self.ft_values_day_list.append(self.ft_value[5])  # Ft verdi blir lagt til i liste
+                # self.timestamp_list.append(self.sample_nr)  # Sample nr blir lagt til i liste
+                # self.sample_nr = (
+                #    self.sample_nr + 1
+                # )  # Øker sample nummer for vær runde kjørt, altså for vær nye ft verdi
+                # print(self.ft_values_day_list)
+            print("Liste fra dag" + str(date1) + ": " + str(self.ft_values_day_list))
+            self.new_day == False
 
     def newDayNewList(self,):
         if (
@@ -77,6 +197,7 @@ class PLS3:
             self.timestamp_list = []  # Resetter dagslisten for nye verdier
             self.sample_nr = 0  # Resetter samplenr slik at sample 1 for ny dag blir 1
             self.new_day = True
+            time.sleep(1)
 
     def avarageListForXDay(self,):
         if (
@@ -195,24 +316,27 @@ class PLS3:
                 self.number_of_deviation_0x > self.total_samples_one_day * 0.75
             ):  # Hvis for mange avviksvariabler er over deviation_treshold
                 print("Mulig gradvis lekkasje")
-                time.sleep(5)
             else:
                 print("Ingen gravis lekkasje")
-                time.sleep(5)
             self.compare_0x_command = False
 
     def plsProgram(self,):
         while self.flag == True:
-            pls3.simLeak()
+            pls3.reciveValuesFromMQTT()
+            pls3.newDay()
+            # pls3.reciveFtValuesDB()
+            # pls3.simLeak()
+            # pls3.randomFTvalue()
             pls3.ftValueToDayList()
-            pls3.newDayNewList()
-            pls3.avarageListForXDay()
-            pls3.compareAvarageList01()
-            pls3.compareAvarageList0x()
-            time.sleep(0.3)
+            # pls3.newDayNewList()
+            # pls3.avarageListForXDay()
+            # pls3.compareAvarageList01()
+            # pls3.compareAvarageList0x()
+            time.sleep(1)
 
 
 pls3 = PLS3()
 
 while True:
     pls3.plsProgram()
+
