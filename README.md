@@ -36,7 +36,7 @@ To view the documentation open `docs/_build/html/index.html` in a browser.
 ### Build (and push) from root:
 `docker buildx build -f dockerfile-name --platform linux/arm/v7 -t username/imagename:tag --push .`  
 E.g:  
-`docker buildx build -f Dockerfile-plc2-pressure --platform linux/arm/v7 -t jonev/python-test:v6 --push .`
+`docker buildx build -f Dockerfile-plc2-pressure --platform linux/arm/v7 -t jonev/ba-wago:v6 --push .`
 
 ### Common errors
 - "No space left on device", run `docker system prune` and delete also images with `docker image prune -a`
@@ -50,11 +50,11 @@ E.g:
 1. Pull image with:  
 `docker pull username/imagename:tag`    
 E.g:  
-`docker pull jonev/python-test:v6`
+`docker pull jonev/ba-wago:v6`
 2. Run image with output to terminal connected:  
 `docker run -it username/imagename:tag`  
 E.g:  
-`docker run -it jonev/python-test:v6`
+`docker run -it jonev/ba-wago:v6`
 
 ### Sources:
 - [Docker on PFC200 2. Gen](https://github.com/Wago-Norge/Docker-Support)
