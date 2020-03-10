@@ -18,7 +18,6 @@ variables = {}
 hashs = {}  # Storing a hash of the object to be able to compare two objects fast
 hashsLock = Lock()  # hashs are used in multiple threads
 sampleTime = int(os.getenv("SAMPLE_TIME"))  # For testing
-PlcIsRunning = [True, True, False]
 ## Opc UA
 opcUaServer = os.getenv("OPC_UA_SERVER")  # Host of docker
 opcUaServerUsername = os.getenv("OPC_UA_SERVER_USERNAME")
@@ -51,34 +50,29 @@ print(
 )
 
 
-def on_connect(client, userdata, flags, rc):
+def on_mqtt_connect(client, userdata, flags, rc):
     print("MQTT Connected with result code " + str(rc))
     for topic in mqttTopicSubscribeData:
         client.subscribe(topic)
 
 
-def on_message(client, userdata, msg):
-    global hashsLock, PlcIsRunning
+def on_received_mqtt_message(client, userdata, msg):
+    global hashsLock
     try:
         receivedObject = json.loads(str(msg.payload, encoding="utf-8"))
-        if receivedObject["_owner"] == "plc1":
-            PlcIsRunning[0] = True
-        if receivedObject["_owner"] == "plc2":
-            PlcIsRunning[1] = True
-        if receivedObject["_owner"] == "plc3":
-            PlcIsRunning[2] = True
         # Generate new hash
+        # Timestamp will always change and are therefore excluded
         del receivedObject["_timestamp"]
-        newValueHash = hashlib.md5(receivedObject.__str__().encode("utf-8")).hexdigest()
+        newHash = hashlib.md5(receivedObject.__str__().encode("utf-8")).hexdigest()
         # Store hash
-        with hashsLock:  # Sending data only on change, therefor no need to check for change
-            hashs[receivedObject["_tagId"]] = newValueHash
-        # Write to opc ua by getting the children recursive
+        with hashsLock:  # Sending data only on change, therefore no need to check for change
+            hashs[receivedObject["_tagId"]] = newHash
+        # Write to opc ua by setting the children recursive
         topLevelObject = clientPlc.get_node(
             "ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix + "." + receivedObject["_tagId"]
         )
         setChildrenRecursive(receivedObject, topLevelObject.get_children())
-    except Exception as e:
+    except Exception:
         logging.exception("Exception in on_message.")
 
 
@@ -109,8 +103,8 @@ clientPlc.set_password(opcUaServerPassword)
 
 # MQTT
 mqttClient = mqtt.Client()
-mqttClient.on_connect = on_connect
-mqttClient.on_message = on_message
+mqttClient.on_connect = on_mqtt_connect
+mqttClient.on_message = on_received_mqtt_message
 
 
 def getChildrenRecursive(pObject, OpcNodes):
@@ -145,10 +139,11 @@ def publish(pObject):
         raise Exception("Unknown owner of object: " + pObject["_owner"])
 
 
+# Ensure disconnecting on program close
 try:
+    # Tries to reconnect every 10 seconds
     while True:
         try:
-            # Init
             print("Connecting to Opc.")
             clientPlc.connect()
             if clientPlc is None:
@@ -161,46 +156,43 @@ try:
             mqttThread = Thread(target=mqttClient.loop_forever, args=())
             mqttThread.start()
             print("Waiting for MQTT to connect...")
-            time.sleep(2)
+            time.sleep(2)  # MQTT need time to connect
 
-            while True:  # Read data from OPC UA and Publish data to MQTT loop
-                topLevelOpcNodes = (
-                    nodesUnderPrefix.get_children()
-                )  # Nodes are initialized each loop -> no need for restart if there are new nodes
+            # Read data from OPC UA and Publish data to MQTT loop
+            while True:
+                # OPC UA Nodes are initialized each loop -> no need for restart if there are new nodes
+                topLevelOpcNodes = nodesUnderPrefix.get_children()
                 if len(topLevelOpcNodes) == 0:
                     raise Exception("No tags where found")
                 for topLevelOpcNode in topLevelOpcNodes:
                     tagname = getTagname(topLevelOpcNode)
-                    pObject = {}  # Building python object, then converting to json before sending
+                    # Building python object, then converting to json before sending
+                    pObject = {}
                     getChildrenRecursive(pObject, topLevelOpcNode.get_children())
-                    # Publishing
+                    # Publishing, HMI does not publish process values
                     if mqttPublishPvSuffix in tagname:
-                        pass
+                        continue
                     else:
-                        # Hash
-                        newValueHash = hashlib.md5(pObject.__str__().encode("utf-8")).hexdigest()
+                        newHash = hashlib.md5(pObject.__str__().encode("utf-8")).hexdigest()
                         pObject["_timestamp"] = str(datetime.datetime.now())
-                        with hashsLock:
-                            if (
-                                tagname in hashs and pObject["_type"] != ""
-                            ):  # Missing data from plc -> publish to get
-                                # Compare
-                                if hashs[tagname] != newValueHash:
+                        with hashsLock:  # Threadsafe
+                            # Missing data from plc -> publish to get
+                            if tagname in hashs and pObject["_type"] != "":
+                                if hashs[tagname] != newHash:
                                     # Publish and save hash
-                                    hashs[tagname] = newValueHash
+                                    hashs[tagname] = newHash
                                     publish(pObject)
-                                # Or nothing
                             else:
                                 # Tagname does not exist in hashs
-                                # Save hash
-                                hashs[tagname] = newValueHash
-                                # Publish
+                                # Save hash and publish
+                                hashs[tagname] = newHash
                                 publish(pObject)
                 time.sleep(sampleTime)
-        except Exception as e:
+        except Exception:
             logging.exception("Exception in connection loop.")
         time.sleep(10)
 finally:
     if clientPlc is not None:
         clientPlc.disconnect()
     mqttClient.disconnect()
+logging.warning("OPC UA - MQTT link is shutting down.")
