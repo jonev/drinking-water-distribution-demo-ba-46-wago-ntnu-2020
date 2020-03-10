@@ -1,9 +1,0 @@
-version: '3.1'
-
-services:
-
-    pythonapp:
-        image: jonev/python-test:v6
-        depends_on:
-            - mongo
-        command: --cap-add SYS_NICE
