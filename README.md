@@ -1,17 +1,68 @@
+Master: [![Build Status](https://travis-ci.com/jonev/wago-demo-plc-python.svg?branch=master)](https://travis-ci.com/jonev/wago-demo-plc-python)
+
+Develop: [![Build Status](https://travis-ci.com/jonev/wago-demo-plc-python.svg?branch=develop)](https://travis-ci.com/jonev/wago-demo-plc-python)
 # README
+
 ## Start develoopment environment
 Prerequisites: Docker and Visual Studio Code (With remote development extension)
-Open root folder in container with VS code.
+- Open root folder in container with VS code.
 
 ## Run tests
-Use vs code Test menu
+- Use vs code Test menu
+- Or from root:
+```
+python -m unittest discover test -p '*_test.py'
+```
 
-## Run PLC 2 or 3
-Use vs code rund and debug menu, choose plc from the dropdown
+## Run current file, PLC 2 or PLC 3
+- Use vs code run and debug menu, choose plc from the dropdown
+
+## Code Documentation with Sphinx
+### New files *.py
+- New files need to be added to `docs/modules.rst`, and `*.rst` file need to be added for each file
+### Create/Update
+To create/update the documentation, run `make html`from /docs directory.
+### View
+To view the documentation open `docs/_build/html/index.html` in a browser.
+
+
+
+## Build to PLC [(source)](https://www.docker.com/blog/multi-arch-images/)
+### Prerequisites: 
+- Docker [hub account](https://hub.docker.com/)
+- Docker settings -> Daemon -> Enable Experimental features
+- Add builder:  
+`docker buildx create --name builder-for-plc`
+### Build (and push) from root:
+`docker buildx build -f dockerfile-name --platform linux/arm/v7 -t username/imagename:tag --push .`  
+E.g:  
+`docker buildx build -f Dockerfile-plc2-pressure --platform linux/arm/v7 -t jonev/ba-wago:v6 --push .`
+
+### Common errors
+- "No space left on device", run `docker system prune` and delete also images with `docker image prune -a`
+
+## Run on PLC
+- To avoid long pull-time, reuse image tag
+### Prerequisites:
+- Download [.ipk file](https://github.com/WAGO/docker-ipk/releases)
+- Follow [this guide.](https://github.com/Wago-Norge/Docker-Support)
+
+1. Pull image with:  
+`docker pull username/imagename:tag`    
+E.g:  
+`docker pull jonev/ba-wago:v6`
+2. Run image with output to terminal connected:  
+`docker run -it username/imagename:tag`  
+E.g:  
+`docker run -it jonev/ba-wago:v6`
 
 ### Sources:
-Documentation: https://medium.com/@eikonomega/getting-started-with-sphinx-autodoc-part-1-2cebbbca5365
+- [Docker on PFC200 2. Gen](https://github.com/Wago-Norge/Docker-Support)
 
-### TODO
-- add sphinx to dockerfile
-- set up travis
+## Tools
+### Simple mongodb client
+Docker:  
+`mongo-express -u user -p password -d database -H mongoDBHost -P mongoDBPort`
+### Transfer files from Windows to Linux
+[WinSCP](https://winscp.net/eng/download.php)
+- Log inn and drag files between the two computers

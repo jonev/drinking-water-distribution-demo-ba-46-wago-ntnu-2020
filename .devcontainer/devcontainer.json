@@ -1,7 +1,9 @@
 {
   "name": "Wago-PLC-Python-Dev",
-  "context": "..",
-  "dockerFile": "Dockerfile",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "pythonapp",
+  "shutdownAction": "stopCompose",
+  "workspaceFolder": "/workspace",
   // Use 'settings' to set *default* container specific settings.json values on container create.
   // You can edit these settings after create using File > Preferences > Settings > Remote.
   "settings": {
@@ -19,5 +21,9 @@
   // Comment out next line to run as root
   //"remoteUser": "vscode",
   // Add the IDs of extensions you want installed when the container is created in the array below.
-  "extensions": ["ms-python.python"]
+  "extensions": [
+    "ms-python.python",
+    "njpwerner.autodocstring",
+    "streetsidesoftware.code-spell-checker"
+  ]
 }
