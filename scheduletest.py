@@ -27,22 +27,25 @@ class SimpleTaskScheduler:
     :raises Exception: Last task is not done when task is started
     """
 
-    def __init__(self, task, intervallInSeconds):
-        self.__starttime = time.time()
-        self.__intervallInSeconds = intervallInSeconds
-        self.__doneflag = True
-        self.__doneflagLock = threading.Lock()
+    def __init__(self, task, runIntervalInSeconds, checkIntervalInSeconds):
+        self.__runIntervalInSeconds = runIntervalInSeconds
+        self.__checkIntervalInSeconds = checkIntervalInSeconds
+        self.__runflag = True
         self.__task = task
         self.__starterThread = threading.Thread(target=self.__starterThreadMethod, args=())
 
     def start(self):
+        self.__starttime = time.time()
         self.__starterThread.start()
 
     def join(self):
         self.__starterThread.join()
+    
+    def stop(self):
+        self.__runflag = False
 
     def __starterThreadMethod(self):
-        while True:
+        while self.__runflag:
             self.__starttime = self.__starttime + self.__intervallInSeconds
             worker = threading.Thread(target=self.__task, args=())
             worker.start()
@@ -50,9 +53,9 @@ class SimpleTaskScheduler:
             if self.__starttime < time.time():
                 raise Exception("Last task was not done -> increase the interval")
             while self.__starttime > time.time():
-                time.sleep(0.1)
+                time.sleep(self.__checkIntervalInSeconds)
 
 
-s = SimpleTaskScheduler(dojob, 2.0)
+s = SimpleTaskScheduler(dojob, 2.0, 0.1)
 s.start()
 s.join()
