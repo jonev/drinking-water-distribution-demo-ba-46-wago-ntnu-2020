@@ -18,7 +18,7 @@ class SimValuesPLS3:
         self.battery_voltage = 12  # V
         self.battery_amphour = 26  # Ah
         self.battery_state_of_charge = self.battery_amphour / 2  # Startvalue
-        self.sampling_time = 1
+        self.sampling_time = 0.5
         self.samplings_in_hour = (60 * 60) / self.sampling_time
         # Weather
         self.symbol_equal_sun = ["Clear sky", "Fair"]  # 0
@@ -122,6 +122,8 @@ class SimValuesPLS3:
         self.zones_residens = [30, 50, 40, 60]
         self.pipes = [0, 0, 0, 0, 0, 0, 0]
         self.leak_in_pipe = [0, 0, 0, 0, 0, 0, 0]
+        self.leak_test_pipe = 2  # Testing
+        self.leak_day = 3  # Testing
         self.total_samples_every_hour = 6
         self.list_randomized_ft_value = []
         self.list_timestamp = []
@@ -133,14 +135,16 @@ class SimValuesPLS3:
 
         # DB SETUP
         self.dbName = "processvalues"
-        self.db = mysql.connector.connect(host="db", user="root", passwd="example",)
+        self.db = mysql.connector.connect(
+            host="db", user="root", passwd="example", database=self.dbName
+        )
         self.cursor = self.db.cursor()
-
+        """
         try:  # Add if not exist
             self.cursor.execute("CREATE DATABASE " + self.dbName)
         except Exception as ex:
             print(ex)
-
+        """
         self.flowValueTableName = "flowValueValues"
         self.flowValueTableFormat = "(id INT AUTO_INCREMENT PRIMARY KEY, metric VARCHAR(3), timestamp DATETIME, daycounter INT,samplenr VARCHAR(5), FlowValue FLOAT)"
         self.flowValueTableInsert = (
@@ -148,6 +152,9 @@ class SimValuesPLS3:
             + self.flowValueTableName
             + " (metric, timestamp, daycounter, samplenr, FlowValue) VALUES (%s, %s,  %s, %s, %s)"
         )
+        self.cursor.execute(
+            "DROP TABLE IF EXISTS " + self.flowValueTableName
+        )  # Resetter tabellen ved første oppstart om den finnes
 
         try:  # Create table if not exist
             self.cursor.execute(
@@ -246,11 +253,15 @@ class SimValuesPLS3:
         print("Battery Value: " + str(round(self.battery_state_of_charge, 2)))
         print("Battery Value %: " + str(round(self.battery_value_persent, 2)))
 
+    def leakInPipe(self,):
+        if self.day_counter > self.leak_day:
+            self.randomized_ft_value = self.randomized_ft_value + self.leak_test_pipe
+
     def flowInPipes(self,):
         for i in range(0, len(self.list_normal_water_consumption_hours)):
             self.list_normal_water_consumption_hours[i] = self.list_normal_water_consumption_hours[
                 i
-            ]  # * random.uniform(1, 1)
+            ] * random.uniform(0.95, 1.05)
             self.ft_value = self.list_normal_water_consumption_hours[i]
             for m in range(0, self.total_samples_every_hour):
                 if i < len(self.list_normal_water_consumption_hours):
@@ -267,7 +278,7 @@ class SimValuesPLS3:
                     self.ft_value = self.ft_value + self.dif_ft_value
                     #
 
-                    self.randomized_ft_value = self.ft_value  # * random.uniform(1, 1)
+                    self.randomized_ft_value = self.ft_value * random.uniform(0.95, 1.05)
 
                     self.list_randomized_ft_value.append(round(self.randomized_ft_value, 2))
                     self.sample_nr = self.sample_nr + 1
@@ -304,14 +315,14 @@ class SimValuesPLS3:
                     sim.importJsonDayForcast()
                     sim.solarPanelOutput()
                     sim.batteryStateOfCharge()
+                    sim.leakInPipe()
                     sim.simTimeStamp()
                     sim.sendValuesToDb()
                     sim.sendValuesToMQTT()
                     sim.samplingTime()
 
     def samplingTime(self,):
-        # time.sleep(self.sampling_time)
-        # time.sleep(0.2)
+        time.sleep(self.sampling_time)
         pass
 
     def simTimeStamp(self,):  # Lager timestamp for hver sample
@@ -342,7 +353,6 @@ class SimValuesPLS3:
         }
         self.mqttClient.publish(self.mqttTopicPublish, json.dumps(dict_))
         print("MQTT send: " + json.dumps(dict_))
-        # time.sleep(1)
 
 
 sim = SimValuesPLS3()
