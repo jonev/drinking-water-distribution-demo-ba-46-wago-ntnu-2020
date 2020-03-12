@@ -1,4 +1,3 @@
-from plclib.mqtt_client import MQTTClient
 from threading import Thread
 from random import randint
 import time

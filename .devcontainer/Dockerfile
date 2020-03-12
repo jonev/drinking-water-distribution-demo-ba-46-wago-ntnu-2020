@@ -29,6 +29,7 @@ RUN pip --disable-pip-version-check --no-cache-dir install pylint \
     && pip --disable-pip-version-check --no-cache-dir install paho-mqtt \
     && pip --disable-pip-version-check --no-cache-dir install opcua \
     && pip --disable-pip-version-check --no-cache-dir install mysql-connector \
+    && pip --disable-pip-version-check --no-cache-dir install python-dotenv \
     # Update Python environment based on requirements.txt
     # && pip --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
     # && rm -rf /tmp/pip-tmp \
