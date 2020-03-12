@@ -1,8 +1,0 @@
-FROM jonev/python-test:template
-
-COPY ./plc2_pressure ./plc2_pressure
-COPY ./plclib ./plclib
-
-CMD ["python",  "-m", "plc2_pressure"]
-
-
