@@ -335,6 +335,7 @@ class SimValuesPLS3:
             self.sec_between_samples
         )  # Endrer til sec between samples etter første sample
 
+    # git test
     def sendValuesToDb(self,):
         # Skriver til database
         self.val = (
