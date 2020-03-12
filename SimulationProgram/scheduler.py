@@ -2,22 +2,6 @@ import logging
 import threading
 import time
 
-logging.basicConfig(filename="example.log", level=logging.DEBUG)
-
-
-def dojob():
-    logging.debug(str(time.time()))
-    for x in range(1, 100000):
-        # if x % 100000 == 0:
-        #    print("Metod1: " + str(x))
-        y = 2 + x ** 2 - x ** 10 - 15000
-        z = y ** 15 - 15000 + (x - y)
-    # print("Done")
-
-
-def dojob2():
-    print("Job 2")
-
 
 class SimpleTaskScheduler:
     """ Simple task scheduler
@@ -40,13 +24,13 @@ class SimpleTaskScheduler:
 
     def join(self):
         self.__starterThread.join()
-    
+
     def stop(self):
         self.__runflag = False
 
     def __starterThreadMethod(self):
         while self.__runflag:
-            self.__starttime = self.__starttime + self.__intervallInSeconds
+            self.__starttime = self.__starttime + self.__runIntervalInSeconds
             worker = threading.Thread(target=self.__task, args=())
             worker.start()
             worker.join()
@@ -54,8 +38,3 @@ class SimpleTaskScheduler:
                 raise Exception("Last task was not done -> increase the interval")
             while self.__starttime > time.time():
                 time.sleep(self.__checkIntervalInSeconds)
-
-
-s = SimpleTaskScheduler(dojob, 2.0, 0.1)
-s.start()
-s.join()
