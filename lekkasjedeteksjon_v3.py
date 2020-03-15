@@ -7,9 +7,32 @@ import json
 import mysql.connector
 from datetime import timedelta, datetime
 
+class DBClient:
+    def  __init__(self):
+        self.cursor = self.db.cursor()
+    
+    def getValues(tablename, tagname, startdate, enddate):
+        # databaselogikk
+        return values
+
+    def getValuesXXXX(tablename, tagname):
+        # databaselogikk
+        return values
+
+    def getLastDateInDB(self, tablename):
+        """
+        Get the last date added to the database. In format YYYY-MM-DD.
+        """
+        
+        self.cursor.execute("SELECT * FROM " + tablename + " ORDER BY ID DESC LIMIT 1")
+        dag = self.cursor.fetchone()
+        self.db.commit()
+        self.last_day_in_DB = dag[2].date()
 
 class PLS3:
-    def __init__(self,):
+    def __init__(self, dbclient):
+        self.__dbclient = dbclient
+
         self.dbName = "processvalues"
         self.db = mysql.connector.connect(
             host="db", user="root", passwd="example", database=self.dbName
@@ -148,6 +171,7 @@ class PLS3:
         dag = self.cursor.fetchone()
         self.db.commit()
         self.last_day_in_DB = dag[2].date()
+        
 
     def checkIfNewDay(self,):
         """
@@ -346,13 +370,19 @@ class PLS3:
 
         print("")
 
+    def getAvg(tagname, start, end):
+        # hente data fra dbclient
+        
+
+
+
     def plsProgram(self,):
         while self.flag == True:
             pls3.checkIfNewDay()
             # time.sleep(1)
 
 
-pls3 = PLS3()
+pls3 = PLS3(DBClient())
 
 while True:
     pls3.plsProgram()

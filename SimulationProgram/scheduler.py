@@ -19,7 +19,6 @@ class SimpleTaskScheduler:
         self.__starterThread = threading.Thread(target=self.__starterThreadMethod, args=())
 
     def start(self):
-        self.__starttime = time.time()
         self.__starterThread.start()
 
     def join(self):
@@ -29,12 +28,14 @@ class SimpleTaskScheduler:
         self.__runflag = False
 
     def __starterThreadMethod(self):
+        t = time.time()
+        self.__starttime = t - (t % self.__runIntervalInSeconds) + self.__runIntervalInSeconds
         while self.__runflag:
-            self.__starttime = self.__starttime + self.__runIntervalInSeconds
-            worker = threading.Thread(target=self.__task, args=())
-            worker.start()
-            worker.join()
             if self.__starttime < time.time():
                 raise Exception("Last task was not done -> increase the interval")
             while self.__starttime > time.time():
                 time.sleep(self.__checkIntervalInSeconds)
+            self.__starttime = self.__starttime + self.__runIntervalInSeconds
+            worker = threading.Thread(target=self.__task, args=())
+            worker.start()
+            worker.join()

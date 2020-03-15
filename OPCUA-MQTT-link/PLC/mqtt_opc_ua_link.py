@@ -10,7 +10,7 @@ import os
 import logging
 
 logging.basicConfig(level=logging.WARNING)
-
+logging.info("Starting OPC-UA - MQTT link")
 load_dotenv()
 # Global variables
 variables = {}
@@ -18,7 +18,7 @@ hashs = {}  # Storing a hash of the object to be able to compare two objects fas
 hashsLock = Lock()  # hashs are used in multiple threads
 sampleTime = int(os.getenv("SAMPLE_TIME"))  # For testing
 ## Opc UA
-opcUaServer = os.getenv("OPC_UA_SERVER")  # Host of docker
+opcUaServer = os.getenv("OPC_UA_SERVER")  # Host of docker "192.168.0.15"
 opcUaServerUsername = os.getenv("OPC_UA_SERVER_USERNAME")
 opcUaServerPassword = os.getenv("OPC_UA_SERVER_PASSWORD")
 opcUaNs = int(os.getenv("OPC_UA_NS"))  # Address
@@ -32,7 +32,7 @@ mqttPublishPvSuffix = os.getenv(
     "MQTT_PUBLISH_PV_SUFFIX"
 )  # Published every sample, other tags are pulished on data change
 mqttPublishPvFlag = os.getenv("MQTT_PUBLISH_PV_FLAG")
-print(
+logging.info(
     "Evn: OpcUaServer: "
     + opcUaServer
     + ", OpcUaIdPrefix"
@@ -43,7 +43,7 @@ print(
 
 
 def on_mqtt_connect(client, userdata, flags, rc):
-    print("MQTT Connected with result code " + str(rc))
+    logging.info("MQTT Connected with result code " + str(rc))
     client.subscribe(mqttTopicSubscribeData)
 
 
@@ -53,6 +53,7 @@ def on_received_mqtt_message(client, userdata, msg):
         receivedObject = json.loads(str(msg.payload, encoding="utf-8"))
         # If plc receive empty objects, it send an object with values in return, immediately
         if receivedObject["_type"] == "":
+            logging.info("HMI is missing data and requesting: " + receivedObject["_tagId"])
             topLevelObject = clientPlc.get_node(
                 "ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix + "." + receivedObject["_tagId"]
             )
@@ -134,22 +135,23 @@ try:
     # Tries to reconnect every 10 seconds
     while True:
         try:
-            print("Connecting to Opc.")
+            logging.info("Connecting to Opc.")
             clientPlc.connect()
             if clientPlc is None:
                 raise Exception("Opc connection failed")
-            print("Connected")
+            logging.info("OPC Connected")
             nodesUnderPrefix = clientPlc.get_node("ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix)
 
-            print("Connecting to MQTT broker.")
+            logging.info("Connecting to MQTT broker.")
             mqttClient.connect(mqttBroker, mqttPort, 60)
             mqttThread = Thread(target=mqttClient.loop_forever, args=())
             mqttThread.start()
-            print("Waiting for MQTT to connect...")
+            logging.info("Waiting for MQTT to connect...")
             time.sleep(2)  # MQTT need time to connect
 
             # Read data from OPC UA and Publish data to MQTT loop
             while True:
+                publishLoopStarttime = time.time()
                 # OPC UA Nodes are initialized each loop -> no need for restart if there are new nodes
                 topLevelOpcNodes = nodesUnderPrefix.get_children()
                 if len(topLevelOpcNodes) == 0:
@@ -183,11 +185,19 @@ try:
                                 mqttClient.publish(
                                     mqttTopicPublishData, payload=json.dumps(pObject)
                                 )
+                logging.warning(
+                    "Publish loop used [s]: "
+                    + str((time.time() - publishLoopStarttime))
+                    + ", sampletime: "
+                    + str(sampleTime)
+                )
                 time.sleep(sampleTime)
         except Exception:
             logging.exception("Exception in connection loop.")
+        logging.info("Waiting 10s before trying to reconnect.")
         time.sleep(10)
 finally:
+    logging.warning("Disconnecting.")
     if clientPlc is not None:
         clientPlc.disconnect()
     mqttClient.disconnect()

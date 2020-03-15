@@ -1,0 +1,1 @@
+docker buildx build --platform linux/arm/v7 -t jonev/ba-wago:opcua-mqtt-link-plc3 --push .
