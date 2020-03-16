@@ -56,13 +56,14 @@ def on_received_mqtt_message(client, userdata, msg):
         receivedObject = json.loads(str(msg.payload, encoding="utf-8"))
         # If plc receive empty objects, it send an object with values in return, immediately
         if receivedObject["_type"] == "":
-            logging.warning("HMI is missing data and requesting: " + receivedObject["_tagId"])
+            tagname = receivedObject["_tagId"]
+            logging.warning("HMI is missing data and requesting: " + tagname)
             topLevelObject = clientPlc.get_node(
-                "ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix + "." + receivedObject["_tagId"]
+                "ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix + "." + tagname
             )
-            # Building python object, then converting to json before sending
-            pObject = {}
-            getChildrenRecursive(pObject, topLevelOpcNode.get_children())
+            pObject = tags[tagname]
+            getValuesFromNodes(pObject, nodes[tagname])
+            del pObject["_timestamp"]
             newHash = hashlib.md5(pObject.__str__().encode("utf-8")).hexdigest()
             pObject["_timestamp"] = str(datetime.datetime.now())
             # Publish and save hash
@@ -85,7 +86,9 @@ def on_received_mqtt_message(client, userdata, msg):
         logging.exception("Exception in on_message.")
 
 
-def setChildrenRecursive(pObject, OpcNodes):
+def setChildrenRecursive(
+    pObject, OpcNodes
+):  # TODO this should be re-written in the same manner at getting values
     for node in OpcNodes:
         children = node.get_children()
         tagname = getTagname(node)
@@ -114,17 +117,6 @@ clientPlc.set_password(opcUaServerPassword)
 mqttClient = mqtt.Client()
 mqttClient.on_connect = on_mqtt_connect
 mqttClient.on_message = on_received_mqtt_message
-
-
-def getChildrenRecursive(pObject, OpcNodes):
-    for node in OpcNodes:
-        children = node.get_children()
-        tagname = getTagname(node)
-        if len(children) == 0:
-            pObject[tagname] = node.get_value()
-        else:
-            pObject[tagname] = {}
-            getChildrenRecursive(pObject[tagname], children)
 
 
 def buildNodeTree(pObject, nodeStore, OpcNodes):
@@ -178,6 +170,7 @@ try:
             logging.info("Waiting for MQTT to connect...")
             time.sleep(2)  # MQTT need time to connect
 
+            # Building tag and opc node trees, for better performance on publishing data
             topLevelOpcNodes = nodesUnderPrefix.get_children()
             if len(topLevelOpcNodes) == 0:
                 raise Exception("No tags where found")
@@ -229,7 +222,7 @@ try:
                 time.sleep(sampleTime)
         except Exception:
             logging.exception("Exception in connection loop.")
-        logging.info("Waiting 10s before trying to reconnect.")
+        logging.warning("Waiting 10s before trying to reconnect.")
         time.sleep(10)
 finally:
     logging.warning("Disconnecting.")
