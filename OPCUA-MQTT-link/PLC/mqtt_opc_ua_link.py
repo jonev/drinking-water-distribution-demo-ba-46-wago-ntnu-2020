@@ -20,7 +20,7 @@ hashs = {}  # Storing a hash of the object to be able to compare two objects fas
 cmdPublishIntervall = 6
 cmdPublishCounter = 0
 hashsLock = Lock()  # hashs are used in multiple threads
-sampleTime = int(os.getenv("SAMPLE_TIME"))  # For testing
+publishLoopWaitTime = int(os.getenv("WAIT_TIME"))  # For testing
 ## Opc UA
 opcUaServer = os.getenv("OPC_UA_SERVER")  # Host of docker "192.168.0.15"
 opcUaServerUsername = os.getenv("OPC_UA_SERVER_USERNAME")
@@ -219,7 +219,7 @@ try:
                 logging.warning(
                     "Publish loop used [s]: " + str((time.time() - publishLoopStarttime))
                 )
-                time.sleep(sampleTime)
+                time.sleep(publishLoopWaitTime)
         except Exception:
             logging.exception("Exception in connection loop.")
         logging.warning("Waiting 10s before trying to reconnect.")
