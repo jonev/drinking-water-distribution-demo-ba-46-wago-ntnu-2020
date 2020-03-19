@@ -7,6 +7,9 @@ services:
         depends_on: 
             - db
 
+    simulation:
+        image: jonev/ba-wago:simulation-amd64
+
     grafana:
         image: grafana/grafana
         ports:

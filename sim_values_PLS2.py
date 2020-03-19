@@ -13,100 +13,108 @@ time.sleep(2)
 
 class SimValuesPLS2:
     def __init__(self,):
-        self.hoyde = 30  # m
-        self.ror_diameter = 0.05  # m
-        self.tetthet_vann = 1000  # kg/m^3
-        self.tyngde_aks = 9.81  # m/s^2
+        self.water_source_height = 30  # m
+        self.density_water = 1000  # kg/m^3
+        self.gravitational_acc = 9.81  # m/s^2
 
-        self.houses = 300
+        self.number_of_consumers = 300
         self.waterusage_person_day = 200  # l https://www.norskvann.no/index.php/vann/ofte-stilte-sporsmal-om-vann/91-forbruk)
 
+        # Fra HMI
         self.pump_running = [0, 0, 0]
         self.pump_running_value = [0, 0, 0]
+
         self.pump_current_draw = [0, 0, 0]
         self.pump_timer = [0, 0, 0]
 
         self.pump_pressure = 3  # bar
-        self.p_out = 0
+        self.pressure_out = 0
 
-        # Fra HMI
+        # For og simulere manuel auto
         self.auto_mode = [1, 1, 0]  # Auto(1) Manuell (0)
         self.pump_manuel_start_stopp = [0, 0, 1]  # Start(1) Stopp(0)
         self.pump_running_manuel_value = [0, 0, 20]  # 0-100
         self.onsket_p = 5  # bar
 
-        self.pumps = len(self.auto_mode)
+        self.number_of_pumps = len(self.auto_mode)
 
     def waterLevel(self,):
         self.level = randint(1, 2)  # m
 
     def waterUsage(self,):
-        self.random_users = randint(0, self.houses)
+        self.random_number_of_consumers = randint(0, self.number_of_consumers)
         self.waterusage_person_day = self.waterusage_person_day + random.uniform(-20, 20)
-        self.water_usage_per_second = self.waterusage_person_day / (24 * 60 * 60)
-        self.water_usage = self.water_usage_per_second * self.random_users
+        self.waterusage_person_per_second = self.waterusage_person_day / (24 * 60 * 60)
+        self.water_usage = self.waterusage_person_per_second * self.random_number_of_consumers
         self.water_usage = round(self.water_usage, 3)
-        self.pressure_drop = 0.00005 * self.random_users
+        self.pressure_drop = 0.00005 * self.random_number_of_consumers
         self.waterusage_person_day = 200
         return self.water_usage
 
-    def pressureInPump(self,):
-        self.p_in_pascal = self.tetthet_vann * self.tyngde_aks * (self.hoyde + self.level)
-        self.p_in_bar = self.p_in_pascal / 100_000
-        return self.p_in_bar
+    def pressureInPumpStation(self,):
+        self.pressure_in_pascal = (
+            self.density_water * self.gravitational_acc * (self.water_source_height + self.level)
+        )
+        self.pressure_in_bar = self.pressure_in_pascal / 100_000
+        return self.pressure_in_bar
 
-    def manuelAuto(self,):
-        self.p_missing = self.onsket_p + self.pressure_drop - self.p_out
-        for self.p in range(0, self.pumps):
-            if self.auto_mode[self.p] == 1:
+    def manuelAuto(self,):  # Fjernes når man får verdier fra PLS
+        self.p_missing = self.onsket_p + self.pressure_drop - self.pressure_out
+        for self.pump in range(0, self.number_of_pumps):
+            if self.auto_mode[self.pump] == 1:
                 sim.PLS2()
             else:
                 sim.manuel()
 
-    def PLS2(self,):
+    def PLS2(self,):  # Fjernes når man får verdier fra PLS
 
         if self.p_missing > 0:
-            self.pump_running[self.p] = 1
-            self.pump_running_value[self.p] = self.pump_running_value[self.p] + 0.1
-        elif self.p_missing < 0 and self.pump_running_value[self.p] > 0:
-            self.pump_running_value[self.p] = self.pump_running_value[self.p] - 0.1
+            self.pump_running[self.pump] = 1
+            self.pump_running_value[self.pump] = self.pump_running_value[self.pump] + 0.1
+        elif self.p_missing < 0 and self.pump_running_value[self.pump] > 0:
+            self.pump_running_value[self.pump] = self.pump_running_value[self.pump] - 0.1
 
         else:
-            self.pump_running[self.p] = 0
+            self.pump_running[self.pump] = 0
 
-    def manuel(self,):
-        if self.pump_manuel_start_stopp[self.p] == 1 and self.pump_running_manuel_value[self.p] > 0:
-            self.pump_running[self.p] = 1
-            self.pump_running_value[self.p] = self.pump_running_manuel_value[self.p]
+    def manuel(self,):  # Fjernes når man får verdier fra PLS
+        if (
+            self.pump_manuel_start_stopp[self.pump] == 1
+            and self.pump_running_manuel_value[self.pump] > 0
+        ):
+            self.pump_running[self.pump] = 1
+            self.pump_running_value[self.pump] = self.pump_running_manuel_value[self.pump]
         else:
-            self.pump_running[self.p] = 0
-            self.pump_running_value[self.p] = 0
+            self.pump_running[self.pump] = 0
+            self.pump_running_value[self.pump] = 0
 
-    def pressureOutPump(self,):
-        self.p_out = self.p_in_bar + (sum(self.pump_running_value) / 100) * self.pump_pressure
-        return self.p_out
+    def pressureOutPumpStation(self,):
+        self.pressure_out = (
+            self.pressure_in_bar + (sum(self.pump_running_value) / 100) * self.pump_pressure
+        )
+        return self.pressure_out
 
-    def flowOutPump(self,):
+    def flowOutPumpStation(self,):
         self.flow_out = self.water_usage
 
     def currentDrawPump(self,):
-        for p in range(0, self.pumps):
-            self.pump_current_draw[p] = round(self.pump_running_value[p] * 0.05, 2)
+        for pump in range(0, self.number_of_pumps):
+            self.pump_current_draw[pump] = round(self.pump_running_value[pump] * 0.05, 2)
         return self.pump_current_draw
 
     def runtimePump(self,):
-        for p in range(0, self.pumps):
-            if self.pump_running[p] == 1:
-                self.pump_timer[p] += 1
+        for pump in range(0, self.number_of_pumps):
+            if self.pump_running[pump] == 1:
+                self.pump_timer[pump] += 1
         return self.pump_timer
 
     def print(self,):
         print("Water usages: " + str(round(self.water_usage, 3)))
-        print("Pressure in: " + str(round(self.p_in_bar, 3)))
+        print("Pressure in: " + str(round(self.pressure_in_bar, 3)))
         print("Pressure missing: " + str(round(self.p_missing, 2)))
         print("Pump running: " + str(self.pump_running))
         print("Pump value: " + str(self.pump_running_value))
-        print("Pressure out: " + str(round(self.p_out, 2)))
+        print("Pressure out: " + str(round(self.pressure_out, 2)))
         print("Current: " + str(self.pump_current_draw))
         print("Auto/Manuel A=1 " + str(self.auto_mode))
         print("Pump timer: " + str(self.pump_timer))
@@ -117,14 +125,14 @@ sim = SimValuesPLS2()
 
 while True:
     # MQTT IN
-    data = mqtt.getData("wago/ba/sim/inn/test")
-    objectJson = json.loads(data)
+    # data = mqtt.getData("wago/ba/sim/inn/test")
+    # objectJson = json.loads(data)
 
     waterUsage = sim.waterUsage()
     sim.waterLevel()
-    pressureInPump = sim.pressureInPump()
+    pressureInPumpStation = sim.pressureInPumpStation()
     sim.manuelAuto()
-    pressureOutPump = sim.pressureOutPump()
+    pressureOutPumpStation = sim.pressureOutPumpStation()
     currentDrawPump = sim.currentDrawPump()
     runtimePump = sim.runtimePump()
     sim.print()
@@ -133,8 +141,8 @@ while True:
 
     dict_ = {
         "waterUsage": waterUsage,
-        "pressureInPump": pressureInPump,
-        "pressureOutPump": pressureOutPump,
+        "pressureInPumpStation": pressureInPumpStation,
+        "pressureOutPumpStation": pressureOutPumpStation,
         "pumpCurrent": currentDrawPump,
         "runtimePump": runtimePump,
     }
