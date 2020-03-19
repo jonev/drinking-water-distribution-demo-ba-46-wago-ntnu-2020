@@ -135,8 +135,10 @@ def publish(pObject):
         mqttClient.publish(mqttTopicPublishData[0], payload=json.dumps(pObject))
         mqttClient.publish(mqttTopicPublishData[1], payload=json.dumps(pObject))
         mqttClient.publish(mqttTopicPublishData[2], payload=json.dumps(pObject))
+    elif pObject["_owner"] == "":
+        logging.warning("Unregistered object: " + pObject["_tagId"])
     else:
-        raise Exception("Unknown owner of object: " + pObject["_owner"])
+        raise Exception("Unknown owner of object: " + pObject["_tagId"])
 
 
 # Ensure disconnecting on program close
@@ -180,11 +182,13 @@ try:
                             if tagname in hashs and pObject["_type"] != "":
                                 if hashs[tagname] != newHash:
                                     # Publish and save hash
+                                    logging.warning("HMI is sending: " + tagname)
                                     hashs[tagname] = newHash
                                     publish(pObject)
                             else:
                                 # Tagname does not exist in hashs
                                 # Save hash and publish
+                                logging.warning("HMI is sending: " + tagname)
                                 hashs[tagname] = newHash
                                 publish(pObject)
                 time.sleep(sampleTime)

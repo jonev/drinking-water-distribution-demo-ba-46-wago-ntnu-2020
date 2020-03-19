@@ -1,23 +1,7 @@
-from random import randint
+self.cursor = self.db.cursor()
+        self.cursor.execute(
+            "SELECT * FROM flowValueValues WHERE timestamp >= %s AND timestamp <=%s", (date1, date2)
+        )
 
-weatherTypes = [
-    ("sun", -1),
-    ("partlycloudy", 0),
-    ("cloudy", 0),
-    ("drizzle", 2),
-    ("rainy", 4),
-    ("storm", 6),
-]
-
-random = int(len(weatherTypes) / 2)
-random = random + randint(-1, 1)
-if random >= len(weatherTypes):
-    random = len(weatherTypes) - 1
-elif random < 0:
-    random = 0
-weather = weatherTypes[4][0]
-print(weather)
-rain = weatherTypes[random][1]
-print(rain)
-randomm = randint(2, 2)
-print(randomm)
+        self.day_ft_values = self.cursor.fetchall()
+        for self.ft_value in self.day_ft_values:

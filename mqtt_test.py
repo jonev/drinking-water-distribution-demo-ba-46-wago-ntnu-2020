@@ -1,5 +1,6 @@
 import paho.mqtt.client as mqtt
 
+
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
