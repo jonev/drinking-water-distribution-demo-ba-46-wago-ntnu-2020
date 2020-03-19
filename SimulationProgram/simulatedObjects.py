@@ -1,4 +1,6 @@
 import copy
+import datetime
+import random
 
 
 class Water:
@@ -79,10 +81,15 @@ class RainForcast:
 
 
 class WaterDistributionPipes:
-    def __init__(self, sampletime_s, oneDayIsSimulatedTo_s):
+    def __init__(self, sampletime_s, oneDayIsSimulatedTo_s, simulatedSamplesPerDay):
+        if oneDayIsSimulatedTo_s % sampletime_s != 0:
+            raise Exception("One day must be simulated to a multiplum of the sampletime")
         self.__sampletime_s = sampletime_s
         self.__oneDayIsSimulatoedTo_s = oneDayIsSimulatedTo_s
-        self.__normalWaterConsumption_l_hour_PerHour = [
+        self.__samplesPerDay = oneDayIsSimulatedTo_s // sampletime_s
+        self.__simulatedSampelsPerSample = simulatedSamplesPerDay // self.__samplesPerDay
+        # Base - from a source online
+        self.__normalWaterConsumptionForADay_Per_Hour_24_samples = [
             8,
             6,
             5,
@@ -108,131 +115,58 @@ class WaterDistributionPipes:
             10,
             8,
         ]
-        self.__normalWaterConsumption_l_hour_Per5sSample = [
-            7,
-            5,
-            5,
-            5.5,
-            7,
-            8.5,
-            9,
-            9.5,
-            11.5,
-            12,
-            11,
-            9,
-        ]
-        self.__normalWaterConsumption_l_hour_PerDbSample = [
-            8,
-            7.5,
-            7.0,
-            6.5,
-            6,
-            6.75,
-            6.5,
-            6.25,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5.25,
-            5.5,
-            5.75,
-            6,
-            6.25,
-            6.5,
-            6.75,
-            7,
-            7,
-            7,
-            7,
-            7,
-            7.25,
-            7.5,
-            7.75,
-            8,
-            8.25,
-            8.5,
-            8.75,
-            9,
-            9,
-            9,
-            9,
-            9,
-            9,
-            9,
-            9,
-            9,
-            9,
-            9,
-            9,
-            9,
-            9.25,
-            9.5,
-            9.75,
-            10,
-            10.25,
-            10.5,
-            10.75,
-            11,
-            11.25,
-            11.5,
-            11.75,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            12,
-            11.75,
-            11.5,
-            11.25,
-            11,
-            11,
-            11,
-            11,
-            11,
-            11.75,
-            11.5,
-            11.25,
-            10,
-            9.5,
-            9,
-            8.5,
-            8,
-            8,
-            8,
-            8,
-        ]
+
+        self.__normalWaterConsumptionForASimulatedDayWithHistoricallyData = self.__scaleNormalWaterComsumptionForADay(
+            self.__normalWaterConsumptionForADay_Per_Hour_24_samples, simulatedSamplesPerDay
+        )
+        self.__normalWaterConsumptionForASimulatedDay_Per_Hour = self.__scaleNormalWaterComsumptionForADay(
+            self.__normalWaterConsumptionForADay_Per_Hour_24_samples, self.__samplesPerDay
+        )
+        print(self.__normalWaterConsumptionForASimulatedDayWithHistoricallyData)
+        print(self.__normalWaterConsumptionForASimulatedDay_Per_Hour)
         self.__zonesResidents = [30, 50, 40, 60]
         self.__flowInPipe = [0, 0, 0, 0, 0, 0, 0]
         self.__leakInPipe = [0, 0, 0, 0, 0, 0, 0]
-        self.__samples_5s = 0
+        self.__samplesCounter = 0
+
+    def __scaleNormalWaterComsumptionForADay(self, inputlist, wantedLength):
+        l = inputlist.__len__()
+
+        result = []
+        if wantedLength <= l:
+            if l % wantedLength != 0:
+                raise Exception("Wanted length must be a multiplum of 24")
+            steps = l // wantedLength
+            for i in range(wantedLength):
+                result.append(inputlist[i * steps])
+        else:
+            if wantedLength % l != 0:
+                raise Exception("Wanted length must be a multiplum of 24")
+            stepSize = l / wantedLength
+            samplesPrSample = wantedLength // l
+            for b in range(l):
+                releation = inputlist[(b + 1) % l] - inputlist[b]
+                for s in range(samplesPrSample):
+                    sample = inputlist[b] + (releation * (s * stepSize))
+                    result.append(sample)
+        return result
 
     def __calulateFlowInPipes(self, zonesResidents, normalWaterConsumption, sample, leakInPipe):
         # Pipes at the end
         flowInPipe = [0, 0, 0, 0, 0, 0, 0]
 
-        flowInPipe[0] = (zonesResidents[0] * normalWaterConsumption[sample]) + leakInPipe[0]
-        flowInPipe[1] = (zonesResidents[1] * normalWaterConsumption[sample]) + leakInPipe[1]
-        flowInPipe[2] = (zonesResidents[2] * normalWaterConsumption[sample]) + leakInPipe[2]
-        flowInPipe[3] = (zonesResidents[3] * normalWaterConsumption[sample]) + leakInPipe[3]
+        flowInPipe[0] = (
+            zonesResidents[0] * normalWaterConsumption[sample] * random.uniform(0.95, 1.05)
+        ) + leakInPipe[0]
+        flowInPipe[1] = (
+            zonesResidents[1] * normalWaterConsumption[sample] * random.uniform(0.95, 1.05)
+        ) + leakInPipe[1]
+        flowInPipe[2] = (
+            zonesResidents[2] * normalWaterConsumption[sample] * random.uniform(0.95, 1.05)
+        ) + leakInPipe[2]
+        flowInPipe[3] = (
+            zonesResidents[3] * normalWaterConsumption[sample] * random.uniform(0.95, 1.05)
+        ) + leakInPipe[3]
         # Pipes not at the end
         flowInPipe[4] = flowInPipe[3] + flowInPipe[2] + leakInPipe[4]
         flowInPipe[5] = flowInPipe[4] + flowInPipe[1] + leakInPipe[5]
@@ -240,31 +174,39 @@ class WaterDistributionPipes:
         return flowInPipe
 
     def calculateFlowInPipesNow(self):
-        self.__samples_5s = self.__samples_5s + 1
-        if self.__samples_5s >= 12:
-            self.__samples_5s = 0
+        self.__samplesCounter = self.__samplesCounter + 1
+        if self.__samplesCounter >= self.__samplesPerDay:
+            self.__samplesCounter = 0
         self.__flowInPipe = self.__calulateFlowInPipes(
             self.__zonesResidents,
-            self.__normalWaterConsumption_l_hour_Per5sSample,
-            self.__samples_5s,
+            self.__normalWaterConsumptionForASimulatedDay_Per_Hour,
+            self.__samplesCounter,
             self.__leakInPipe,
         )
 
-    def calculateFlowInPipesSinceLastSample(self, timestamp):
+    def getFlowInPipesSinceLastSample(self, datetimestamp):
         # One sample is 2 hours -> 8 samples
         flowValues = []
-        timestamps = []
-        for index in range(8):
+        datetimestamps = []
+        timeBetweenSamples = self.__sampletime_s / self.__simulatedSampelsPerSample
+        for index in range(self.__simulatedSampelsPerSample):
+            sample = (
+                ((self.__samplesCounter) * self.__simulatedSampelsPerSample) - 7 + index
+            ) % self.__normalWaterConsumptionForASimulatedDayWithHistoricallyData.__len__()
+
             flowInPipes = self.__calulateFlowInPipes(
                 self.__zonesResidents,
-                self.__normalWaterConsumption_l_hour_PerDbSample,
-                ((self.__samples_5s) * 8) + (8 - index),
+                self.__normalWaterConsumptionForASimulatedDayWithHistoricallyData,
+                sample,
                 self.__leakInPipe,
             )
-            flowValues.append(flowInPipes)
-            timestamps.append(timestamp)  # TODO legg til litt tid på hver
 
-        return flowValues, timestamps
+            flowValues.append(flowInPipes)
+            datetimestamps.append(
+                datetimestamp - datetime.timedelta(seconds=(7 - index) * timeBetweenSamples)
+            )
+
+        return flowValues, datetimestamps
 
     def getFlowInPipes(self):
         return copy.deepcopy(self.__flowInPipe)

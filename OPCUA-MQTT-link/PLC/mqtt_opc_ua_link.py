@@ -55,8 +55,8 @@ def on_received_mqtt_message(client, userdata, msg):
     try:
         receivedObject = json.loads(str(msg.payload, encoding="utf-8"))
         # If plc receive empty objects, it send an object with values in return, immediately
+        tagname = receivedObject["_tagId"]
         if receivedObject["_type"] == "":
-            tagname = receivedObject["_tagId"]
             logging.warning("HMI is missing data and requesting: " + tagname)
             topLevelObject = clientPlc.get_node(
                 "ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix + "." + tagname
@@ -72,6 +72,7 @@ def on_received_mqtt_message(client, userdata, msg):
             return
 
         # Generate new hash
+        logging.warning("HMI is sending CMD: " + tagname)
         del receivedObject["_timestamp"]
         newHash = hashlib.md5(receivedObject.__str__().encode("utf-8")).hexdigest()
         # Store hash
