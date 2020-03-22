@@ -47,28 +47,33 @@ def calculateHourlyAverageValues(datetimestamp):
 
 
 if __name__ == "__main__":
-    # Init db
-    dbClient = DbLeakDetectionClient()
-    dbClient.connectHost("db", "root", "example")
-    dbClient.createDatabase("processvalues")
-    dbClient.connectDatabase("db", "root", "example", "processvalues")
+    while True:
+        try:
+            # Init db
+            dbClient = DbLeakDetectionClient()
+            dbClient.connectHost("db", "root", "example")
+            dbClient.createDatabase("processvalues")
+            dbClient.connectDatabase("db", "root", "example", "processvalues")
 
-    dbClient.createTable(
-        "SignalAnalogHmiPv",
-        "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), metric VARCHAR(3), timestamp DATETIME(6), Output_Pv FLOAT)",
-        "processvalues",
-    )
-    dbClient.createTable(
-        "LeakDetectionHourlyAverage",
-        "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), metric VARCHAR(3), timestamp DATETIME(6), value FLOAT)",
-        "processvalues",
-    )
-    dbClient.createTable(
-        "LeakDetection120SamplesHouryAverage",
-        "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), metric VARCHAR(3), timestamp DATETIME(6), value FLOAT)",
-        "processvalues",
-    )
-    # Init and start Scheduled task "mainloop"
-    s = SimpleTaskScheduler(calculateHourlyAverageValues, oneHour_s, 0, 0.1)
-    s.start()
-    s.join()
+            dbClient.createTable(
+                "SignalAnalogHmiPv",
+                "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), metric VARCHAR(3), timestamp DATETIME(6), Output_Pv FLOAT)",
+                "processvalues",
+            )
+            dbClient.createTable(
+                "LeakDetectionHourlyAverage",
+                "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), metric VARCHAR(3), timestamp DATETIME(6), value FLOAT)",
+                "processvalues",
+            )
+            dbClient.createTable(
+                "LeakDetection120SamplesHouryAverage",
+                "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), metric VARCHAR(3), timestamp DATETIME(6), value FLOAT)",
+                "processvalues",
+            )
+            # Init and start Scheduled task "mainloop"
+            s = SimpleTaskScheduler(calculateHourlyAverageValues, oneHour_s, 0, 0.1)
+            s.start()
+            s.join()
+        except:
+            logging.exception("Leak detection exception, restarting in 10 seconds")
+        time.sleep(10)

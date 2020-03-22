@@ -84,21 +84,26 @@ def dbCleanUp(datetimestamp):
 
 
 if __name__ == "__main__":
-    # Init MQTT
-    mqtt = MQTTClient(mqttBroker, mqttPort, mqttTopicSubscribeData)
-    mqtt.start()
-    time.sleep(5)
-    # Init objects
-    w = Water(sampleTime_s, oneDayIsSimulatedTo_s, 1000.0, 1000.0, 100.0)
-    rain = RainForcast(sampleTime_s, oneDayIsSimulatedTo_s, [1, 1, 8, 8, 1])
-    db = DbClient()
-    waterDistributionPipes = WaterDistributionPipes(
-        sampleTime_s, oneDayIsSimulatedTo_s, simulatedSamplesPerDay
-    )
-    # Init and start Scheduled task "mainloop"
-    s1 = SimpleTaskScheduler(mainloop, sampleTime_s, 0, 0.1)
-    s1.start()
-    s2 = SimpleTaskScheduler(dbCleanUp, oneDayIsSimulatedTo_s * 3, 1, 0.1)
-    s2.start()
-    s1.join()
-    s2.join()
+    while True:
+        try:
+            # Init MQTT
+            mqtt = MQTTClient(mqttBroker, mqttPort, mqttTopicSubscribeData)
+            mqtt.start()
+            time.sleep(5)
+            # Init objects
+            w = Water(sampleTime_s, oneDayIsSimulatedTo_s, 1000.0, 1000.0, 100.0)
+            rain = RainForcast(sampleTime_s, oneDayIsSimulatedTo_s, [1, 1, 8, 8, 1])
+            db = DbClient()
+            waterDistributionPipes = WaterDistributionPipes(
+                sampleTime_s, oneDayIsSimulatedTo_s, simulatedSamplesPerDay
+            )
+            # Init and start Scheduled task "mainloop"
+            s1 = SimpleTaskScheduler(mainloop, sampleTime_s, 0, 0.1)
+            s1.start()
+            s2 = SimpleTaskScheduler(dbCleanUp, oneDayIsSimulatedTo_s * 3, 1, 0.1)
+            s2.start()
+            s1.join()
+            s2.join()
+        except:
+            logging.exception("Simulaiton program exception, restarting in 10 seconds")
+        time.sleep(10)
