@@ -1,1 +1,1 @@
-docker buildx build --platform linux/arm/v7 -t jonev/ba-wago:opcua-mqtt-link-hmi --push .
+docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t jonev/opcua-mqtt-link-hmi --push .

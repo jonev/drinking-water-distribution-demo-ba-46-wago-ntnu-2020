@@ -1,14 +1,14 @@
-from mqtt_client import MQTTClient
-from scheduler import SimpleTaskScheduler
-from simulatedObjects import Water, RainForcast, WaterDistributionPipes
-from DbClient import DbFlowClient
+from SimulationProgram.mqtt_client import MQTTClient
+from utils.scheduler import SimpleTaskScheduler
+from SimulationProgram.simulatedObjects import Water, RainForcast, WaterDistributionPipes
+from SimulationProgram.dbClient import DbClient
 import datetime  # Best compatible with mysql
 import logging
 import time
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)-8s %(message)s",
-    level=logging.INFO,
+    level=logging.WARNING,
     datefmt="%Y-%m-%d %H:%M:%S",
     filename="simulationprogram.log",
 )
@@ -25,7 +25,7 @@ mqttTopicSubscribeData = [
 ]
 
 
-def mainloop():
+def mainloop(datetimestamp):  # TODO ta i bruk denne input
     datetimestamp = datetime.datetime.now()
 
     """
@@ -59,10 +59,28 @@ def mainloop():
     waterDistributionPipes.calculateFlowInPipesNow()
     flowValues, timestamps = waterDistributionPipes.getFlowInPipesSinceLastSample(datetimestamp)
     for i in range(flowValues.__len__()):
-        dbFlow.insertFlowValuesBatch8DifferentTags(
+        db.insertFlowValuesBatch8DifferentTags(
             ["t0", "t1", "t2", "t3", "t4", "t5", "t6"], flowValues[i], timestamps[i]
         )
-    logging.warning("Loop used: " + str(datetime.datetime.now() - datetimestamp))
+    logging.info("Loop used: " + str(datetime.datetime.now() - datetimestamp))
+
+
+def dbCleanUp(datetimestamp):
+    rows = db.deleteDataOlderThan(
+        "SignalAnalogHmiPv",
+        (datetime.datetime.now() - datetime.timedelta(seconds=oneDayIsSimulatedTo_s * 10)),
+    )
+    logging.info("SignalAnalogHmiPv Rows deleted: " + str(rows))
+    rows = db.deleteDataOlderThan(
+        "LeakDetectionHourlyAverage",
+        (datetime.datetime.now() - datetime.timedelta(seconds=oneDayIsSimulatedTo_s * 20)),
+    )
+    logging.info("LeakDetectionHourlyAverage Rows deleted: " + str(rows))
+    rows = db.deleteDataOlderThan(
+        "LeakDetection120SamplesHouryAverage",
+        (datetime.datetime.now() - datetime.timedelta(seconds=oneDayIsSimulatedTo_s * 30)),
+    )
+    logging.info("LeakDetection120SamplesHouryAverage Rows deleted: " + str(rows))
 
 
 if __name__ == "__main__":
@@ -71,13 +89,16 @@ if __name__ == "__main__":
     mqtt.start()
     time.sleep(5)
     # Init objects
-    w = Water(sampleTime_s, oneDayIsSimulatedTo_s)
+    w = Water(sampleTime_s, oneDayIsSimulatedTo_s, 1000.0, 1000.0, 100.0)
     rain = RainForcast(sampleTime_s, oneDayIsSimulatedTo_s, [1, 1, 8, 8, 1])
-    dbFlow = DbFlowClient()
+    db = DbClient()
     waterDistributionPipes = WaterDistributionPipes(
         sampleTime_s, oneDayIsSimulatedTo_s, simulatedSamplesPerDay
     )
     # Init and start Scheduled task "mainloop"
-    s = SimpleTaskScheduler(mainloop, sampleTime_s, 0.1)
-    s.start()
-    s.join()
+    s1 = SimpleTaskScheduler(mainloop, sampleTime_s, 0, 0.1)
+    s1.start()
+    s2 = SimpleTaskScheduler(dbCleanUp, oneDayIsSimulatedTo_s * 3, 1, 0.1)
+    s2.start()
+    s1.join()
+    s2.join()

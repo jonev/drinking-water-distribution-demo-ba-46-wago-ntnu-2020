@@ -1,6 +1,7 @@
 import copy
 import datetime
 import random
+import logging
 
 
 class Water:
@@ -8,12 +9,12 @@ class Water:
         USING SI units https://en.wikipedia.org/wiki/International_System_of_Units
     """
 
-    def __init__(self, sampletime_s, oneDayIsSimulatedTo_s):
+    def __init__(self, sampletime_s, oneDayIsSimulatedTo_s, length_m, width_m, hightMax_m):
         self.__sampletime_s = sampletime_s
         self.__oneDayIsSimulatoedTo_s = oneDayIsSimulatedTo_s
-        self.__length_m = 1000.0
-        self.__width_m = 1000.0
-        self.__hightMax_m = 100.0
+        self.__length_m = length_m
+        self.__width_m = width_m
+        self.__hightMax_m = hightMax_m
         self.__area_m2 = self.__length_m * self.__width_m
         self.__volume_m3 = self.__area_m2 * self.__hightMax_m
         self.__currentVolume_m3 = (self.__volume_m3 / 3) * 2  # 2/3 full at start
@@ -74,6 +75,7 @@ class RainForcast:
             self.__start = self.__start - self.__oneDayIsSimulatoedTo_s
         if self.__day >= len(self.__rainForcast_m_per_day):
             self.__day = 0
+
         self.__rain = rain
 
     def getRain_m(self):
@@ -122,12 +124,12 @@ class WaterDistributionPipes:
         self.__normalWaterConsumptionForASimulatedDay_Per_Hour = self.__scaleNormalWaterComsumptionForADay(
             self.__normalWaterConsumptionForADay_Per_Hour_24_samples, self.__samplesPerDay
         )
-        print(self.__normalWaterConsumptionForASimulatedDayWithHistoricallyData)
-        print(self.__normalWaterConsumptionForASimulatedDay_Per_Hour)
         self.__zonesResidents = [30, 50, 40, 60]
         self.__flowInPipe = [0, 0, 0, 0, 0, 0, 0]
         self.__leakInPipe = [0, 0, 0, 0, 0, 0, 0]
         self.__samplesCounter = 0
+        self.__leakInterval = self.__oneDayIsSimulatoedTo_s * 3
+        self.__leakIntervalCounter = 0
 
     def __scaleNormalWaterComsumptionForADay(self, inputlist, wantedLength):
         l = inputlist.__len__()
@@ -177,6 +179,16 @@ class WaterDistributionPipes:
         self.__samplesCounter = self.__samplesCounter + 1
         if self.__samplesCounter >= self.__samplesPerDay:
             self.__samplesCounter = 0
+        self.__leakIntervalCounter = self.__leakIntervalCounter + self.__sampletime_s
+        if self.__leakIntervalCounter > self.__leakInterval:
+            self.__leakIntervalCounter = 0
+            if self.__leakInPipe[0] == 0:
+                self.__leakInPipe[0] = 100
+                logging.info("Leak activated")
+            else:
+                self.__leakInPipe[0] = 0
+                logging.info("Leak de-activated")
+
         self.__flowInPipe = self.__calulateFlowInPipes(
             self.__zonesResidents,
             self.__normalWaterConsumptionForASimulatedDay_Per_Hour,

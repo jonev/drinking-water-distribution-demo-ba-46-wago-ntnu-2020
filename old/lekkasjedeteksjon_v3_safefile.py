@@ -135,10 +135,12 @@ class PLS3:
         # TODO not thread safe
         self.receivedObject = json.loads(str(msg.payload, encoding="utf-8"))
 
+    # Utgår
     def getDayCounterFromSim(self,):
         self.day_counter = self.receivedObject["dayCounter"]
         print(self.day_counter)
 
+    # Utgår
     def getLastDateInDB(self,):
         """
         Get the last date added to the database. In format YYYY-MM-DD.
@@ -149,6 +151,7 @@ class PLS3:
         self.db.commit()
         self.last_day_in_DB = dag[2].date()
 
+    # Utgår
     def checkIfNewDay(self,):
         """
         Checks if the database has a full day of samples available to be imported.
