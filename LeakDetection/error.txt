@@ -1,0 +1,17 @@
+Exception in thread Thread-4291:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/threading.py", line 932, in _bootstrap_inner
+    self.run()
+  File "/usr/local/lib/python3.8/threading.py", line 870, in run
+    self._target(*self._args, **self._kwargs)
+  File "/workspace/SimulationProgram/__main__.py", line 68, in dbCleanUp
+    rows = db.deleteDataOlderThan(
+  File "/workspace/SimulationProgram/dbClient.py", line 64, in deleteDataOlderThan
+    self.__cursor.execute("DELETE FROM " + tableName + " WHERE timestamp < %s", (olderThan,))
+  File "/usr/local/lib/python3.8/site-packages/mysql/connector/cursor.py", line 551, in execute
+    self._handle_result(self._connection.cmd_query(stmt))
+  File "/usr/local/lib/python3.8/site-packages/mysql/connector/connection.py", line 490, in cmd_query
+    result = self._handle_result(self._send_cmd(ServerCmd.QUERY, query))
+  File "/usr/local/lib/python3.8/site-packages/mysql/connector/connection.py", line 384, in _handle_result
+    elif packet[4] == 0:
+IndexError: bytearray index out of range

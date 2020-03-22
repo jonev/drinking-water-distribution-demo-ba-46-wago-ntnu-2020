@@ -3,12 +3,20 @@ version: '3.1'
 services:
 
     mqtttomysql:
-        image: jonev/ba-wago:mysqldatastore-amd64
+        image: jonev/mqtt-mysql-store
         depends_on: 
             - db
 
     simulation:
-        image: jonev/ba-wago:simulation-amd64
+        image: jonev/water-simulator
+        depends_on: 
+            - db
+    
+    leakdetection:
+        image: jonev/leak-detection
+        depends_on: 
+            - db
+            - simulation
 
     grafana:
         image: grafana/grafana

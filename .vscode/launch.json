@@ -12,16 +12,16 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "PLC2",
+            "name": "LeakDetection",
             "type": "python",
             "request": "launch",
-            "module": "plc2_pressure"
+            "module": "LeakDetection"
         },
         {
-            "name": "PLC3",
+            "name": "SimulationProgram",
             "type": "python",
             "request": "launch",
-            "module": "plc3_flood"
+            "module": "SimulationProgram"
         }
     ]
 }

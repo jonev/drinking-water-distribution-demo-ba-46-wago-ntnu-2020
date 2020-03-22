@@ -24,6 +24,7 @@
   "extensions": [
     "ms-python.python",
     "njpwerner.autodocstring",
-    "streetsidesoftware.code-spell-checker"
+    "streetsidesoftware.code-spell-checker",
+    "formulahendry.vscode-mysql"
   ]
 }

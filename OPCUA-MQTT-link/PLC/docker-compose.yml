@@ -2,5 +2,5 @@ version: '3.1'
 
 services:
     pythonapp:
-        image: jonev/ba-wago:opcua-mqtt-link-plc3
+        image: jonev/opcua-mqtt-link-plc3
         restart: always
