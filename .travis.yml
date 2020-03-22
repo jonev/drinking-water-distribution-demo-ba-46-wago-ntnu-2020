@@ -15,7 +15,7 @@ jobs:
         - docker run -d --name app pythontestapp sleep infinity
         - docker ps -a
       script:
-        - docker exec app python -m unittest discover test -p '*_test.py' -v
+        - docker exec app python -m unittest discover test -p '*_test.py' -s test -v
       
       after_script:
         -docker rm -f app
