@@ -1,6 +1,7 @@
 import unittest
 from ddt import ddt, data, unpack
 
+
 from LeakDetection.calculations import Calculations
 
 

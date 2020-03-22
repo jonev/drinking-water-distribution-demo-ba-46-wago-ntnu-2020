@@ -1,4 +1,6 @@
-os: linux
+sudo: required
+
+language: python
 
 services:
   - docker
@@ -6,24 +8,16 @@ services:
 stages:
   - name: Unit Tests
     if: branch = master OR branch = develop
-  - name: Deploy
-    if: branch = master OR branch = develop
 
 jobs:
   include:
     - stage: Unit Tests
-      language: python
-      python:
-        - "3.8"
-      cache: pip
-      install:
-        - pip install -r requirements.txt
+      before_install:
+        - docker build -f Dockerfile-tests -t pythontestapp .
+        - docker run -d --name app pythontestapp sleep infinity
+        - docker ps -a
       script:
-        - python -m unittest discover test -p '*_test.py'
-
-    #- stage: Deploy
-    #  name: Deploy to Docker hub
-    #  script:
-    #    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-    #    - docker buildx create --name builder-for-plc
-    #    - docker buildx build -f Dockerfile-plc2-pressure --platform linux/arm/v7 -t #$DOCKER_USERNAME/python-test:v6 --push .
+        - docker exec app python -m unittest discover test -p '*_test.py' -v
+      
+      after_script:
+        -docker rm -f app
