@@ -8,9 +8,9 @@ USER root
 # Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
 
-COPY LeakDetection LeakDetection
-COPY SimulationProgram SimulationProgram
-COPY test test
+COPY . app
+WORKDIR app
+
 
 RUN pip --disable-pip-version-check --no-cache-dir install ddt
 
