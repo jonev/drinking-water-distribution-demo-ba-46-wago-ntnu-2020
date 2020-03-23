@@ -7,12 +7,19 @@ Develop: [![Build Status](https://travis-ci.com/jonev/wago-demo-plc-python.svg?b
 Prerequisites: Docker and Visual Studio Code (With remote development extension)
 - Open root folder in container with VS code.
 
-## Run tests
+## Run tests local
 - Use vs code Test menu (recommended)
 - Or from root:
 ```
 python -m unittest discover test -p '*_test.py'
 ```
+## Run tests as in Travis
+1. `docker build -f Dockerfile-tests -t pythontestapp .`
+2. `docker run -d --name app pythontestapp sleep infinity`
+3. `docker ps -a`
+4. `docker exec app python -m unittest discover test -p '*_test.py' -s test -v`
+5. `docker rm -f app`
+
 
 ## Run current file, Leakdetection or Simulation program
 - Use vs code run and debug menu, choose from the dropdown
