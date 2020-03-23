@@ -23,5 +23,5 @@ class SimulatedObjectsTests(unittest.TestCase):
     @unpack
     def test_water_emissionValve(self, opening, expectedFlow):
         w = Water(5.0, 60.0, 1000.0, 1000.0, 100.0)
-        flow = w.emmissionValve_percent_ToFlow_m3_per_s(opening)
+        flow = w.emissionValve_percent_ToFlow_m3_per_s(opening)
         self.assertAlmostEqual(expectedFlow, flow, places=3)

@@ -1,4 +1,4 @@
-class Calculations:
+class DivCalculations:
     def __init__(self):
         pass
 
