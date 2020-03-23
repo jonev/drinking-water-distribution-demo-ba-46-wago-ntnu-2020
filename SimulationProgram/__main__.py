@@ -25,14 +25,14 @@ mqttTopicSubscribeData = [
 ]
 
 
-def mainloop(datetimestamp):  # TODO ta i bruk denne input
+def mainloop(datetimestamp):
     datetimestamp = datetime.datetime.now()
 
     """
     # Read data from mqtt
     ValveEmission1Position_Pv = mqtt.getData("ValveEmission1Position_Pv")
     logging.info("ValveEmission1Position %: " + str(ValveEmission1Position_Pv))
-    emission_m3_per_s = w.emmissionValve_percent_ToFlow_m3_per_s(ValveEmission1Position_Pv)
+    emission_m3_per_s = w.emissionValve_percent_ToFlow_m3_per_s(ValveEmission1Position_Pv)
 
     # Calculating new current volume
     rain.calculateRain()
@@ -77,10 +77,10 @@ def dbCleanUp(datetimestamp):
     )
     logging.info("LeakDetectionHourlyAverage Rows deleted: " + str(rows))
     rows = db.deleteDataOlderThan(
-        "LeakDetection120SamplesHouryAverage",
+        "LeakDetection120SamplesHourlyAverage",
         (datetime.datetime.now() - datetime.timedelta(seconds=oneDayIsSimulatedTo_s * 30)),
     )
-    logging.info("LeakDetection120SamplesHouryAverage Rows deleted: " + str(rows))
+    logging.info("LeakDetection120SamplesHourlyAverage Rows deleted: " + str(rows))
 
 
 if __name__ == "__main__":
@@ -105,5 +105,5 @@ if __name__ == "__main__":
             s1.join()
             s2.join()
         except:
-            logging.exception("Simulaiton program exception, restarting in 10 seconds")
+            logging.exception("Simulation program exception, restarting in 10 seconds")
         time.sleep(10)

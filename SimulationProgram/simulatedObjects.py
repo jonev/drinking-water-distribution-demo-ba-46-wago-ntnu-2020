@@ -47,7 +47,7 @@ class Water:
         else:
             self.__currentVolume_m3 = newCurrentVolume_m3
 
-    def emmissionValve_percent_ToFlow_m3_per_s(self, openingInPersent):
+    def emissionValve_percent_ToFlow_m3_per_s(self, openingInPersent):
         return self.__emissionValveMaxOpening_m3_per_s * (openingInPersent / 100.0)
 
 

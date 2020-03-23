@@ -1,6 +1,6 @@
 from utils.scheduler import SimpleTaskScheduler
 from LeakDetection.dbLeakDetectionClient import DbLeakDetectionClient
-from LeakDetection.calculations import Calculations
+from LeakDetection.divcalculations import DivCalculations
 import datetime  # Best compatible with mysql
 import logging
 import time
@@ -27,16 +27,16 @@ def calculateHourlyAverageValues(datetimestamp):
     end = datetimestamp
     values = dbClient.getValuesBetweenTimestamps("SignalAnalogHmiPv", start, end, "t0",)
     # Skipping values of 0.00
-    avg = Calculations.avgValue(values, 4)
+    avg = DivCalculations.avgValue(values, 4)
     if avg != 0.00:
         dbClient.pushValueOnTimestamp("LeakDetectionHourlyAverage", start, "t0", avg)
 
     values120SamplesHourlyAverages = dbClient.getAverageHourValues(
         "LeakDetectionHourlyAverage", "t0", (start.second - 0.1) % 60, (end.second + 0.1) % 60, 5
     )
-    avg = Calculations.avgValue(values120SamplesHourlyAverages, 4)
+    avg = DivCalculations.avgValue(values120SamplesHourlyAverages, 4)
     if avg != 0.00:
-        dbClient.pushValueOnTimestamp("LeakDetection120SamplesHouryAverage", start, "t0", avg)
+        dbClient.pushValueOnTimestamp("LeakDetection120SamplesHourlyAverage", start, "t0", avg)
 
     logging.info(
         "Ran at: "
@@ -66,7 +66,7 @@ if __name__ == "__main__":
                 "processvalues",
             )
             dbClient.createTable(
-                "LeakDetection120SamplesHouryAverage",
+                "LeakDetection120SamplesHourlyAverage",
                 "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), metric VARCHAR(3), timestamp DATETIME(6), value FLOAT)",
                 "processvalues",
             )

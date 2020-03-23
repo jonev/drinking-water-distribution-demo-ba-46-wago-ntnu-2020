@@ -1,12 +1,11 @@
 import unittest
 from ddt import ddt, data, unpack
 
-
-from LeakDetection.calculations import Calculations
+from LeakDetection.divcalculations import DivCalculations
 
 
 @ddt
-class CalculationsTest(unittest.TestCase):
+class DivCalculationsTest(unittest.TestCase):
     @data(
         ([[1, 0], [2, 0], [3, 0], [4, 0], [5, 0]], 0, 3.0),
         ([[1, 0], [2, 0], [3, 0], [4, 0], [5, 0]], 1, 0),
@@ -15,4 +14,4 @@ class CalculationsTest(unittest.TestCase):
     )
     @unpack
     def test_scale(self, samples, value_column_nr, result):
-        self.assertEqual(result, Calculations.avgValue(samples, value_column_nr))
+        self.assertEqual(result, DivCalculations.avgValue(samples, value_column_nr))
