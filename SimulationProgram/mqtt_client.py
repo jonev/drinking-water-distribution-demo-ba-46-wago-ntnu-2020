@@ -10,6 +10,7 @@ class PublishTopic(Enum):
     PLC1 = "ba/wago/sim/plc1/plcsub"
     PLC2 = "ba/wago/sim/plc2/plcsub"
     PLC3 = "ba/wago/sim/plc3/plcsub"
+    HMI = "ba/wago/sim/hmi/hmisub"
     INFO = "ba/wago/sim/info"
 
 
@@ -55,9 +56,11 @@ class MQTTClient:
     def publishPlc3(self, pObject):
         self.__publish(PublishTopic.PLC3.value, pObject=pObject)
 
+    def publishHmi(self, pObject):
+        self.__publish(PublishTopic.HMI.value, pObject=pObject)
+
     def start(self):
         self.__client.connect(self.__broker, self.__port, 60)
         self.__client.publish(PublishTopic.INFO.value, payload="Simulation program MQTT staring")
         self.__mqttThread = Thread(target=self.__client.loop_forever, args=())
         self.__mqttThread.start()
-

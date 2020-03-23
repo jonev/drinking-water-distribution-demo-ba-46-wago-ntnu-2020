@@ -40,7 +40,7 @@ mqttTopicSubscribeData = [
 mqttPublishPvSuffix = os.getenv(
     "MQTT_PUBLISH_PV_SUFFIX"
 )  # Published every sample, other tags are pulished on data change
-print(
+logging.info(
     "Evn: OpcUaServer: "
     + opcUaServer
     + ", OpcUaIdPrefix"
@@ -51,8 +51,9 @@ print(
 
 
 def on_mqtt_connect(client, userdata, flags, rc):
-    print("MQTT Connected with result code " + str(rc))
+    logging.info("MQTT Connected with result code " + str(rc))
     for topic in mqttTopicSubscribeData:
+        logging.info("MQTT subscribring to: " + topic)
         client.subscribe(topic)
 
 
@@ -146,18 +147,18 @@ try:
     # Tries to reconnect every 10 seconds
     while True:
         try:
-            print("Connecting to Opc.")
+            logging.info("Connecting to Opc.")
             clientPlc.connect()
             if clientPlc is None:
                 raise Exception("Opc connection failed")
-            print("Connected")
+            logging.info("OPC Connected")
             nodesUnderPrefix = clientPlc.get_node("ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix)
 
-            print("Connecting to MQTT broker.")
+            logging.info("Connecting to MQTT broker.")
             mqttClient.connect(mqttBroker, mqttPort, 60)
             mqttThread = Thread(target=mqttClient.loop_forever, args=())
             mqttThread.start()
-            print("Waiting for MQTT to connect...")
+            logging.info("Waiting for MQTT to connect...")
             time.sleep(2)  # MQTT need time to connect
 
             # Read data from OPC UA and Publish data to MQTT loop
@@ -182,13 +183,13 @@ try:
                             if tagname in hashs and pObject["_type"] != "":
                                 if hashs[tagname] != newHash:
                                     # Publish and save hash
-                                    logging.warning("HMI is sending: " + tagname)
+                                    logging.warning("HMI is requesting: " + tagname)
                                     hashs[tagname] = newHash
                                     publish(pObject)
                             else:
                                 # Tagname does not exist in hashs
                                 # Save hash and publish
-                                logging.warning("HMI is sending: " + tagname)
+                                logging.warning("HMI is requesting: " + tagname)
                                 hashs[tagname] = newHash
                                 publish(pObject)
                 time.sleep(sampleTime)

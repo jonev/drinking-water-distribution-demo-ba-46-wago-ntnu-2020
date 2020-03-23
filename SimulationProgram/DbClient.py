@@ -61,6 +61,8 @@ class DbClient:
         self.__db.commit()
 
     def deleteDataOlderThan(self, tableName, olderThan):
-        self.__cursor.execute("DELETE FROM " + tableName + " WHERE timestamp < %s", (olderThan,))
+        q = "DELETE FROM " + tableName + " WHERE timestamp < %s"
+        logging.info("DeleteDataOlderThan: " + q)
+        self.__cursor.execute(q, (olderThan,))
         self.__db.commit()
         return self.__cursor.rowcount

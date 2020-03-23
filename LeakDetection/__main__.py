@@ -7,9 +7,8 @@ import time
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)-8s %(message)s",
-    level=logging.WARNING,
+    level=logging.INFO,
     datefmt="%Y-%m-%d %H:%M:%S",
-    filename="leakdetection.log",
 )
 
 sampleTime_s = 5  # DO NOT CHANGE - One sample is in real time 2 hours. 12 samples pr hour.
@@ -19,31 +18,47 @@ simulatedSamplesPerDay = 96  # DO NOT CHANGE
 
 
 def calculateHourlyAverageValues(datetimestamp):
-    # print("Timestamp run: " + str(datetimestamp))
-    timetaking = datetime.datetime.now()
-    datetimestamp = datetimestamp - datetime.timedelta(seconds=5)
-    # print("Timestamp this run: " + str(datetimestamp))
-    start = datetimestamp - datetime.timedelta(seconds=oneHour_s)
-    end = datetimestamp
-    values = dbClient.getValuesBetweenTimestamps("SignalAnalogHmiPv", start, end, "t0",)
-    # Skipping values of 0.00
-    avg = DivCalculations.avgValue(values, 4)
-    if avg != 0.00:
-        dbClient.pushValueOnTimestamp("LeakDetectionHourlyAverage", start, "t0", avg)
+    try:
+        # print("Timestamp run: " + str(datetimestamp))
+        timetaking = datetime.datetime.now()
+        datetimestamp = datetimestamp - datetime.timedelta(seconds=5)
+        # print("Timestamp this run: " + str(datetimestamp))
+        start = datetimestamp - datetime.timedelta(seconds=oneHour_s)
+        end = datetimestamp
+        values = dbClient.getValuesBetweenTimestamps("SignalAnalogHmiPv", start, end, "t0",)
+        # Skipping values of 0.00
+        avgHour = DivCalculations.avgValue(values, 4)
+        if avgHour != 0.00:
+            dbClient.pushValueOnTimestamp("LeakDetectionHourlyAverage", start, "t0", avgHour)
 
-    values120SamplesHourlyAverages = dbClient.getAverageHourValues(
-        "LeakDetectionHourlyAverage", "t0", (start.second - 0.1) % 60, (end.second + 0.1) % 60, 5
-    )
-    avg = DivCalculations.avgValue(values120SamplesHourlyAverages, 4)
-    if avg != 0.00:
-        dbClient.pushValueOnTimestamp("LeakDetection120SamplesHourlyAverage", start, "t0", avg)
+        values120SamplesHourlyAverages = dbClient.getAverageHourValues(
+            "LeakDetectionHourlyAverage",
+            "t0",
+            (start.second - 0.1) % 60,
+            (end.second + 0.1) % 60,
+            5,
+        )
+        avg120samples = DivCalculations.avgValue(values120SamplesHourlyAverages, 4)
+        if avg120samples != 0.00:
+            dbClient.pushValueOnTimestamp(
+                "LeakDetection120SamplesHourlyAverage", start, "t0", avg120samples
+            )
+        if (avgHour != 0.0) and (avg120samples != 0.00):
+            dbClient.pushValueOnTimestamp(
+                "LeakDetectionDeviationHourAnd120SamplesHourlyAverage",
+                start,
+                "t0",
+                (avgHour - avg120samples),
+            )
 
-    logging.info(
-        "Ran at: "
-        + str(datetimestamp)
-        + ", Loop used: "
-        + str(datetime.datetime.now() - timetaking)
-    )
+        logging.info(
+            "Ran at: "
+            + str(datetimestamp)
+            + ", Loop used: "
+            + str(datetime.datetime.now() - timetaking)
+        )
+    except:
+        logging.exception("Exception in calculateHourlyAverageValues")
 
 
 if __name__ == "__main__":
@@ -67,6 +82,11 @@ if __name__ == "__main__":
             )
             dbClient.createTable(
                 "LeakDetection120SamplesHourlyAverage",
+                "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), metric VARCHAR(3), timestamp DATETIME(6), value FLOAT)",
+                "processvalues",
+            )
+            dbClient.createTable(
+                "LeakDetectionDeviationHourAnd120SamplesHourlyAverage",
                 "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), metric VARCHAR(3), timestamp DATETIME(6), value FLOAT)",
                 "processvalues",
             )
