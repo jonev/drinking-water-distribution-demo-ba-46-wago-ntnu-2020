@@ -13,10 +13,10 @@ https://github.com/wckd/python-yr
 """
 
 # http://www.hivemq.com/demos/websocket-client/
-mqtt = MQTTClient("broker.hivemq.com", 1883, 60, ["wago/ba/sim/#"])
-mqttThread = Thread(target=mqtt.loopForever, args=())
-mqttThread.start()
-time.sleep(2)
+# mqtt = MQTTClient("broker.hivemq.com", 1883, 60, ["wago/ba/sim/#"])
+# mqttThread = Thread(target=mqtt.loopForever, args=())
+# mqttThread.start()
+# time.sleep(2)
 
 
 class SimValuesHMI:

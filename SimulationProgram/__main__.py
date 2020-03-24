@@ -2,9 +2,11 @@ from SimulationProgram.mqtt_client import MQTTClient
 from utils.scheduler import SimpleTaskScheduler
 from SimulationProgram.simulatedObjects import Water, RainForcast, WaterDistributionPipes
 from SimulationProgram.dbClient import DbClient
+from SimulationProgram.forecast import YrForecast
 import datetime  # Best compatible with mysql
 import logging
 import time
+import json
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)-8s %(message)s",
@@ -90,11 +92,17 @@ def dbCleanUp(datetimestamp):
 
 def requestForcastAndSendToHmi(datetimestamp):
     try:
+        logging.info("requestForcastAndSendToHmi running at: " + str(datetimestamp))
         # TODO add code
+
+        forecastToSend = f.getForecast()
+        print(forecastToSend)
+        test = json.dumps(forecastToSend)
+        mqtt.publishHmi(test)
         # This is running each 10 seconds, for testing purposes (on whole seconds, 0, 10, 20, 30 and so on)
         # get forcast
         # Send to HMI
-        mqtt.publishHmi({"testobject": 123})
+        # mqtt.publishHmi({"testobject": 123})
         # Use vs code menu to run this -> "SimulationProgram"
     except:
         logging.exception("Exception in requestForcastAndSendToHmi")
@@ -122,7 +130,8 @@ if __name__ == "__main__":
             # s2.start()
             # s1.join()
             # s2.join()
-            s3 = SimpleTaskScheduler(requestForcastAndSendToHmi, 10.0, 0.0, 0.1)
+            f = YrForecast()
+            s3 = SimpleTaskScheduler(requestForcastAndSendToHmi, 10.0, 0.0, 0.1)  # TODO FORECAST
             s3.start()
             s3.join()
         except:

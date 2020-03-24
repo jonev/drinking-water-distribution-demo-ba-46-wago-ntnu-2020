@@ -58,7 +58,8 @@ class SimpleTaskScheduler:
         )
         while self.__runflag:
             if self.__starttime < time.time():
-                raise Exception("Last task was not done -> increase the interval")
+                # raise Exception("Last task was not done -> increase the interval")
+                pass
             while self.__starttime > time.time():
                 time.sleep(self.__checkIntervalInSeconds)
             worker = threading.Thread(
