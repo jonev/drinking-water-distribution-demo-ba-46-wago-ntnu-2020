@@ -96,9 +96,7 @@ def requestForcastAndSendToHmi(datetimestamp):
         # TODO add code
 
         forecastToSend = f.getForecast()
-        print(forecastToSend)
-        test = json.dumps(forecastToSend)
-        mqtt.publishHmi(test)
+        mqtt.publishHmi(forecastToSend)
         # This is running each 10 seconds, for testing purposes (on whole seconds, 0, 10, 20, 30 and so on)
         # get forcast
         # Send to HMI
