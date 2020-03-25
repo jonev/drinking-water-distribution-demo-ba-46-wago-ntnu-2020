@@ -25,10 +25,11 @@ class YrForecast:
         self.date_list = []
 
         self.symbol_equal_sun = ["Clear sky", "Fair"]  # 0
-        self.symbol_equal_cloudy = ["Fog", "Cloudy", "Partly cloudy"]  # 1
+        self.symbol_equal_partly_cloudy = ["Partly cloudy"]  # 1
+        self.symbol_equal_cloudy = ["Fog", "Cloudy"]  # 2
         self.symbol_equal_rain = [
             "Light rain",
-            "Light rain showers",
+            "Light rain showers",  # NEW
             "Light sleet",
             "Light sleet showers",
             "Light rain showers and thunder",
@@ -43,6 +44,8 @@ class YrForecast:
             "Sleet showers and thunder",
             "Rain and thunder",
             "Sleet and thunder",
+        ]  # 3
+        self.symbol_equal_storm = [
             "Heavy rain showers",
             "Heavy rain",
             "Heavy sleet",
@@ -51,6 +54,8 @@ class YrForecast:
             "Heavy sleet showers and thunder",
             "Heavy rain and thunder",
             "Heavy sleet and thunder",
+        ]  # 4
+        self.symbol_equal_snow = [
             "Light snow",
             "Snow",
             "Heavy snow",
@@ -63,12 +68,15 @@ class YrForecast:
             "Light snow and thunder",
             "Snow and thunder",
             "Heavy snow and thunder",
-        ]  # 2
+        ]  # 5
 
         self.weather_symbol_list = [
-            self.symbol_equal_sun,
-            self.symbol_equal_cloudy,
-            self.symbol_equal_rain,
+            self.symbol_equal_sun,  # 0
+            self.symbol_equal_partly_cloudy,  # 1
+            self.symbol_equal_cloudy,  # 2
+            self.symbol_equal_rain,  # 3
+            self.symbol_equal_storm,  # 4
+            self.symbol_equal_snow,  # 5
         ]
         self.flag = False
 

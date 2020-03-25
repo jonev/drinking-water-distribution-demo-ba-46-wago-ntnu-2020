@@ -34,7 +34,7 @@ class SimValuesHMI:
         self.symbol_equal_sun = ["Clear sky", "Fair"]  # 0
         self.symbol_equal_partly_cloudy = ["Partly cloudy"]  # 1
         self.symbol_equal_cloudy = ["Fog", "Cloudy"]  # 2
-        self.symbol_equal_light_rain = [
+        self.symbol_equal_rain = [
             "Light rain",
             "Light rain showers",  # NEW
             "Light sleet",
@@ -43,8 +43,6 @@ class SimValuesHMI:
             "Light sleet showers and thunder",
             "Light rain and thunder",
             "Light sleet and thunder",
-        ]  # 3
-        self.symbol_equal_rain = [
             "Rain",
             "Rain showers",
             "Sleet",
@@ -53,8 +51,8 @@ class SimValuesHMI:
             "Sleet showers and thunder",
             "Rain and thunder",
             "Sleet and thunder",
-        ]  # 4
-        self.mye_regn = [
+        ]  # 3
+        self.symbol_equal_storm = [
             "Heavy rain showers",
             "Heavy rain",
             "Heavy sleet",
@@ -63,7 +61,7 @@ class SimValuesHMI:
             "Heavy sleet showers and thunder",
             "Heavy rain and thunder",
             "Heavy sleet and thunder",
-        ]  # 5
+        ]  # 4
         self.symbol_equal_snow = [
             "Light snow",
             "Snow",
@@ -77,16 +75,15 @@ class SimValuesHMI:
             "Light snow and thunder",
             "Snow and thunder",
             "Heavy snow and thunder",
-        ]  # 6
+        ]  # 5
 
         self.weather_symbol_list = [
-            self.symbol_equal_sun,
-            self.symbol_equal_partly_cloudy,
-            self.symbol_equal_cloudy,
-            self.symbol_equal_light_rain,
-            self.symbol_equal_rain,
-            self.mye_regn,
-            self.symbol_equal_snow,
+            self.symbol_equal_sun,  # 0
+            self.symbol_equal_partly_cloudy,  # 1
+            self.symbol_equal_cloudy,  # 2
+            self.symbol_equal_rain,  # 3
+            self.symbol_equal_storm,  # 4
+            self.symbol_equal_snow,  # 5
         ]
         self.flag = False
         self.update_weather_forcast = True

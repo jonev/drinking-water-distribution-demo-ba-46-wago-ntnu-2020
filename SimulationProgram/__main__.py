@@ -93,14 +93,10 @@ def dbCleanUp(datetimestamp):
 def requestForcastAndSendToHmi(datetimestamp):
     try:
         logging.info("requestForcastAndSendToHmi running at: " + str(datetimestamp))
-        # TODO add code
 
         forecastToSend = f.getForecast()
         mqtt.publishHmi(forecastToSend)
         # This is running each 10 seconds, for testing purposes (on whole seconds, 0, 10, 20, 30 and so on)
-        # get forcast
-        # Send to HMI
-        # mqtt.publishHmi({"testobject": 123})
         # Use vs code menu to run this -> "SimulationProgram"
     except:
         logging.exception("Exception in requestForcastAndSendToHmi")
