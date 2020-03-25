@@ -80,7 +80,7 @@ class YrForecast:
         ]
         self.flag = False
 
-    def importDataFromYrInJson(self, place_string):
+    def importForcastLongFromYrInJson(self, place_string):
         """Import 8 days forcast from Yr.no in json file.
 
         Parameters:
@@ -225,7 +225,7 @@ class YrForecast:
         Returns:
         MQTT_send (dict):
         """
-        imported_data = self.importDataFromYrInJson("Norge/Trøndelag/Trondheim/Trondheim/")
+        imported_data = self.importForcastLongFromYrInJson("Norge/Trøndelag/Trondheim/Trondheim/")
         formated_data = self.formatDataFromYrToJson(imported_data)
         send_data = self.mqttSend(formated_data)
         return send_data
