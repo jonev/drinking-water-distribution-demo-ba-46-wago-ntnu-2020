@@ -10,15 +10,17 @@ import os
 import logging
 import copy
 
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(
+    format="%(asctime)s %(levelname)-8s %(message)s",
+    level=logging.WARNING,
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 logging.info("Starting OPC-UA - MQTT link")
 load_dotenv()
 # Global variables
 tags = {}
 nodes = {}
 hashs = {}  # Storing a hash of the object to be able to compare two objects fast
-cmdPublishIntervall = 6
-cmdPublishCounter = 0
 hashsLock = Lock()  # hashs are used in multiple threads
 publishLoopWaitTime = int(os.getenv("WAIT_TIME"))  # For testing
 ## Opc UA
@@ -58,9 +60,6 @@ def on_received_mqtt_message(client, userdata, msg):
         tagname = receivedObject["_tagId"]
         if receivedObject["_type"] == "":
             logging.warning("HMI is missing data and requesting: " + tagname)
-            topLevelObject = clientPlc.get_node(
-                "ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix + "." + tagname
-            )
             pObject = tags[tagname]
             getValuesFromNodes(pObject, nodes[tagname])
             del pObject["_timestamp"]
@@ -79,34 +78,9 @@ def on_received_mqtt_message(client, userdata, msg):
         with hashsLock:  # Sending data only on change, therefor no need to check for change
             hashs[receivedObject["_tagId"]] = newHash
         # Write to opc ua by setting the children recursive
-        topLevelObject = clientPlc.get_node(
-            "ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix + "." + receivedObject["_tagId"]
-        )
-        setChildrenRecursive(receivedObject, topLevelObject.get_children())
+        setValuesToNodes(receivedObject, nodes[tagname])
     except Exception:
         logging.exception("Exception in on_message.")
-
-
-def setChildrenRecursive(
-    pObject, OpcNodes
-):  # TODO this should be re-written in the same manner at getting values
-    for node in OpcNodes:
-        children = node.get_children()
-        tagname = getTagname(node)
-        if len(children) == 0:
-            value = pObject[tagname]
-            if type(value) is str:
-                node.set_value(value)
-            elif type(value) is bool:
-                node.set_value(value)
-            elif type(value) is float:
-                node.set_value(value, varianttype=ua.VariantType.Float)
-            elif type(value) is int:
-                node.set_value(value, varianttype=ua.VariantType.Int16)
-            else:
-                raise Exception("Type not found")
-        else:
-            setChildrenRecursive(pObject[tagname], children)
 
 
 # OPC UA
@@ -146,6 +120,27 @@ def getValuesFromNodes(pObject, nodeStore):
             pObject[tagname] = nodeStore[tagname].get_value()
 
 
+def setValuesToNodes(pObject, nodeStore):
+    for tagname, pObje in pObject.items():
+        if tagname.startswith("_"):
+            continue
+        if type(pObje) is dict:
+            setValuesToNodes(pObje, nodeStore[tagname])
+        else:
+            value = pObje
+            node = nodeStore[tagname]
+            if type(value) is str:
+                node.set_value(value)
+            elif type(value) is bool:
+                node.set_value(value)
+            elif type(value) is float:
+                node.set_value(value, varianttype=ua.VariantType.Float)
+            elif type(value) is int:
+                node.set_value(value, varianttype=ua.VariantType.Int16)
+            else:
+                raise Exception("Type not found")
+
+
 def getTagname(node):
     path = node.nodeid.Identifier
     position = path.rfind(".")
@@ -164,13 +159,6 @@ try:
             logging.info("OPC Connected")
             nodesUnderPrefix = clientPlc.get_node("ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix)
 
-            logging.info("Connecting to MQTT broker.")
-            mqttClient.connect(mqttBroker, mqttPort, 60)
-            mqttThread = Thread(target=mqttClient.loop_forever, args=())
-            mqttThread.start()
-            logging.info("Waiting for MQTT to connect...")
-            time.sleep(2)  # MQTT need time to connect
-
             # Building tag and opc node trees, for better performance on publishing data
             topLevelOpcNodes = nodesUnderPrefix.get_children()
             if len(topLevelOpcNodes) == 0:
@@ -182,22 +170,25 @@ try:
                 nodes[tagname] = {}
                 buildNodeTree(tags[tagname], nodes[tagname], topLevelOpcNode.get_children())
 
+            logging.info("Connecting to MQTT broker.")
+            mqttClient.connect(mqttBroker, mqttPort, 60)
+            mqttThread = Thread(target=mqttClient.loop_forever, args=())
+            mqttThread.start()
+            logging.info("Waiting 2s for MQTT to connect...")
+            time.sleep(2)  # MQTT need time to connect
+
             # Read data from OPC UA and Publish data to MQTT loop
             while True:
-                if cmdPublishCounter > cmdPublishIntervall:
-                    cmdPublishCounter = 0
-                cmdPublishCounter = cmdPublishCounter + 1
-
                 publishLoopStarttime = time.time()
                 # OPC UA Nodes are at start -> need for restart if there are new nodes
                 for tagname, pObject in tags.items():
-                    getValuesFromNodes(pObject, nodes[tagname])
                     # Building python object, then converting to json before sending
+                    getValuesFromNodes(pObject, nodes[tagname])
                     # Publishing
                     if mqttPublishPvSuffix in tagname:
                         pObject["_timestamp"] = str(datetime.datetime.now())
                         mqttClient.publish(mqttTopicPublishData, payload=json.dumps(pObject))
-                    elif cmdPublishCounter == 1:
+                    else:
                         del pObject["_timestamp"]
                         newHash = hashlib.md5(pObject.__str__().encode("utf-8")).hexdigest()
                         pObject["_timestamp"] = str(datetime.datetime.now())

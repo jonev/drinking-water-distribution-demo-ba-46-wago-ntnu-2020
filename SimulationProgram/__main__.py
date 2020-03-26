@@ -28,13 +28,13 @@ def mainloop(datetimestamp):
     try:
         datetimestamp = datetime.datetime.now()
 
-        """
-        # Read data from mqtt
+        # Simulation Water and rain
+        ## Read data from mqtt
         ValveEmission1Position_Pv = mqtt.getData("ValveEmission1Position_Pv")
         logging.info("ValveEmission1Position %: " + str(ValveEmission1Position_Pv))
         emission_m3_per_s = w.emissionValve_percent_ToFlow_m3_per_s(ValveEmission1Position_Pv)
 
-        # Calculating new current volume
+        ## Calculating new current volume
         rain.calculateRain()
         rain_m = rain.getRain_m()
         rainforcast = rain.getForcast()
@@ -42,7 +42,7 @@ def mainloop(datetimestamp):
         w.addInflowFromRivers()
         w.setWantedEmission_m3_per_s(emission_m3_per_s)
 
-        # Collecting data and writing to mqtt
+        ## Collecting data and writing to mqtt
         waterLevel_m = w.getWaterLevel_m()
         waterLevel_percent = w.getWaterLevel_percent()
         mqtt.publishPlc3(
@@ -52,10 +52,18 @@ def mainloop(datetimestamp):
                 "RainForcast": rainforcast.__str__(),  # This is a fix to be able to parse the data in the PLC
             }
         )
-        logging.info("Waterlevel m: " + str(waterLevel_m))
-        logging.info("Emission m3/s: " + str(emission_m3_per_s))
-        logging.info("Forcast: " + str(rainforcast) + " Rain: " + str(rain_m))
-        """
+        logging.info(
+            "Waterlevel m: "
+            + str(waterLevel_m)
+            + ", Emission m3/s: "
+            + str(emission_m3_per_s)
+            + ", Forcast: "
+            + str(rainforcast)
+            + ", Rain: "
+            + str(rain_m)
+        )
+
+        # Simulation for leakdetection
         waterDistributionPipes.calculateFlowInPipesNow()
         flowValues, timestamps = waterDistributionPipes.getFlowInPipesSinceLastSample(datetimestamp)
         for i in range(flowValues.__len__()):
@@ -64,24 +72,30 @@ def mainloop(datetimestamp):
             )
         logging.info("Loop used: " + str(datetime.datetime.now() - datetimestamp))
     except:
-        logging.exception("Excepiton in mainLoop")
+        logging.exception("Exception in mainLoop")
 
 
 def dbCleanUp(datetimestamp):
     try:
         rows = db.deleteDataOlderThan(
             "SignalAnalogHmiPv",
-            (datetime.datetime.now() - datetime.timedelta(seconds=oneDayIsSimulatedTo_s * 10)),
+            (
+                datetime.datetime.now() - datetime.timedelta(seconds=oneDayIsSimulatedTo_s * 10)
+            ),  # 10 Days
         )
         logging.info("SignalAnalogHmiPv Rows deleted: " + str(rows))
         rows = db.deleteDataOlderThan(
             "LeakDetectionHourlyAverage",
-            (datetime.datetime.now() - datetime.timedelta(seconds=oneDayIsSimulatedTo_s * 20)),
+            (
+                datetime.datetime.now() - datetime.timedelta(seconds=oneDayIsSimulatedTo_s * 20)
+            ),  # 20 Days
         )
         logging.info("LeakDetectionHourlyAverage Rows deleted: " + str(rows))
         rows = db.deleteDataOlderThan(
             "LeakDetection120SamplesHourlyAverage",
-            (datetime.datetime.now() - datetime.timedelta(seconds=oneDayIsSimulatedTo_s * 30)),
+            (
+                datetime.datetime.now() - datetime.timedelta(seconds=oneDayIsSimulatedTo_s * 30)
+            ),  # 30 Days
         )
         logging.info("LeakDetection120SamplesHourlyAverage Rows deleted: " + str(rows))
     except:
@@ -94,8 +108,9 @@ def requestForcastAndSendToHmi(datetimestamp):
         # This is running each 10 seconds, for testing purposes (on whole seconds, 0, 10, 20, 30 and so on)
         # get forcast
         # Send to HMI
-        mqtt.publishHmi({"testobject": 123})
+        # mqtt.publishHmi({"testobject": 123})
         # Use vs code menu to run this -> "SimulationProgram"
+        pass
     except:
         logging.exception("Exception in requestForcastAndSendToHmi")
 
@@ -106,24 +121,24 @@ if __name__ == "__main__":
             # Init MQTT
             mqtt = MQTTClient(mqttBroker, mqttPort, mqttTopicSubscribeData)
             mqtt.start()
-            logging.info("Waiting 5seconds for MQTT to connect")
+            logging.info("Waiting 5 seconds for MQTT to connect")
             time.sleep(5)
             # Init objects
-            # w = Water(sampleTime_s, oneDayIsSimulatedTo_s, 1000.0, 1000.0, 100.0)
-            # rain = RainForcast(sampleTime_s, oneDayIsSimulatedTo_s, [1, 1, 8, 8, 1])
-            # db = DbClient()
-            # waterDistributionPipes = WaterDistributionPipes(
-            #     sampleTime_s, oneDayIsSimulatedTo_s, simulatedSamplesPerDay
-            # )
+            w = Water(sampleTime_s, oneDayIsSimulatedTo_s, 1000.0, 1000.0, 100.0)
+            rain = RainForcast(sampleTime_s, oneDayIsSimulatedTo_s, [1, 1, 8, 8, 1])
+            db = DbClient()
+            waterDistributionPipes = WaterDistributionPipes(
+                sampleTime_s, oneDayIsSimulatedTo_s, simulatedSamplesPerDay
+            )
             # Init and start Scheduled task "mainloop"
-            # s1 = SimpleTaskScheduler(mainloop, sampleTime_s, 0, 0.1)
-            # s1.start()
-            # s2 = SimpleTaskScheduler(dbCleanUp, oneDayIsSimulatedTo_s * 3, 1, 0.1)
-            # s2.start()
-            # s1.join()
-            # s2.join()
+            s1 = SimpleTaskScheduler(mainloop, sampleTime_s, 0, 0.1)
+            s1.start()
+            s2 = SimpleTaskScheduler(dbCleanUp, oneDayIsSimulatedTo_s * 3, 1, 0.1)
+            s2.start()
             s3 = SimpleTaskScheduler(requestForcastAndSendToHmi, 10.0, 0.0, 0.1)
             s3.start()
+            s1.join()
+            s2.join()
             s3.join()
         except:
             logging.exception("Simulation program exception, restarting in 10 seconds")

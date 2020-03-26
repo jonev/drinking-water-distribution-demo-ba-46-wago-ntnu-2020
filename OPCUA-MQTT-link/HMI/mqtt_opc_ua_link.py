@@ -9,15 +9,20 @@ import hashlib
 import os
 import logging
 
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(
+    format="%(asctime)s %(levelname)-8s %(message)s",
+    level=logging.WARNING,
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
 load_dotenv()
 
 # Global variables
-variables = {}
+tags = {}
+nodes = {}
 hashs = {}  # Storing a hash of the object to be able to compare two objects fast
 hashsLock = Lock()  # hashs are used in multiple threads
-sampleTime = int(os.getenv("SAMPLE_TIME"))  # For testing
+publisLoopWaitTime = int(os.getenv("WAIT_TIME"))  # For testing
 ## Opc UA
 opcUaServer = os.getenv("OPC_UA_SERVER")  # Host of docker
 opcUaServerUsername = os.getenv("OPC_UA_SERVER_USERNAME")
@@ -61,6 +66,7 @@ def on_received_mqtt_message(client, userdata, msg):
     global hashsLock
     try:
         receivedObject = json.loads(str(msg.payload, encoding="utf-8"))
+        tagname = receivedObject["_tagId"]
         # Generate new hash
         # Timestamp will always change and are therefore excluded
         del receivedObject["_timestamp"]
@@ -69,32 +75,9 @@ def on_received_mqtt_message(client, userdata, msg):
         with hashsLock:  # Sending data only on change, therefore no need to check for change
             hashs[receivedObject["_tagId"]] = newHash
         # Write to opc ua by setting the children recursive
-        topLevelObject = clientPlc.get_node(
-            "ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix + "." + receivedObject["_tagId"]
-        )
-        setChildrenRecursive(receivedObject, topLevelObject.get_children())
+        setValuesToNodes(receivedObject, nodes[tagname])
     except Exception:
         logging.exception("Exception in on_message.")
-
-
-def setChildrenRecursive(pObject, OpcNodes):
-    for node in OpcNodes:
-        children = node.get_children()
-        tagname = getTagname(node)
-        if len(children) == 0:
-            value = pObject[tagname]
-            if type(value) is str:
-                node.set_value(value)
-            elif type(value) is bool:
-                node.set_value(value)
-            elif type(value) is float:
-                node.set_value(value, varianttype=ua.VariantType.Float)
-            elif type(value) is int:
-                node.set_value(value, varianttype=ua.VariantType.Int16)
-            else:
-                raise Exception("Type not found")
-        else:
-            setChildrenRecursive(pObject[tagname], children)
 
 
 # OPC UA
@@ -108,15 +91,51 @@ mqttClient.on_connect = on_mqtt_connect
 mqttClient.on_message = on_received_mqtt_message
 
 
-def getChildrenRecursive(pObject, OpcNodes):
+def buildNodeTree(pObject, nodeStore, OpcNodes):
     for node in OpcNodes:
         children = node.get_children()
         tagname = getTagname(node)
         if len(children) == 0:
-            pObject[tagname] = node.get_value()
+            if tagname.startswith("_"):
+                pObject[tagname] = node.get_value()
+            else:
+                nodeStore[tagname] = node
+                pObject[tagname] = node.get_value()
         else:
+            nodeStore[tagname] = {}
             pObject[tagname] = {}
-            getChildrenRecursive(pObject[tagname], children)
+            buildNodeTree(pObject[tagname], nodeStore[tagname], children)
+
+
+def getValuesFromNodes(pObject, nodeStore):
+    for tagname, pObje in pObject.items():
+        if tagname.startswith("_"):
+            continue
+        if type(pObje) is dict:
+            getValuesFromNodes(pObje, nodeStore[tagname])
+        else:
+            pObject[tagname] = nodeStore[tagname].get_value()
+
+
+def setValuesToNodes(pObject, nodeStore):
+    for tagname, pObje in pObject.items():
+        if tagname.startswith("_"):
+            continue
+        if type(pObje) is dict:
+            setValuesToNodes(pObje, nodeStore[tagname])
+        else:
+            value = pObje
+            node = nodeStore[tagname]
+            if type(value) is str:
+                node.set_value(value)
+            elif type(value) is bool:
+                node.set_value(value)
+            elif type(value) is float:
+                node.set_value(value, varianttype=ua.VariantType.Float)
+            elif type(value) is int:
+                node.set_value(value, varianttype=ua.VariantType.Int16)
+            else:
+                raise Exception("Type not found")
 
 
 def getTagname(node):
@@ -154,28 +173,37 @@ try:
             logging.info("OPC Connected")
             nodesUnderPrefix = clientPlc.get_node("ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix)
 
+            # Building tag and opc node trees, for better performance on publishing data
+            topLevelOpcNodes = nodesUnderPrefix.get_children()
+            if len(topLevelOpcNodes) == 0:
+                raise Exception("No tags where found")
+            for topLevelOpcNode in topLevelOpcNodes:
+                tagname = getTagname(topLevelOpcNode)
+                tags[tagname] = {}
+                tags[tagname]["_timestamp"] = {}
+                nodes[tagname] = {}
+                buildNodeTree(tags[tagname], nodes[tagname], topLevelOpcNode.get_children())
+
             logging.info("Connecting to MQTT broker.")
             mqttClient.connect(mqttBroker, mqttPort, 60)
             mqttThread = Thread(target=mqttClient.loop_forever, args=())
             mqttThread.start()
-            logging.info("Waiting for MQTT to connect...")
+            logging.info("Waiting 2s for MQTT to connect...")
             time.sleep(2)  # MQTT need time to connect
 
             # Read data from OPC UA and Publish data to MQTT loop
             while True:
                 # OPC UA Nodes are initialized each loop -> no need for restart if there are new nodes
-                topLevelOpcNodes = nodesUnderPrefix.get_children()
-                if len(topLevelOpcNodes) == 0:
-                    raise Exception("No tags where found")
-                for topLevelOpcNode in topLevelOpcNodes:
-                    tagname = getTagname(topLevelOpcNode)
+                publishLoopStarttime = time.time()
+
+                for tagname, pObject in tags.items():
                     # Building python object, then converting to json before sending
-                    pObject = {}
-                    getChildrenRecursive(pObject, topLevelOpcNode.get_children())
+                    getValuesFromNodes(pObject, nodes[tagname])
                     # Publishing, HMI does not publish process values
                     if mqttPublishPvSuffix in tagname:
                         continue
                     else:
+                        del pObject["_timestamp"]
                         newHash = hashlib.md5(pObject.__str__().encode("utf-8")).hexdigest()
                         pObject["_timestamp"] = str(datetime.datetime.now())
                         with hashsLock:  # Threadsafe
@@ -192,7 +220,10 @@ try:
                                 logging.warning("HMI is requesting: " + tagname)
                                 hashs[tagname] = newHash
                                 publish(pObject)
-                time.sleep(sampleTime)
+                logging.warning(
+                    "Publish loop used [s]: " + str((time.time() - publishLoopStarttime))
+                )
+                time.sleep(publisLoopWaitTime)
         except Exception:
             logging.exception("Exception in connection loop.")
         time.sleep(10)

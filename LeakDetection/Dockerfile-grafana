@@ -3,4 +3,5 @@ USER root
 RUN  apt-get update \
     && apt-get -y install git \
     && cd /var/lib/grafana/plugins/ \
-    && git clone https://github.com/AutohomeCorp/grafana-compare-queries.git
+    && git clone https://github.com/AutohomeCorp/grafana-compare-queries.git \
+    && grafana-cli plugins install marcuscalidus-svg-panel
