@@ -63,12 +63,35 @@ def mainloop(datetimestamp):
             + str(rain_m)
         )
 
-        # Simulation for leakdetection
+        # Simulation for leakdetection - the order is important
         waterDistributionPipes.calculateFlowInPipesNow()
+        nowValueFlows = waterDistributionPipes.getFlowInPipes()
+        mqtt.publishPlc1(
+            {
+                "WaterFlowFT01_Pv": nowValueFlows[0],
+                "WaterFlowFT02_Pv": nowValueFlows[1],
+                "WaterFlowFT03_Pv": nowValueFlows[2],
+                "WaterFlowFT04_Pv": nowValueFlows[3],
+                "WaterFlowFT05_Pv": nowValueFlows[4],
+                "WaterFlowFT06_Pv": nowValueFlows[5],
+                "WaterFlowFT07_Pv": nowValueFlows[6],
+            }
+        )
+
         flowValues, timestamps = waterDistributionPipes.getFlowInPipesSinceLastSample(datetimestamp)
         for i in range(flowValues.__len__()):
             db.insertFlowValuesBatch8DifferentTags(
-                ["t0", "t1", "t2", "t3", "t4", "t5", "t6"], flowValues[i], timestamps[i]
+                [
+                    "WaterFlowFT01_Pv",
+                    "WaterFlowFT02_Pv",
+                    "WaterFlowFT03_Pv",
+                    "WaterFlowFT04_Pv",
+                    "WaterFlowFT05_Pv",
+                    "WaterFlowFT06_Pv",
+                    "WaterFlowFT07_Pv",
+                ],
+                flowValues[i],
+                timestamps[i],
             )
         logging.info("Loop used: " + str(datetime.datetime.now() - datetimestamp))
     except:

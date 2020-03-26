@@ -1,10 +1,10 @@
 from utils.scheduler import SimpleTaskScheduler
 from LeakDetection.dbLeakDetectionClient import DbLeakDetectionClient
 from LeakDetection.divcalculations import DivCalculations
+from LeakDetection.datastore import FtData
 import datetime  # Best compatible with mysql
 import logging
 import time
-import queue
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)-8s %(message)s",
@@ -30,8 +30,51 @@ def updatePoints(diff, limit, points, queue):
     return points
 
 
+def handleFt(dbClient, start, end, ftData):
+    # start
+    # t0
+    values = dbClient.getValuesBetweenTimestamps("SignalAnalogHmiPv", start, end, ftData._tagId,)
+    avgHour = DivCalculations.avgValue(values, 4)
+    if avgHour != 0.00:
+        dbClient.pushValueOnTimestamp("LeakDetectionHourlyAverage", start, ftData._tagId, avgHour)
+
+    values120SamplesHourlyAverages = dbClient.getAverageHourValues(
+        "LeakDetectionHourlyAverage",
+        ftData._tagId,
+        (start.second - 0.1) % 60,
+        (end.second + 0.1) % 60,
+        5,
+    )
+    avg120samples = DivCalculations.avgValue(values120SamplesHourlyAverages, 4)
+    if avg120samples != 0.00:
+        dbClient.pushValueOnTimestamp(
+            "LeakDetection120SamplesHourlyAverage", start, ftData._tagId, avg120samples
+        )
+
+    # Calculating points over limit
+    if avg120samples != 0.00:
+        diffNowInPercent = avgHour / avg120samples
+        ftData.pointsOver10 = updatePoints(
+            diffNowInPercent, 1.10, ftData.pointsOver10, ftData.queuePointsOver10
+        )
+        ftData.pointsOver20 = updatePoints(
+            diffNowInPercent, 1.20, ftData.pointsOver20, ftData.queuePointsOver20
+        )
+        ftData.pointsOver30 = updatePoints(
+            diffNowInPercent, 1.30, ftData.pointsOver30, ftData.queuePointsOver30
+        )
+        dbClient.pushPointsOnTimestamp(
+            "LeakDetectionAlarmPoints",
+            start,
+            ftData._tagId,
+            ftData.pointsOver10,
+            ftData.pointsOver20,
+            ftData.pointsOver30,
+        )
+
+
 def calculateHourlyAverageValues(datetimestamp):
-    global pointsOver10, pointsOver20, pointsOver30, queuePointsOver10, queuePointsOver20, queuePointsOver30
+    global FT01, FT02, FT03, FT04, FT05, FT06, FT07
     try:
         # print("Timestamp run: " + str(datetimestamp))
         timetaking = datetime.datetime.now()
@@ -39,35 +82,15 @@ def calculateHourlyAverageValues(datetimestamp):
         # print("Timestamp this run: " + str(datetimestamp))
         start = datetimestamp - datetime.timedelta(seconds=oneHour_s)
         end = datetimestamp
-        values = dbClient.getValuesBetweenTimestamps("SignalAnalogHmiPv", start, end, "t0",)
-        # Skipping values of 0.00
-        avgHour = DivCalculations.avgValue(values, 4)
-        if avgHour != 0.00:
-            dbClient.pushValueOnTimestamp("LeakDetectionHourlyAverage", start, "t0", avgHour)
 
-        values120SamplesHourlyAverages = dbClient.getAverageHourValues(
-            "LeakDetectionHourlyAverage",
-            "t0",
-            (start.second - 0.1) % 60,
-            (end.second + 0.1) % 60,
-            5,
-        )
-        avg120samples = DivCalculations.avgValue(values120SamplesHourlyAverages, 4)
-        if avg120samples != 0.00:
-            dbClient.pushValueOnTimestamp(
-                "LeakDetection120SamplesHourlyAverage", start, "t0", avg120samples
-            )
-
-        # Calculating points over limit
-        if avg120samples != 0.00:
-            diffNowInPercent = avgHour / avg120samples
-            pointsOver10 = updatePoints(diffNowInPercent, 1.10, pointsOver10, queuePointsOver10)
-            pointsOver20 = updatePoints(diffNowInPercent, 1.20, pointsOver20, queuePointsOver20)
-            pointsOver30 = updatePoints(diffNowInPercent, 1.30, pointsOver30, queuePointsOver30)
-            dbClient.pushPointsOnTimestamp(
-                "LeakDetectionAlarmPoints", start, "t0", pointsOver10, pointsOver20, pointsOver30
-            )
-
+        # FT Values
+        handleFt(dbClient, start, end, FT01)
+        handleFt(dbClient, start, end, FT02)
+        handleFt(dbClient, start, end, FT03)
+        handleFt(dbClient, start, end, FT04)
+        handleFt(dbClient, start, end, FT05)
+        handleFt(dbClient, start, end, FT06)
+        handleFt(dbClient, start, end, FT07)
         logging.info(
             "Ran at: "
             + str(datetimestamp)
@@ -104,19 +127,16 @@ if __name__ == "__main__":
                 "LeakDetectionAlarmPoints",
                 "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), timestamp DATETIME(6), pointsOver10 INT, pointsOver20 INT, pointsOver30 INT)",
             )
-            # Queues
-            queuePointsOver10 = queue.Queue()
-            queuePointsOver20 = queue.Queue()
-            queuePointsOver30 = queue.Queue()
-            for i in range(24):
-                queuePointsOver10.put(0)
-                queuePointsOver20.put(0)
-                queuePointsOver30.put(0)
-            pointsOver10 = 0
-            pointsOver20 = 0
-            pointsOver30 = 0
+            # FT data
+            FT01 = FtData("WaterFlowFT01_Pv")
+            FT02 = FtData("WaterFlowFT02_Pv")
+            FT03 = FtData("WaterFlowFT03_Pv")
+            FT04 = FtData("WaterFlowFT04_Pv")
+            FT05 = FtData("WaterFlowFT05_Pv")
+            FT06 = FtData("WaterFlowFT06_Pv")
+            FT07 = FtData("WaterFlowFT07_Pv")
 
-            # Init and start Scheduled task "mainloop"
+            # Init and start Scheduled task "calculateHourlyAverageValues"
             s = SimpleTaskScheduler(calculateHourlyAverageValues, oneHour_s, 0, 0.1)
             s.start()
             s.join()

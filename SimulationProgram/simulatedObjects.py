@@ -184,10 +184,10 @@ class WaterDistributionPipes:
             self.__leakIntervalCounter = 0
             if self.__leakInPipe[0] == 0:
                 self.__leakInPipe[0] = 100
-                logging.info("Leak activated")
+                logging.info("Leak in pipe 1 activated")
             else:
                 self.__leakInPipe[0] = 0
-                logging.info("Leak de-activated")
+                logging.info("Leak in pipe 1 de-activated")
 
         self.__flowInPipe = self.__calulateFlowInPipes(
             self.__zonesResidents,
