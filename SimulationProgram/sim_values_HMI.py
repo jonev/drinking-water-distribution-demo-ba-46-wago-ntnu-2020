@@ -13,10 +13,10 @@ https://github.com/wckd/python-yr
 """
 
 # http://www.hivemq.com/demos/websocket-client/
-mqtt = MQTTClient("broker.hivemq.com", 1883, 60, ["wago/ba/sim/#"])
-mqttThread = Thread(target=mqtt.loopForever, args=())
-mqttThread.start()
-time.sleep(2)
+# mqtt = MQTTClient("broker.hivemq.com", 1883, 60, ["wago/ba/sim/#"])
+# mqttThread = Thread(target=mqtt.loopForever, args=())
+# mqttThread.start()
+# time.sleep(2)
 
 
 class SimValuesHMI:
@@ -34,7 +34,7 @@ class SimValuesHMI:
         self.symbol_equal_sun = ["Clear sky", "Fair"]  # 0
         self.symbol_equal_partly_cloudy = ["Partly cloudy"]  # 1
         self.symbol_equal_cloudy = ["Fog", "Cloudy"]  # 2
-        self.symbol_equal_rain = [
+        self.symbol_equal_light_rain = [
             "Light rain",
             "Light rain showers",  # NEW
             "Light sleet",
@@ -43,6 +43,8 @@ class SimValuesHMI:
             "Light sleet showers and thunder",
             "Light rain and thunder",
             "Light sleet and thunder",
+        ]  # 3
+        self.symbol_equal_rain = [
             "Rain",
             "Rain showers",
             "Sleet",
@@ -51,8 +53,8 @@ class SimValuesHMI:
             "Sleet showers and thunder",
             "Rain and thunder",
             "Sleet and thunder",
-        ]  # 3
-        self.symbol_equal_storm = [
+        ]  # 4
+        self.mye_regn = [
             "Heavy rain showers",
             "Heavy rain",
             "Heavy sleet",
@@ -61,7 +63,7 @@ class SimValuesHMI:
             "Heavy sleet showers and thunder",
             "Heavy rain and thunder",
             "Heavy sleet and thunder",
-        ]  # 4
+        ]  # 5
         self.symbol_equal_snow = [
             "Light snow",
             "Snow",
@@ -75,15 +77,16 @@ class SimValuesHMI:
             "Light snow and thunder",
             "Snow and thunder",
             "Heavy snow and thunder",
-        ]  # 5
+        ]  # 6
 
         self.weather_symbol_list = [
-            self.symbol_equal_sun,  # 0
-            self.symbol_equal_partly_cloudy,  # 1
-            self.symbol_equal_cloudy,  # 2
-            self.symbol_equal_rain,  # 3
-            self.symbol_equal_storm,  # 4
-            self.symbol_equal_snow,  # 5
+            self.symbol_equal_sun,
+            self.symbol_equal_partly_cloudy,
+            self.symbol_equal_cloudy,
+            self.symbol_equal_light_rain,
+            self.symbol_equal_rain,
+            self.mye_regn,
+            self.symbol_equal_snow,
         ]
         self.flag = False
         self.update_weather_forcast = True
