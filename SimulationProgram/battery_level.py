@@ -187,15 +187,15 @@ class BatteryLevel:
 
     def mqttSend(self, solar_panel_output, battery_output, battery_level):
         MQTT_send = {
-            "CurrentIn01_Pv": solar_panel_output[0],
-            "CurentOut01_Pv": battery_output[0],
-            "BatteryLevel01_Pv": battery_level[0],
-            "CurrentIn02_Pv": solar_panel_output[1],
-            "CurentOut02_Pv": battery_output[1],
-            "BatteryLevel02_Pv": battery_level[1],
-            "CurrentIn03_Pv": solar_panel_output[2],
-            "CurentOut03_Pv": battery_output[2],
-            "BatteryLevel03_Pv": battery_level[2],
+            "CI01": round(solar_panel_output[0], 2),
+            "CO01": round(battery_output[0], 2),
+            "BL01": round(battery_level[0], 2),
+            "CI02": round(solar_panel_output[1], 2),
+            "CO02": round(battery_output[1], 2),
+            "BL02": round(battery_level[1], 2),
+            "CI03": round(solar_panel_output[2], 2),
+            "CO03": round(battery_output[2], 2),
+            "BL03": round(battery_level[2], 2),
         }
         return MQTT_send
 
@@ -209,20 +209,13 @@ class BatteryLevel:
             "Norge/Trøndelag/Trondheim/Trondheim/"
         )
         weather_symbol = imported_weather["symbol"]["@name"]
-        print(weather_symbol)
+        # print(weather_symbol)
         weather_number = self.symbolStringToInt(weather_symbol)
-        print(weather_number)
+        # print(weather_number)
         solar_panel_output = self.solarPanelOutput(weather_number)
-        print("Solar" + str(solar_panel_output))
+        # print("Solar" + str(solar_panel_output))
         battery_output = self.batteryOutput()
-        print("Battery" + str(battery_output))
+        # print("Battery" + str(battery_output))
         battery_level = self.calculateBatteryLevel(solar_panel_output, battery_output)
-        print("LEvel" + str(battery_level))
-        return battery_level
-
-
-bl = BatteryLevel()
-
-while True:
-    bl.getBatteryLevelValues()
-    time.sleep(0.1)
+        # print("LEvel" + str(battery_level))
+        return self.mqttSend(solar_panel_output, battery_output, battery_level)

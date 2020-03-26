@@ -104,7 +104,10 @@ def calculateHourlyAverageValues(datetimestamp):
 if __name__ == "__main__":
     while True:
         try:
-            logging.info("Starting in __main__")
+            logging.info("Starting Leakdetection in __main__")
+            logging.info("Waiting for db to start - 30 seconds")
+            time.sleep(30)
+
             # Init db
             dbClient = DbLeakDetectionClient()
             dbClient.connectHost("db", "root", "example")

@@ -6,7 +6,7 @@ import time
 import datetime
 
 
-class YrForecast:
+class YrForecastToHmi:
     """
     Using json file from yr.no to find forecast for 8 days.
 

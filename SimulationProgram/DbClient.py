@@ -15,14 +15,18 @@ class DbClient:
             + " (_tagId, metric, timestamp, Output_Pv) VALUES (%s, %s, %s, %s)"
         )
         # Connection to database server
+        logging.info("Connecting to db host")
         self.__db = mysql.connector.connect(host="db", user="root", passwd="example",)
         self.__cursor = self.__db.cursor()
 
-        try:  # Add database if not exist
-            self.__cursor.execute("CREATE DATABASE " + self.__dbName)
-        except Exception:
-            logging.info("Could not create database, it exist")
+        logging.info("Adding db " + self.__dbName + " if it does not exist")
+        # TODO this make the whole program hang
+        # try:  # Add database if not exist
+        #    self.__cursor.execute("CREATE DATABASE IF NOT EXISTS " + self.__dbName)
+        # except Exception:
+        #    logging.exception("Could not create database")
 
+        logging.info("Creating tables if not exist")
         try:  # Create tables if not exist
             self.__cursor.execute(
                 "SELECT * FROM information_schema.tables WHERE table_name='"
@@ -31,6 +35,7 @@ class DbClient:
             )
             tables = self.__cursor.fetchall()
             if len(tables) == 0:
+                logging.info("Creating table " + self.__flowValueTableName)
                 self.__cursor.execute(
                     "CREATE TABLE "
                     + self.__dbName
@@ -39,11 +44,16 @@ class DbClient:
                     + " "
                     + self.__flowValueTableFormat
                 )
+            else:
+                logging.info("Table " + self.__flowValueTableName + " already exist")
+
             # Connect to database
+            logging.info("Connecting to db " + self.__dbName)
             self.__db = mysql.connector.connect(
                 host="db", user="root", passwd="example", database=self.__dbName
             )
             self.__cursor = self.__db.cursor()
+            logging.info("DbClient ready")
         except Exception:
             logging.exception("Could not create tables")
 

@@ -1,9 +1,8 @@
 FROM jonev/python-opcua-mqtt-template
 RUN pip --disable-pip-version-check --no-cache-dir install python-dotenv
 
-COPY mqtt_opc_ua_link.py .
-COPY .env .
+COPY ./OPCUA_MQTT_link ./OPCUA_MQTT_link
 
-CMD ["python", "mqtt_opc_ua_link.py"]
+CMD ["python", "-m" "OPCUA_MQTT_link.HMI"]
 
 

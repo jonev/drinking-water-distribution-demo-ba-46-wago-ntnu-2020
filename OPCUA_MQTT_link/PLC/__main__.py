@@ -2,6 +2,7 @@ from opcua import Client, ua, Node
 import paho.mqtt.client as mqtt
 from threading import Thread, Lock
 from dotenv import load_dotenv
+from OPCUA_MQTT_link.utils import getTagname, buildNodeTree, getValuesFromNodes, setValuesToNodes
 import time
 import datetime
 import json
@@ -15,7 +16,7 @@ logging.basicConfig(
     level=logging.WARNING,
     datefmt="%Y-%m-%d %H:%M:%S",
 )
-logging.info("Starting OPC-UA - MQTT link")
+logging.info("PLC: Starting OPC-UA - MQTT link")
 load_dotenv()
 # Global variables
 tags = {}
@@ -48,7 +49,7 @@ logging.info(
 
 
 def on_mqtt_connect(client, userdata, flags, rc):
-    logging.info("MQTT Connected with result code " + str(rc))
+    logging.info("PLC: MQTT Connected with result code " + str(rc))
     client.subscribe(mqttTopicSubscribeData)
 
 
@@ -59,7 +60,7 @@ def on_received_mqtt_message(client, userdata, msg):
         # If plc receive empty objects, it send an object with values in return, immediately
         tagname = receivedObject["_tagId"]
         if receivedObject["_type"] == "":
-            logging.warning("HMI is missing data and requesting: " + tagname)
+            logging.warning("PLC: HMI is missing data and requesting: " + tagname)
             pObject = tags[tagname]
             getValuesFromNodes(pObject, nodes[tagname])
             del pObject["_timestamp"]
@@ -71,7 +72,7 @@ def on_received_mqtt_message(client, userdata, msg):
             return
 
         # Generate new hash
-        logging.warning("HMI is sending CMD: " + tagname)
+        logging.warning("PLC: HMI is sending CMD: " + tagname)
         del receivedObject["_timestamp"]
         newHash = hashlib.md5(receivedObject.__str__().encode("utf-8")).hexdigest()
         # Store hash
@@ -80,7 +81,7 @@ def on_received_mqtt_message(client, userdata, msg):
         # Write to opc ua by setting the children recursive
         setValuesToNodes(receivedObject, nodes[tagname])
     except Exception:
-        logging.exception("Exception in on_message.")
+        logging.exception("PLC: Exception in on_message.")
 
 
 # OPC UA
@@ -93,76 +94,22 @@ mqttClient = mqtt.Client()
 mqttClient.on_connect = on_mqtt_connect
 mqttClient.on_message = on_received_mqtt_message
 
-
-def buildNodeTree(pObject, nodeStore, OpcNodes):
-    for node in OpcNodes:
-        children = node.get_children()
-        tagname = getTagname(node)
-        if len(children) == 0:
-            if tagname.startswith("_"):
-                pObject[tagname] = node.get_value()
-            else:
-                nodeStore[tagname] = node
-                pObject[tagname] = node.get_value()
-        else:
-            nodeStore[tagname] = {}
-            pObject[tagname] = {}
-            buildNodeTree(pObject[tagname], nodeStore[tagname], children)
-
-
-def getValuesFromNodes(pObject, nodeStore):
-    for tagname, pObje in pObject.items():
-        if tagname.startswith("_"):
-            continue
-        if type(pObje) is dict:
-            getValuesFromNodes(pObje, nodeStore[tagname])
-        else:
-            pObject[tagname] = nodeStore[tagname].get_value()
-
-
-def setValuesToNodes(pObject, nodeStore):
-    for tagname, pObje in pObject.items():
-        if tagname.startswith("_"):
-            continue
-        if type(pObje) is dict:
-            setValuesToNodes(pObje, nodeStore[tagname])
-        else:
-            value = pObje
-            node = nodeStore[tagname]
-            if type(value) is str:
-                node.set_value(value)
-            elif type(value) is bool:
-                node.set_value(value)
-            elif type(value) is float:
-                node.set_value(value, varianttype=ua.VariantType.Float)
-            elif type(value) is int:
-                node.set_value(value, varianttype=ua.VariantType.Int16)
-            else:
-                raise Exception("Type not found")
-
-
-def getTagname(node):
-    path = node.nodeid.Identifier
-    position = path.rfind(".")
-    return path[position + 1 :]
-
-
 # Ensure disconnecting on program close
 try:
     # Tries to reconnect every 10 seconds
     while True:
         try:
-            logging.info("Connecting to Opc.")
+            logging.info("PLC: Connecting to Opc.")
             clientPlc.connect()
             if clientPlc is None:
-                raise Exception("Opc connection failed")
-            logging.info("OPC Connected")
+                raise Exception("PLC: Opc connection failed")
+            logging.info("PLC: OPC Connected")
             nodesUnderPrefix = clientPlc.get_node("ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix)
 
             # Building tag and opc node trees, for better performance on publishing data
             topLevelOpcNodes = nodesUnderPrefix.get_children()
             if len(topLevelOpcNodes) == 0:
-                raise Exception("No tags where found")
+                raise Exception("PLC: No tags where found")
             for topLevelOpcNode in topLevelOpcNodes:
                 tagname = getTagname(topLevelOpcNode)
                 tags[tagname] = {}
@@ -170,11 +117,11 @@ try:
                 nodes[tagname] = {}
                 buildNodeTree(tags[tagname], nodes[tagname], topLevelOpcNode.get_children())
 
-            logging.info("Connecting to MQTT broker.")
+            logging.info("PLC: Connecting to MQTT broker.")
             mqttClient.connect(mqttBroker, mqttPort, 60)
             mqttThread = Thread(target=mqttClient.loop_forever, args=())
             mqttThread.start()
-            logging.info("Waiting 2s for MQTT to connect...")
+            logging.info("PLC: Waiting 2s for MQTT to connect...")
             time.sleep(2)  # MQTT need time to connect
 
             # Read data from OPC UA and Publish data to MQTT loop
@@ -213,12 +160,12 @@ try:
                 )
                 time.sleep(publishLoopWaitTime)
         except Exception:
-            logging.exception("Exception in connection loop.")
-        logging.warning("Waiting 10s before trying to reconnect.")
+            logging.exception("PLC: Exception in connection loop.")
+        logging.warning("PLC: Waiting 10s before trying to reconnect.")
         time.sleep(10)
 finally:
-    logging.warning("Disconnecting.")
+    logging.warning("PLC: Disconnecting.")
     if clientPlc is not None:
         clientPlc.disconnect()
     mqttClient.disconnect()
-logging.warning("OPC UA - MQTT link is shutting down.")
+logging.warning("PLC: OPC UA - MQTT link is shutting down.")

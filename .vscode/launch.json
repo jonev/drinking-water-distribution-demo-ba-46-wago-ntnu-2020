@@ -18,6 +18,18 @@
             "module": "LeakDetection"
         },
         {
+            "name": "MQTT-OPC-Hmi",
+            "type": "python",
+            "request": "launch",
+            "module": "OPCUA_MQTT_link.HMI"
+        },
+        {
+            "name": "MQTT-OPC-Plc",
+            "type": "python",
+            "request": "launch",
+            "module": "OPCUA_MQTT_link.PLC"
+        },
+        {
             "name": "SimulationProgram",
             "type": "python",
             "request": "launch",

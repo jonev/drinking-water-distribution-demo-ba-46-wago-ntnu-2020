@@ -2,7 +2,9 @@ from SimulationProgram.mqtt_client import MQTTClient
 from utils.scheduler import SimpleTaskScheduler
 from SimulationProgram.simulatedObjects import Water, RainForcast, WaterDistributionPipes
 from SimulationProgram.dbClient import DbClient
-from SimulationProgram.forecast import YrForecast
+
+from SimulationProgram.yrForecastToHmi import YrForecastToHmi
+from SimulationProgram.battery_level import BatteryLevel
 import datetime  # Best compatible with mysql
 import logging
 import time
@@ -17,6 +19,7 @@ sampleTime_s = 5  # DO NOT CHANGE - One sample is in real time 2 hours. 12 sampl
 oneDayIsSimulatedTo_s = 60  # DO NOT CHANGE
 simulatedSamplesPerDay = 96  # DO NOT CHANGE
 
+version = "0.0.6"
 mqttBroker = "broker.hivemq.com"
 mqttPort = 1883
 mqttTopicSubscribeData = [
@@ -28,6 +31,7 @@ mqttTopicSubscribeData = [
 
 def mainloop(datetimestamp):
     try:
+        logging.info("Starting mainloop")
         datetimestamp = datetime.datetime.now()
 
         # Simulation Water and rain
@@ -68,17 +72,15 @@ def mainloop(datetimestamp):
         # Simulation for leakdetection - the order is important
         waterDistributionPipes.calculateFlowInPipesNow()
         nowValueFlows = waterDistributionPipes.getFlowInPipes()
-        mqtt.publishPlc1(
-            {
-                "WaterFlowFT01_Pv": nowValueFlows[0],
-                "WaterFlowFT02_Pv": nowValueFlows[1],
-                "WaterFlowFT03_Pv": nowValueFlows[2],
-                "WaterFlowFT04_Pv": nowValueFlows[3],
-                "WaterFlowFT05_Pv": nowValueFlows[4],
-                "WaterFlowFT06_Pv": nowValueFlows[5],
-                "WaterFlowFT07_Pv": nowValueFlows[6],
-            }
-        )
+        nowValueFlowsDict = {
+            "FT01": round(nowValueFlows[0], 2),
+            "FT02": round(nowValueFlows[1], 2),
+            "FT03": round(nowValueFlows[2], 2),
+            "FT04": round(nowValueFlows[3], 2),
+            "FT05": round(nowValueFlows[4], 2),
+            "FT06": round(nowValueFlows[5], 2),
+            "FT07": round(nowValueFlows[6], 2),
+        }
 
         flowValues, timestamps = waterDistributionPipes.getFlowInPipesSinceLastSample(datetimestamp)
         for i in range(flowValues.__len__()):
@@ -95,6 +97,11 @@ def mainloop(datetimestamp):
                 flowValues[i],
                 timestamps[i],
             )
+
+        # Battery levels
+        nowBatteryLevels = batteryLevels.getBatteryLevelValues()
+        nowValueFlowsDict.update(nowBatteryLevels)
+        mqtt.publishPlc1(nowValueFlowsDict)
         logging.info("Loop used: " + str(datetime.datetime.now() - datetimestamp))
     except:
         logging.exception("Exception in mainLoop")
@@ -102,6 +109,7 @@ def mainloop(datetimestamp):
 
 def dbCleanUp(datetimestamp):
     try:
+        logging.info("Starting dbCleanUp")
         rows = db.deleteDataOlderThan(
             "SignalAnalogHmiPv",
             (
@@ -129,13 +137,10 @@ def dbCleanUp(datetimestamp):
 
 def requestForcastAndSendToHmi(datetimestamp):
     try:
-        logging.info("requestForcastAndSendToHmi running at: " + str(datetimestamp))
-
-        forecastToSend = f.getForecast()
+        logging.info("Starting requestForcastAndSendToHmi")
+        forecastToSend = forcastToHmi.getForecast()
+        logging.info("Publishing forcast from yr to HMI: " + str(forecastToSend))
         mqtt.publishHmi(forecastToSend)
-        # This is running each 10 seconds, for testing purposes (on whole seconds, 0, 10, 20, 30 and so on)
-        # Use vs code menu to run this -> "SimulationProgram"
-        pass
     except:
         logging.exception("Exception in requestForcastAndSendToHmi")
 
@@ -143,6 +148,9 @@ def requestForcastAndSendToHmi(datetimestamp):
 if __name__ == "__main__":
     while True:
         try:
+            logging.info("Starting Simulation in __main__ version: " + version)
+            logging.info("Waiting for db to start - 30 seconds")
+            time.sleep(30)
             # Init MQTT
             mqtt = MQTTClient(mqttBroker, mqttPort, mqttTopicSubscribeData)
             mqtt.start()
@@ -151,23 +159,26 @@ if __name__ == "__main__":
             # Init objects
             w = Water(sampleTime_s, oneDayIsSimulatedTo_s, 1000.0, 1000.0, 100.0)
             rain = RainForcast(sampleTime_s, oneDayIsSimulatedTo_s, [1, 1, 8, 8, 1])
+            logging.info("Connecting to db")
             db = DbClient()
             waterDistributionPipes = WaterDistributionPipes(
                 sampleTime_s, oneDayIsSimulatedTo_s, simulatedSamplesPerDay
             )
 
-            f = YrForecast()
+            forcastToHmi = YrForecastToHmi()
+            batteryLevels = BatteryLevel()
             # Init and start Scheduled task "mainloop"
+            logging.info("Starting periodic tasks")
             s1 = SimpleTaskScheduler(mainloop, sampleTime_s, 0, 0.1)
             s1.start()
 
             s2 = SimpleTaskScheduler(dbCleanUp, oneDayIsSimulatedTo_s * 3, 1, 0.1)
             s2.start()
 
-            s3 = SimpleTaskScheduler(requestForcastAndSendToHmi, 10.0, 0.0, 0.1)
-            s3 = SimpleTaskScheduler(requestForcastAndSendToHmi, 10.0, 0.0, 0.1)  # TODO FORECAST
+            s3 = SimpleTaskScheduler(requestForcastAndSendToHmi, 30.0, 0.0, 2.0)
             s3.start()
 
+            logging.info("Periodic tasks started")
             s1.join()
             s2.join()
             s3.join()
