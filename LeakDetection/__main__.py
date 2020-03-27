@@ -12,7 +12,7 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-version = "0.0.1"
+version = "0.0.4"
 sampleTime_s = 5  # DO NOT CHANGE - One sample is in real time 2 hours. 12 samples pr hour.
 oneDayIsSimulatedTo_s = 60  # DO NOT CHANGE
 oneHour_s = oneDayIsSimulatedTo_s / 24
@@ -36,9 +36,7 @@ def handleFt(dbClient, start, end, ftData):
     # t0
     values = dbClient.getValuesBetweenTimestamps("SignalAnalogHmiPv", start, end, ftData._tagId,)
     avgHour = DivCalculations.avgValue(values, 4)
-    if avgHour != 0.00:
-        dbClient.pushValueOnTimestamp("LeakDetectionHourlyAverage", start, ftData._tagId, avgHour)
-
+    dbClient.pushValueOnTimestamp("LeakDetectionHourlyAverage", start, ftData._tagId, avgHour)
     values120SamplesHourlyAverages = dbClient.getAverageHourValues(
         "LeakDetectionHourlyAverage",
         ftData._tagId,
@@ -47,31 +45,33 @@ def handleFt(dbClient, start, end, ftData):
         5,
     )
     avg120samples = DivCalculations.avgValue(values120SamplesHourlyAverages, 4)
-    if avg120samples != 0.00:
-        dbClient.pushValueOnTimestamp(
-            "LeakDetection120SamplesHourlyAverage", start, ftData._tagId, avg120samples
-        )
+    dbClient.pushValueOnTimestamp(
+        "LeakDetection120SamplesHourlyAverage", start, ftData._tagId, avg120samples
+    )
 
     # Calculating points over limit
     if avg120samples != 0.00:
         diffNowInPercent = avgHour / avg120samples
-        ftData.pointsOver10 = updatePoints(
-            diffNowInPercent, 1.10, ftData.pointsOver10, ftData.queuePointsOver10
-        )
-        ftData.pointsOver20 = updatePoints(
-            diffNowInPercent, 1.20, ftData.pointsOver20, ftData.queuePointsOver20
-        )
-        ftData.pointsOver30 = updatePoints(
-            diffNowInPercent, 1.30, ftData.pointsOver30, ftData.queuePointsOver30
-        )
-        dbClient.pushPointsOnTimestamp(
-            "LeakDetectionAlarmPoints",
-            start,
-            ftData._tagId,
-            ftData.pointsOver10,
-            ftData.pointsOver20,
-            ftData.pointsOver30,
-        )
+    else:
+        diffNowInPercent = 0.0
+
+    ftData.pointsOver10 = updatePoints(
+        diffNowInPercent, 1.10, ftData.pointsOver10, ftData.queuePointsOver10
+    )
+    ftData.pointsOver20 = updatePoints(
+        diffNowInPercent, 1.20, ftData.pointsOver20, ftData.queuePointsOver20
+    )
+    ftData.pointsOver30 = updatePoints(
+        diffNowInPercent, 1.30, ftData.pointsOver30, ftData.queuePointsOver30
+    )
+    dbClient.pushPointsOnTimestamp(
+        "LeakDetectionAlarmPoints",
+        start,
+        ftData._tagId,
+        ftData.pointsOver10,
+        ftData.pointsOver20,
+        ftData.pointsOver30,
+    )
 
 
 def calculateHourlyAverageValues(datetimestamp):

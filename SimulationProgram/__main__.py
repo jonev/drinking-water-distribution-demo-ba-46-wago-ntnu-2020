@@ -19,7 +19,7 @@ sampleTime_s = 5  # DO NOT CHANGE - One sample is in real time 2 hours. 12 sampl
 oneDayIsSimulatedTo_s = 60  # DO NOT CHANGE
 simulatedSamplesPerDay = 96  # DO NOT CHANGE
 
-version = "0.0.7"
+version = "0.0.11"
 mqttBroker = "broker.hivemq.com"
 mqttPort = 1883
 mqttTopicSubscribeData = [
@@ -30,8 +30,7 @@ mqttTopicSubscribeData = [
 
 
 def mainloop(datetimestamp):
-    logging.info("Starting mainloop")
-    datetimestamp = datetime.datetime.now()
+    timetaking = datetime.datetime.now()
 
     # Simulation Water and rain
     ## Read data from mqtt
@@ -102,6 +101,12 @@ def mainloop(datetimestamp):
     nowValueFlowsDict.update(nowBatteryLevels)
     mqtt.publishPlc1(nowValueFlowsDict)
     logging.info("Loop used: " + str(datetime.datetime.now() - datetimestamp))
+    logging.info(
+        "Ran at: "
+        + str(datetimestamp)
+        + ", Loop used: "
+        + str(datetime.datetime.now() - timetaking)
+    )
 
 
 def dbCleanUp(datetimestamp):
@@ -143,7 +148,7 @@ if __name__ == "__main__":
     while True:
         s1 = SimpleTaskScheduler(mainloop, sampleTime_s, 0, 0.1)
         s2 = SimpleTaskScheduler(dbCleanUp, oneDayIsSimulatedTo_s * 3, 1, 0.1)
-        s3 = SimpleTaskScheduler(requestForcastAndSendToHmi, 30.0, 0.0, 2.0)
+        s3 = SimpleTaskScheduler(requestForcastAndSendToHmi, 60.0, 0.0, 5.0)
 
         try:
             logging.info("Starting Simulation in __main__ version: " + version)
@@ -169,9 +174,7 @@ if __name__ == "__main__":
             # Init and start Scheduled task "mainloop"
             logging.info("Starting periodic tasks")
             s1.start()
-
             s2.start()
-
             s3.start()
 
             logging.info("Periodic tasks started")
