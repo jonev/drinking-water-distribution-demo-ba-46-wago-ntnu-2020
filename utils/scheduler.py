@@ -40,7 +40,8 @@ class SimpleTaskScheduler:
     def join(self):
         """Join the scheduler task - Wait for the the scheduler to finish
         """
-        self.__starterThread.join()
+        if self.__starterThread.isAlive():
+            self.__starterThread.join()
 
     def stop(self):
         """Stop the scheduler
@@ -58,8 +59,7 @@ class SimpleTaskScheduler:
         )
         while self.__runflag:
             if self.__starttime < time.time():
-                # raise Exception("Last task was not done -> increase the interval")
-                pass
+                raise Exception("Last task was not done -> increase the interval")
             while self.__starttime > time.time():
                 time.sleep(self.__checkIntervalInSeconds)
             worker = threading.Thread(

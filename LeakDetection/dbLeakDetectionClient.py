@@ -19,25 +19,18 @@ class DbLeakDetectionClient:
         self.cursor = self.db.cursor()
 
     def createDatabase(self, databaseName):
-        try:
-            self.cursor.execute("CREATE DATABASE " + databaseName)
-            logging.warning("Database " + databaseName + " was created")
-        except Exception:
-            logging.exception("Exception creating database " + databaseName)
+        self.cursor.execute("CREATE DATABASE IF NOT EXISTS " + databaseName)
 
     def createTable(self, tableName, tableFormat):
-        try:
-            self.cursor.execute(
-                "SELECT * FROM information_schema.tables WHERE table_name='" + tableName + "'"
-            )
-            all = self.cursor.fetchall()
-            if len(all) == 0:
-                self.cursor.execute("CREATE TABLE " + tableName + " " + tableFormat)
-                logging.warning("Table " + tableName + " was created")
-            else:
-                logging.warning("Table " + tableName + " aleready exist")
-        except Exception:
-            logging.exception("Exception creating table " + tableName)
+        self.cursor.execute(
+            "SELECT * FROM information_schema.tables WHERE table_name='" + tableName + "'"
+        )
+        all = self.cursor.fetchall()
+        if len(all) == 0:
+            self.cursor.execute("CREATE TABLE " + tableName + " " + tableFormat)
+            logging.warning("Table " + tableName + " was created")
+        else:
+            logging.warning("Table " + tableName + " aleready exist")
 
     def deleteTable(self, table_name):
         self.cursor.execute("DROP TABLE IF EXISTS " + table_name)

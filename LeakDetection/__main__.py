@@ -12,6 +12,7 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
+version = "0.0.1"
 sampleTime_s = 5  # DO NOT CHANGE - One sample is in real time 2 hours. 12 samples pr hour.
 oneDayIsSimulatedTo_s = 60  # DO NOT CHANGE
 oneHour_s = oneDayIsSimulatedTo_s / 24
@@ -75,7 +76,7 @@ def handleFt(dbClient, start, end, ftData):
 
 def calculateHourlyAverageValues(datetimestamp):
     global FT01, FT02, FT03, FT04, FT05, FT06, FT07
-    try:
+    try:  # TODO vurder om disse try'ene skal bort og det skal feile helt opp i main
         # print("Timestamp run: " + str(datetimestamp))
         timetaking = datetime.datetime.now()
         datetimestamp = datetimestamp - datetime.timedelta(seconds=5)
@@ -104,7 +105,7 @@ def calculateHourlyAverageValues(datetimestamp):
 if __name__ == "__main__":
     while True:
         try:
-            logging.info("Starting Leakdetection in __main__")
+            logging.info("Starting Leakdetection in __main__ version: " + version)
             logging.info("Waiting for db to start - 30 seconds")
             time.sleep(30)
 

@@ -40,6 +40,8 @@ To view the documentation open `docs/_build/html/index.html` in a browser.
 - Docker settings -> Daemon -> Enable Experimental features
 - Add builder:  
 `docker buildx create --name builder-for-plc`
+- Configure to use it:
+`docker buildx use builder-for-plc`
 ### Build (and push) from root:
 `docker buildx build -f dockerfile-name --platform linux/amd64,linux/arm64,linux/arm/v7 -t username/imagename:tag --push .`  
 E.g:  

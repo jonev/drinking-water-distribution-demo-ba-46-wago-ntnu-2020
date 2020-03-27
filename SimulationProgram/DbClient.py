@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 class DbClient:
-    def __init__(self,):
+    def __init__(self):
         # Constants - Database setup
         self.__dbName = "processvalues"
         self.__flowValueTableName = "SignalAnalogHmiPv"
@@ -18,44 +18,36 @@ class DbClient:
         logging.info("Connecting to db host")
         self.__db = mysql.connector.connect(host="db", user="root", passwd="example",)
         self.__cursor = self.__db.cursor()
-
         logging.info("Adding db " + self.__dbName + " if it does not exist")
-        # TODO this make the whole program hang
-        # try:  # Add database if not exist
-        #    self.__cursor.execute("CREATE DATABASE IF NOT EXISTS " + self.__dbName)
-        # except Exception:
-        #    logging.exception("Could not create database")
+        self.__cursor.execute("CREATE DATABASE IF NOT EXISTS " + self.__dbName)
 
         logging.info("Creating tables if not exist")
-        try:  # Create tables if not exist
+        self.__cursor.execute(
+            "SELECT * FROM information_schema.tables WHERE table_name='"
+            + self.__flowValueTableName
+            + "'"
+        )
+        tables = self.__cursor.fetchall()
+        if len(tables) == 0:
+            logging.info("Creating table " + self.__flowValueTableName)
             self.__cursor.execute(
-                "SELECT * FROM information_schema.tables WHERE table_name='"
+                "CREATE TABLE "
+                + self.__dbName
+                + "."
                 + self.__flowValueTableName
-                + "'"
+                + " "
+                + self.__flowValueTableFormat
             )
-            tables = self.__cursor.fetchall()
-            if len(tables) == 0:
-                logging.info("Creating table " + self.__flowValueTableName)
-                self.__cursor.execute(
-                    "CREATE TABLE "
-                    + self.__dbName
-                    + "."
-                    + self.__flowValueTableName
-                    + " "
-                    + self.__flowValueTableFormat
-                )
-            else:
-                logging.info("Table " + self.__flowValueTableName + " already exist")
+        else:
+            logging.info("Table " + self.__flowValueTableName + " already exist")
 
-            # Connect to database
-            logging.info("Connecting to db " + self.__dbName)
-            self.__db = mysql.connector.connect(
-                host="db", user="root", passwd="example", database=self.__dbName
-            )
-            self.__cursor = self.__db.cursor()
-            logging.info("DbClient ready")
-        except Exception:
-            logging.exception("Could not create tables")
+        # Connect to database
+        logging.info("Connecting to db " + self.__dbName)
+        self.__db = mysql.connector.connect(
+            host="db", user="root", passwd="example", database=self.__dbName
+        )
+        self.__cursor = self.__db.cursor()
+        logging.info("DbClient ready")
 
     def insertFlowValuesBatch8DifferentTags(self, tags, values, datetimestamp):
         val = [
