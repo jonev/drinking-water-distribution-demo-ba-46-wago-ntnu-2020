@@ -19,7 +19,7 @@ sampleTime_s = 5  # DO NOT CHANGE - One sample is in real time 2 hours. 12 sampl
 oneDayIsSimulatedTo_s = 60  # DO NOT CHANGE
 simulatedSamplesPerDay = 96  # DO NOT CHANGE
 
-version = "0.0.11"
+version = "0.0.12"
 mqttBroker = "broker.hivemq.com"
 mqttPort = 1883
 mqttTopicSubscribeData = [
@@ -161,7 +161,7 @@ if __name__ == "__main__":
             time.sleep(5)
             # Init objects
             w = Water(sampleTime_s, oneDayIsSimulatedTo_s, 1000.0, 1000.0, 100.0)
-            rain = RainForcast(sampleTime_s, oneDayIsSimulatedTo_s, [1, 1, 8, 8, 1])
+            rain = RainForcast(sampleTime_s, oneDayIsSimulatedTo_s, [0, 0, 0.5, 0.5, 0])
             logging.info("Connecting to db")
             db = DbClient()
 

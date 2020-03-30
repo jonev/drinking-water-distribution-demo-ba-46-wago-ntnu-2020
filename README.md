@@ -68,6 +68,15 @@ E.g:
 - Or restart only one container
 `docker-compose restart "service name"`
 
+## Instal docker manually
+1. Use a file transfer software (e.g. WinSCP) to transfer docker_xxx.ipk to the plc at /root  
+2. Install docker with: `opkg install docker_xxx.ipk`  
+Possible errors:  
+```
+Collected errors:
+ * verify_pkg_installable: Only have 17424kb available on filesystem /, pkg docker needs 115002
+ * opkg_solver_install: Cannot install package docker.
+ ```
 ### Sources:
 - [Docker on PFC200 2. Gen](https://github.com/Wago-Norge/Docker-Support)
 
@@ -77,3 +86,4 @@ Putty, or Termius (supports saving passwords and transfer files)
 ### Transfer files from Windows to Linux
 [WinSCP](https://winscp.net/eng/download.php)
 - Log inn and drag files between the two computers
+

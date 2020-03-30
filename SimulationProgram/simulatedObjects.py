@@ -22,7 +22,7 @@ class Water:
         self.__emissionValveMaxOpening_m3_per_s = self.__volume_m3 / (
             10.0 * self.__oneDayIsSimulatoedTo_s
         )
-        self.__inflowFromRivers_m3_per_s = self.__emissionValveMaxOpening_m3_per_s / 5
+        self.__inflowFromRivers_m3_per_s = self.__emissionValveMaxOpening_m3_per_s / 3
 
     def getWaterLevel_m(self):
         return self.__currentVolume_m3 / self.__area_m2
@@ -126,7 +126,7 @@ class WaterDistributionPipes:
         )
         self.__zonesResidents = [30, 50, 40, 60]
         self.__flowInPipe = [0, 0, 0, 0, 0, 0, 0]
-        self.__leakInPipe = [0, 0, 0, 0, 0, 0, 0]
+        self.__leakInPipe = [0, 0, 0, 0, 0, 100, 0]
         self.__samplesCounter = 0
         self.__leakInterval = self.__oneDayIsSimulatoedTo_s * 3
         self.__leakIntervalCounter = 0
@@ -158,16 +158,16 @@ class WaterDistributionPipes:
         flowInPipe = [0, 0, 0, 0, 0, 0, 0]
 
         flowInPipe[0] = (
-            zonesResidents[0] * normalWaterConsumption[sample] * random.uniform(0.95, 1.05)
+            zonesResidents[0] * normalWaterConsumption[sample] * random.uniform(0.90, 1.10)
         ) + leakInPipe[0]
         flowInPipe[1] = (
-            zonesResidents[1] * normalWaterConsumption[sample] * random.uniform(0.95, 1.05)
+            zonesResidents[1] * normalWaterConsumption[sample] * random.uniform(0.90, 1.10)
         ) + leakInPipe[1]
         flowInPipe[2] = (
-            zonesResidents[2] * normalWaterConsumption[sample] * random.uniform(0.95, 1.05)
+            zonesResidents[2] * normalWaterConsumption[sample] * random.uniform(0.9, 1.10)
         ) + leakInPipe[2]
         flowInPipe[3] = (
-            zonesResidents[3] * normalWaterConsumption[sample] * random.uniform(0.95, 1.05)
+            zonesResidents[3] * normalWaterConsumption[sample] * random.uniform(0.9, 1.10)
         ) + leakInPipe[3]
         # Pipes not at the end
         flowInPipe[4] = flowInPipe[3] + flowInPipe[2] + leakInPipe[4]
@@ -184,10 +184,12 @@ class WaterDistributionPipes:
             self.__leakIntervalCounter = 0
             if self.__leakInPipe[0] == 0:
                 self.__leakInPipe[0] = 100
-                logging.info("Leak in pipe 1 activated")
             else:
                 self.__leakInPipe[0] = 0
-                logging.info("Leak in pipe 1 de-activated")
+            if self.__leakInPipe[5] == 0:
+                self.__leakInPipe[5] = 100
+            else:
+                self.__leakInPipe[5] = 0
 
         self.__flowInPipe = self.__calulateFlowInPipes(
             self.__zonesResidents,

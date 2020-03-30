@@ -12,7 +12,7 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-version = "0.0.4"
+version = "0.0.7"
 sampleTime_s = 5  # DO NOT CHANGE - One sample is in real time 2 hours. 12 samples pr hour.
 oneDayIsSimulatedTo_s = 60  # DO NOT CHANGE
 oneHour_s = oneDayIsSimulatedTo_s / 24
@@ -72,6 +72,13 @@ def handleFt(dbClient, start, end, ftData):
         ftData.pointsOver20,
         ftData.pointsOver30,
     )
+    return avgHour
+
+
+def handleFtBalance(dbClient, start, end, inFlowAvg, outFlowAvg, ftData):
+    dbClient.pushValueOnTimestamp(
+        "LeakDetectionBalanceHourlyAverage", start, ftData._tagId, (inFlowAvg - outFlowAvg)
+    )
 
 
 def calculateHourlyAverageValues(datetimestamp):
@@ -85,13 +92,27 @@ def calculateHourlyAverageValues(datetimestamp):
         end = datetimestamp
 
         # FT Values
-        handleFt(dbClient, start, end, FT01)
-        handleFt(dbClient, start, end, FT02)
-        handleFt(dbClient, start, end, FT03)
-        handleFt(dbClient, start, end, FT04)
-        handleFt(dbClient, start, end, FT05)
-        handleFt(dbClient, start, end, FT06)
-        handleFt(dbClient, start, end, FT07)
+        avgHourFT01 = handleFt(dbClient, start, end, FT01)
+        avgHourFT02 = handleFt(dbClient, start, end, FT02)
+        avgHourFT03 = handleFt(dbClient, start, end, FT03)
+        avgHourFT04 = handleFt(dbClient, start, end, FT04)
+        avgHourFT05 = handleFt(dbClient, start, end, FT05)
+        avgHourFT06 = handleFt(dbClient, start, end, FT06)
+        avgHourFT07 = handleFt(dbClient, start, end, FT07)
+        # Flow balance
+        # FT07_is_FT01_FT06
+        # FT06_is_FT02_FT05
+        # FT05_is_FT03_FT04
+        handleFtBalance(
+            dbClient, start, end, avgHourFT07, (avgHourFT01 + avgHourFT06), FT07_is_FT01_FT06,
+        )
+        handleFtBalance(
+            dbClient, start, end, avgHourFT06, (avgHourFT02 + avgHourFT05), FT06_is_FT02_FT05,
+        )
+        handleFtBalance(
+            dbClient, start, end, avgHourFT05, (avgHourFT03 + avgHourFT04), FT05_is_FT03_FT04,
+        )
+
         logging.info(
             "Ran at: "
             + str(datetimestamp)
@@ -131,6 +152,12 @@ if __name__ == "__main__":
                 "LeakDetectionAlarmPoints",
                 "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), timestamp DATETIME(6), pointsOver10 INT, pointsOver20 INT, pointsOver30 INT)",
             )
+
+            dbClient.createTable(
+                "LeakDetectionBalanceHourlyAverage",
+                "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), metric VARCHAR(3), timestamp DATETIME(6), value FLOAT)",
+            )
+
             # FT data
             FT01 = FtData("WaterFlowFT01_Pv")
             FT02 = FtData("WaterFlowFT02_Pv")
@@ -139,6 +166,10 @@ if __name__ == "__main__":
             FT05 = FtData("WaterFlowFT05_Pv")
             FT06 = FtData("WaterFlowFT06_Pv")
             FT07 = FtData("WaterFlowFT07_Pv")
+
+            FT07_is_FT01_FT06 = FtData("FT07_is_FT01_FT06")
+            FT06_is_FT02_FT05 = FtData("FT06_is_FT02_FT05")
+            FT05_is_FT03_FT04 = FtData("FT05_is_FT03_FT04")
 
             # Init and start Scheduled task "calculateHourlyAverageValues"
             s = SimpleTaskScheduler(calculateHourlyAverageValues, oneHour_s, 0, 0.1)

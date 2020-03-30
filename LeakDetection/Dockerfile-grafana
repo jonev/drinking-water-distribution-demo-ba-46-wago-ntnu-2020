@@ -1,5 +1,6 @@
 FROM grafana/grafana:6.7.1-ubuntu
 USER root
+COPY grafana.ini /etc/grafana/grafana.ini
 RUN  apt-get update \
     && apt-get -y install git \
     && cd /var/lib/grafana/plugins/ \
