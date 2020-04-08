@@ -19,7 +19,7 @@ sampleTime_s = 5  # DO NOT CHANGE - One sample is in real time 2 hours. 12 sampl
 oneDayIsSimulatedTo_s = 60  # DO NOT CHANGE
 simulatedSamplesPerDay = 96  # DO NOT CHANGE
 
-version = "0.0.12"
+version = "0.0.13"
 mqttBroker = "broker.hivemq.com"
 mqttPort = 1883
 mqttTopicSubscribeData = [
@@ -173,6 +173,7 @@ if __name__ == "__main__":
             batteryLevels = BatteryLevel()
             # Init and start Scheduled task "mainloop"
             logging.info("Starting periodic tasks")
+            # TODO wait for the full minute before it starts
             s1.start()
             s2.start()
             s3.start()

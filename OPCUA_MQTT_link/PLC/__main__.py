@@ -69,32 +69,34 @@ def on_mqtt_connect(client, userdata, flags, rc):
 
 def on_received_mqtt_message(client, userdata, msg):
     global hashsLock, hashs, nodes, tags
-    try:
-        receivedObject = json.loads(str(msg.payload, encoding="utf-8"))
-        # If plc receive empty objects, it send an object with values in return, immediately
-        tagname = receivedObject["_tagId"]
-        if receivedObject["_type"] == "":
-            logging.warning("PLC: HMI is missing data and requesting: " + tagname)
-            pObject = tags[tagname]
-            getValuesFromNodes(pObject, nodes[tagname])
-            newHash = getNewHash(pObject)
-            setTimestamp(pObject)
-            # Publish and save hash
-            mqttClient.publish(mqttTopicPublishData, payload=json.dumps(pObject))
-            with hashsLock:
-                hashs[tagname] = newHash
-            return
+    #try:
+    receivedObject = json.loads(str(msg.payload, encoding="utf-8"))
+    # If plc receive empty objects, it send an object with values in return, immediately
+    tagname = receivedObject["_tagId"]
+    if receivedObject["_type"] == "":
+        logging.warning("PLC: HMI is missing data and requesting: " + tagname)
+        pObject = tags[tagname]
+        getValuesFromNodes(pObject, nodes[tagname])
+        newHash = getNewHash(pObject)
+        setTimestamp(pObject)
+        # Publish and save hash
+        mqttClient.publish(mqttTopicPublishData, payload=json.dumps(pObject))
+        with hashsLock:
+            hashs[tagname] = newHash
+        return
 
-        # Generate new hash
-        logging.warning("PLC: HMI is sending CMD: " + tagname)
-        newHash = getNewHash(receivedObject)
-        # Store hash
-        with hashsLock:  # Sending data only on change, therefor no need to check for change
-            hashs[receivedObject["_tagId"]] = newHash
-        # Write to opc ua by setting the children recursive
-        setValuesToNodes(receivedObject, nodes[tagname])
-    except Exception:
-        logging.exception("PLC: Exception in on_message.")
+    # Generate new hash
+    logging.warning("PLC: HMI is sending CMD: " + tagname)
+    newHash = getNewHash(receivedObject)
+    # Store hash
+    with hashsLock:  # Sending data only on change, therefor no need to check for change
+        hashs[receivedObject["_tagId"]] = newHash
+    # Write to opc ua by setting the children recursive
+    setValuesToNodes(receivedObject, nodes[tagname])
+    #except Exception:
+    #    logging.exception(
+    #        "PLC: Exception in on_message, msg.payload: " + str(msg.payload, encoding="utf-8")
+    #    )
 
 
 if __name__ == "__main__":
@@ -117,6 +119,8 @@ if __name__ == "__main__":
     opcUaServerPassword = os.getenv("OPC_UA_SERVER_PASSWORD")
     opcUaNs = int(os.getenv("OPC_UA_NS"))  # Address
     opcUaIdPrefix = os.getenv("OPC_UA_ID_PREFIX")
+    opcUaIdCounter = os.getenv("OPC_UA_ID_STATUS_COUNTER")
+    opcUaIdLastRun = os.getenv("OPC_UA_ID_STATUS_LAST_RUN")
     ## MQTT
     mqttBroker = os.getenv("MQTT_BROKER")
     mqttPort = int(os.getenv("MQTT_PORT"))
@@ -134,7 +138,7 @@ if __name__ == "__main__":
         + mqttBroker
     )
     # OPC UA
-    clientPlc = Client("opc.tcp://" + opcUaServer + ":4840")
+    clientPlc = Client("opc.tcp://" + opcUaServer + ":4840", timeout=3)
     clientPlc.set_user(opcUaServerUsername)
     clientPlc.set_password(opcUaServerPassword)
 
@@ -172,9 +176,11 @@ if __name__ == "__main__":
                 logging.info("PLC: Waiting 2s for MQTT to connect...")
                 time.sleep(2)  # MQTT need time to connect
 
+                loopCounter = 0
                 # Read data from OPC UA and Publish data to MQTT loop
                 while True:
                     publishLoopStarttime = time.time()
+                    loopCounter = loopCounter + 1
                     # OPC UA Nodes are at start -> need for restart if there are new nodes
                     for tagname, pObject in tags.items():
                         # Building python object, then converting to json before sending
@@ -186,25 +192,30 @@ if __name__ == "__main__":
                         else:
                             newHash = getNewHash(pObject)
                             setTimestamp(pObject)
-                            with hashsLock:  # Threadsafe
-                                if tagname in hashs:
-                                    if hashs[tagname] != newHash:
-                                        # Publish and save hash
-                                        mqttClient.publish(
-                                            mqttTopicPublishData, payload=json.dumps(pObject)
-                                        )
-                                        hashs[tagname] = newHash
-                                else:
-                                    # Tagname does not exist in hashs
-                                    # Save hash
-                                    hashs[tagname] = newHash
-                                    # Publish
+                            if tagname in hashs:
+                                if hashs[tagname] != newHash:
+                                    # Publish and save hash
                                     mqttClient.publish(
                                         mqttTopicPublishData, payload=json.dumps(pObject)
                                     )
+                                    with hashsLock:  # Threadsafe
+                                        hashs[tagname] = newHash
+                            else:
+                                # Publish
+                                mqttClient.publish(
+                                    mqttTopicPublishData, payload=json.dumps(pObject)
+                                )
+                                # Tagname does not exist in hashs
+                                # Save hash
+                                with hashsLock:  # Threadsafe
+                                    hashs[tagname] = newHash
                     logging.warning(
                         "Publish loop used [s]: " + str((time.time() - publishLoopStarttime))
                     )
+                    node = clientPlc.get_node("ns=" + str(opcUaNs) + ";s=" + opcUaIdCounter)
+                    node.set_value(loopCounter, varianttype=ua.VariantType.Int16)
+                    node = clientPlc.get_node("ns=" + str(opcUaNs) + ";s=" + opcUaIdLastRun)
+                    node.set_value(time.ctime())
                     time.sleep(publishLoopWaitTime)
             except Exception:
                 logging.exception("PLC: Exception in connection loop.")
