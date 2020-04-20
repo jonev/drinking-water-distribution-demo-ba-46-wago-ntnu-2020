@@ -28,6 +28,7 @@ class MQTTClient:
     def __on_connect(self, client, userdata, flags, rc):
         logging.info("Connected with result code " + str(rc))
         for t in self.__subscribeTopics:
+            print("Subscribing: " + t)
             client.subscribe(t)
 
     def __on_message(self, client, userdata, msg):

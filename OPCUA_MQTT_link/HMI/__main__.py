@@ -40,7 +40,6 @@ def setValuesToNodes(pObject, nodeStore):
             try:
                 value = pObje
                 node = nodeStore[tagname]
-                #logging.warning("Setting node value: " + node.__str__() + " ; " + str(value))
                 if type(value) is str:
                     node.set_value(value)
                 elif type(value) is bool:
@@ -67,16 +66,13 @@ def on_received_mqtt_message(client, userdata, msg):
     try:
         receivedObject = json.loads(str(msg.payload, encoding="utf-8"))
         tagname = receivedObject["_tagId"]
-        logging.warning("HMI: receiving: " + tagname + ", on: " + msg.topic + "\n" + str(msg.payload, encoding="utf-8"))
         # Generate new hash
         # Timestamp will always change and are therefore excluded
         newHash = getNewHash(receivedObject)
-        logging.warning("Hash generated: " + newHash)
         # Store hash
         with hashsLock:  # Sending data only on change, therefore no need to check for change
             hashs[receivedObject["_tagId"]] = newHash
         # Write to opc ua by setting the children recursive
-        logging.warning("Setting values to nodes")
         setValuesToNodes(receivedObject, nodes[tagname])
     except Exception:
         logging.exception(

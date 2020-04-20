@@ -19,7 +19,7 @@ sampleTime_s = 5  # DO NOT CHANGE - One sample is in real time 2 hours. 12 sampl
 oneDayIsSimulatedTo_s = 60  # DO NOT CHANGE
 simulatedSamplesPerDay = 96  # DO NOT CHANGE
 
-version = "0.0.13"
+version = "0.0.16"
 mqttBroker = "broker.hivemq.com"
 mqttPort = 1883
 mqttTopicSubscribeData = [
@@ -35,36 +35,35 @@ def mainloop(datetimestamp):
     # Simulation Water and rain
     ## Read data from mqtt
     ValveEmission1Position_Pv = mqtt.getData("ValveEmission1Position_Pv")
-    logging.info("ValveEmission1Position %: " + str(ValveEmission1Position_Pv))
     emission_m3_per_s = w.emissionValve_percent_ToFlow_m3_per_s(ValveEmission1Position_Pv)
 
     ## Calculating new current volume
-    rain.calculateRain()
-    rain_m = rain.getRain_m()
-    rainforcast = rain.getForcast()
+    rainObj.calculateRain()
+    rain_m = rainObj.getRain_m()
+    rainforcast = rainObj.getForcast()
     w.addCurrentRain_m_ToCurrentVolume(rain_m, oneDayIsSimulatedTo_s)
     w.addInflowFromRivers()
     w.setWantedEmission_m3_per_s(emission_m3_per_s)
 
     ## Collecting data and writing to mqtt
     waterLevel_m = w.getWaterLevel_m()
-    waterLevel_percent = w.getWaterLevel_percent()
+    # waterLevel_percent = w.getWaterLevel_percent()
     mqtt.publishPlc3(
         {
-            "WaterLevel_Pv": waterLevel_percent,
+            "WaterLevel_Pv": waterLevel_m,
             "EmissionFlow_Pv": emission_m3_per_s,
             "RainForcast": rainforcast.__str__(),  # This is a fix to be able to parse the data in the PLC
         }
     )
     logging.info(
-        "Waterlevel m: "
-        + str(waterLevel_m)
-        + ", Emission m3/s: "
-        + str(emission_m3_per_s)
-        + ", Forcast: "
-        + str(rainforcast)
-        + ", Rain: "
-        + str(rain_m)
+       "Waterlevel m: "
+       + str(waterLevel_m)
+       + ", Emission m3/s: "
+       + str(emission_m3_per_s)
+       + ", Forcast: "
+       + str(rainforcast)
+       + ", Rain: "
+       + str(rain_m)
     )
 
     # Simulation for leakdetection - the order is important
@@ -100,7 +99,6 @@ def mainloop(datetimestamp):
     nowBatteryLevels = batteryLevels.getBatteryLevelValues()
     nowValueFlowsDict.update(nowBatteryLevels)
     mqtt.publishPlc1(nowValueFlowsDict)
-    logging.info("Loop used: " + str(datetime.datetime.now() - datetimestamp))
     logging.info(
         "Ran at: "
         + str(datetimestamp)
@@ -160,8 +158,8 @@ if __name__ == "__main__":
             logging.info("Waiting 5 seconds for MQTT to connect")
             time.sleep(5)
             # Init objects
-            w = Water(sampleTime_s, oneDayIsSimulatedTo_s, 1000.0, 1000.0, 100.0)
-            rain = RainForcast(sampleTime_s, oneDayIsSimulatedTo_s, [0, 0, 0.5, 0.5, 0])
+            w = Water(sampleTime_s, oneDayIsSimulatedTo_s, 22000.0, 25.0)
+            rainObj = RainForcast(sampleTime_s, oneDayIsSimulatedTo_s, [0, 0, 0.5, 0.5, 0])
             logging.info("Connecting to db")
             db = DbClient()
 
@@ -172,8 +170,10 @@ if __name__ == "__main__":
             forcastToHmi = YrForecastToHmi()
             batteryLevels = BatteryLevel()
             # Init and start Scheduled task "mainloop"
-            logging.info("Starting periodic tasks")
-            # TODO wait for the full minute before it starts
+            waitTimeBeforeStart = 59 - (time.time() % 60)
+            logging.info("Waiting for a new day befor starting: " + str(waitTimeBeforeStart) + " s")
+            time.sleep(waitTimeBeforeStart)
+            logging.info("Starting periodic tasks: " + str(time.time()))
             s1.start()
             s2.start()
             s3.start()
