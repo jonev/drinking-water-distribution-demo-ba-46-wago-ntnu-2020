@@ -13,14 +13,14 @@ ENV DEBIAN_FRONTEND=noninteractive
 # COPY requirements.txt /tmp/pip-tmp/
 
 # Configure apt and install packages
-RUN apt-get update \
-    && apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
+#RUN apt-get update \
+#RUN apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
     #
     # Verify git, process tools, lsb-release (common in install instructions for CLIs) installed
-    && apt-get -y install git iproute2 procps lsb-release \
+    # && apt-get -y install git iproute2 procps lsb-release \
     #
     # Install development dependencies
-    && pip --disable-pip-version-check --no-cache-dir install pylint \
+RUN pip --disable-pip-version-check --no-cache-dir install pylint \
     && pip --disable-pip-version-check --no-cache-dir install black \
     && pip --disable-pip-version-check --no-cache-dir install rope \
     && pip --disable-pip-version-check --no-cache-dir install sphinx \
@@ -30,6 +30,7 @@ RUN apt-get update \
     && pip --disable-pip-version-check --no-cache-dir install opcua \
     && pip --disable-pip-version-check --no-cache-dir install mysql-connector \
     && pip --disable-pip-version-check --no-cache-dir install python-dotenv \
+    && pip --disable-pip-version-check --no-cache-dir install python-yr \
     # Update Python environment based on requirements.txt
     # && pip --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
     # && rm -rf /tmp/pip-tmp \

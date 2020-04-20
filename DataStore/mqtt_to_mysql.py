@@ -4,6 +4,13 @@ import datetime
 import mysql.connector
 import datetime
 import time
+import logging
+
+logging.basicConfig(
+    format="%(asctime)s %(levelname)-8s %(message)s",
+    level=logging.INFO,
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
 ## MQTT
 mqttBroker = "broker.hivemq.com"
@@ -12,67 +19,114 @@ mqttTopics = ["ba/wago/opcua/plc3/plcpub", "ba/wago/opcua/plc2/plcpub", "ba/wago
 # MySQL
 dbName = "processvalues"
 signalAnalogTableName = "SignalAnalogHmiPv"
-signalAnalogTableFormat = (
-    "(id INT AUTO_INCREMENT PRIMARY KEY, metric VARCHAR(3), timestamp TIMESTAMP, Output_Pv FLOAT)"
-)
+signalAnalogTableFormat = "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), metric VARCHAR(3), timestamp TIMESTAMP, Output_Pv FLOAT)"
 signalAnalogTableInsert = (
-    "INSERT INTO " + signalAnalogTableName + " (metric, timestamp, Output_Pv) VALUES (%s, %s, %s)"
+    "INSERT INTO "
+    + signalAnalogTableName
+    + " (_tagId, metric, timestamp, Output_Pv) VALUES (%s, %s, %s, %s)"
 )
 valveAnalogTableName = "ValveAnalogHmiPv"
-valveAnalogTableFormat = "(id INT AUTO_INCREMENT PRIMARY KEY, metric VARCHAR(3), timestamp TIMESTAMP, ControlValue_Pv FLOAT, Interlocked_Pv BOOLEAN, Position_Pv FLOAT)"
+valveAnalogTableFormat = "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), metric VARCHAR(3), timestamp TIMESTAMP, ControlValue_Pv FLOAT, Interlocked_Pv BOOLEAN, Position_Pv FLOAT)"
 valveAnalogTableInsert = (
     "INSERT INTO "
     + valveAnalogTableName
-    + " (metric, timestamp, ControlValue_Pv, Interlocked_Pv, Position_Pv) VALUES (%s, %s, %s, %s, %s)"
+    + " (_tagId, metric, timestamp, ControlValue_Pv, Interlocked_Pv, Position_Pv) VALUES (%s, %s, %s, %s, %s, %s)"
 )
 motorDigitalTableName = "MotorDigitalHmiPv"
-motorDigitalTableFormat = "(id INT AUTO_INCREMENT PRIMARY KEY, metric VARCHAR(3), timestamp TIMESTAMP, ControlValue_Pv BOOLEAN, Interlocked_Pv BOOLEAN, Started_Pv BOOLEAN, Stopped_Pv BOOLEAN)"
+motorDigitalTableFormat = "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), metric VARCHAR(3), timestamp TIMESTAMP, ControlValue_Pv BOOLEAN, Interlocked_Pv BOOLEAN, Started_Pv BOOLEAN, Stopped_Pv BOOLEAN)"
 motorDigitalTableInsert = (
     "INSERT INTO "
     + motorDigitalTableName
-    + " (metric, timestamp, ControlValue_Pv, Interlocked_Pv, Started_Pv, Stopped_Pv) VALUES (%s, %s, %s, %s, %s, %s)"
+    + " (_tagId, metric, timestamp, ControlValue_Pv, Interlocked_Pv, Started_Pv, Stopped_Pv) VALUES (%s, %s, %s, %s, %s, %s, %s)"
 )
 
 while True:
     try:
+        logging.info("Starting DataStore in __main__")
+        logging.info("Waiting for db to start - 30 seconds")
+        time.sleep(30)
         db = mysql.connector.connect(host="db", user="root", passwd="example",)
         cursor = db.cursor()
 
         try:  # Add if not exist
             cursor.execute("CREATE DATABASE " + dbName)
-        except Exception as ex:
-            print(ex)
+        except Exception:
+            logging.info("Could not create database")
 
-        try:  # Create table if not exist
+        try:  # Create tables if not exist
             cursor.execute(
-                "SELECT * FROM information_schema.tables WHERE table_name='" + valveAnalogTableName + "'"
+                "SELECT * FROM information_schema.tables WHERE table_name='"
+                + signalAnalogTableName
+                + "'"
             )
-            all = cursor.fetchall()
+            tables = cursor.fetchall()
+            if len(tables) == 0:
+                cursor.execute(
+                    "CREATE TABLE "
+                    + dbName
+                    + "."
+                    + signalAnalogTableName
+                    + " "
+                    + signalAnalogTableFormat
+                )
+            cursor.execute(
+                "SELECT * FROM information_schema.tables WHERE table_name='"
+                + valveAnalogTableName
+                + "'"
+            )
+            tables = cursor.fetchall()
+            if len(tables) == 0:
+                cursor.execute(
+                    "CREATE TABLE "
+                    + dbName
+                    + "."
+                    + valveAnalogTableName
+                    + " "
+                    + valveAnalogTableFormat
+                )
+            cursor.execute(
+                "SELECT * FROM information_schema.tables WHERE table_name='"
+                + motorDigitalTableName
+                + "'"
+            )
+            tables = cursor.fetchall()
+            if len(tables) == 0:
+                cursor.execute(
+                    "CREATE TABLE "
+                    + dbName
+                    + "."
+                    + motorDigitalTableName
+                    + " "
+                    + motorDigitalTableFormat
+                )
+            # Connect to DB
             db = mysql.connector.connect(host="db", user="root", passwd="example", database=dbName)
             cursor = db.cursor()
-            if len(all) == 0:
-                cursor.execute("CREATE TABLE " + valveAnalogTableName + " " + valveAnalogTableFormat)
-        except Exception as ex:
-            print(ex)
-
+        except Exception:
+            logging.exception("Could not create tables")
 
         def on_connect(client, userdata, flags, rc):
             print("MQTT Connected with result code " + str(rc))
             for topic in mqttTopics:
                 client.subscribe(topic)
 
-
         def on_message(client, userdata, msg):
-            print(msg.topic + str(msg.payload))
+            # print(msg.topic + str(msg.payload))
             try:
                 receivedObject = json.loads(str(msg.payload, encoding="utf-8"))
-                print(receivedObject)
+                # print(receivedObject)
                 if receivedObject["_type"] == "SignalAnalog":
-                    val = ("na", receivedObject["_timestamp"], receivedObject["Output_Pv"])
-                    cursor.execute(valveAnalogTableInsert, val)
-                    db.commit()
-                if receivedObject["_type"] == "ValveAnalog":
                     val = (
+                        receivedObject["_tagId"],
+                        "na",
+                        receivedObject["_timestamp"],
+                        receivedObject["Output_Pv"],
+                    )
+                    cursor.execute(signalAnalogTableInsert, val)
+                    db.commit()
+                elif receivedObject["_type"] == "ValveAnalog":
+                    val = (
+                        receivedObject["_tagId"],
                         "na",
                         receivedObject["_timestamp"],
                         receivedObject["ControlValue_Pv"],
@@ -81,8 +135,9 @@ while True:
                     )
                     cursor.execute(valveAnalogTableInsert, val)
                     db.commit()
-                if receivedObject["_type"] == "MotorDigital":
+                elif receivedObject["_type"] == "MotorDigital":
                     val = (
+                        receivedObject["_tagId"],
                         "na",
                         receivedObject["_timestamp"],
                         receivedObject["ControlValue_Pv"],
@@ -90,11 +145,12 @@ while True:
                         receivedObject["Started_Pv"],
                         receivedObject["Stopped_Pv"],
                     )
-                    cursor.execute(valveAnalogTableInsert, val)
+                    cursor.execute(motorDigitalTableInsert, val)
                     db.commit()
-            except Exception as e:
-                print(e)
-
+                else:
+                    logging.info("Unsuported type: " + receivedObject["_type"])
+            except Exception:
+                logging.exception("Exception on received object.")
 
         mqttClient = mqtt.Client()
         mqttClient.connect(mqttBroker, mqttPort, 60)
@@ -102,5 +158,5 @@ while True:
         mqttClient.on_message = on_message
         mqttClient.loop_forever()
     except Exception as e:
-        print(e)
+        logging.exception("Exception in connect loop.")
     time.sleep(10)

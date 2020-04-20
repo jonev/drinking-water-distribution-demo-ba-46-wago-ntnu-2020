@@ -12,16 +12,28 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "PLC2",
+            "name": "LeakDetection",
             "type": "python",
             "request": "launch",
-            "module": "plc2_pressure"
+            "module": "LeakDetection"
         },
         {
-            "name": "PLC3",
+            "name": "MQTT-OPC-Hmi",
             "type": "python",
             "request": "launch",
-            "module": "plc3_flood"
+            "module": "OPCUA_MQTT_link.HMI"
+        },
+        {
+            "name": "MQTT-OPC-Plc",
+            "type": "python",
+            "request": "launch",
+            "module": "OPCUA_MQTT_link.PLC"
+        },
+        {
+            "name": "SimulationProgram",
+            "type": "python",
+            "request": "launch",
+            "module": "SimulationProgram"
         }
     ]
 }
