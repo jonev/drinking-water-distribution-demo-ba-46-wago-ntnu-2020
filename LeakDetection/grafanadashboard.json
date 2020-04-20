@@ -19,6 +19,30 @@
     "links": [],
     "panels": [
         {
+            "dashboardFilter": "",
+            "dashboardTags": [],
+            "datasource": null,
+            "folderId": null,
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 6,
+                "y": 0
+            },
+            "id": 10,
+            "limit": 10,
+            "nameFilter": "",
+            "onlyAlertsOnDashboard": false,
+            "options": {},
+            "show": "current",
+            "sortOrder": 1,
+            "stateFilter": [],
+            "timeFrom": null,
+            "timeShift": null,
+            "title": "Alarms",
+            "type": "alertlist"
+        },
+        {
             "aliasColors": {},
             "bars": false,
             "dashLength": 10,
@@ -27,10 +51,423 @@
             "fill": 1,
             "fillGradient": 0,
             "gridPos": {
-                "h": 11,
+                "h": 9,
                 "w": 24,
                 "x": 0,
-                "y": 0
+                "y": 8
+            },
+            "hiddenSeries": false,
+            "id": 6,
+            "legend": {
+                "avg": false,
+                "current": false,
+                "max": false,
+                "min": false,
+                "show": true,
+                "total": false,
+                "values": false
+            },
+            "lines": true,
+            "linewidth": 1,
+            "nullPointMode": "null",
+            "options": {
+                "dataLinks": []
+            },
+            "percentage": false,
+            "pointradius": 2,
+            "points": true,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": false,
+            "targets": [
+                {
+                    "format": "time_series",
+                    "group": [],
+                    "metricColumn": "none",
+                    "rawQuery": false,
+                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  value AS \"t0 120 samples avg\"\nFROM LeakDetection120SamplesHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't0'\nORDER BY timestamp",
+                    "refId": "A",
+                    "select": [
+                        [
+                            {
+                                "params": [
+                                    "value"
+                                ],
+                                "type": "column"
+                            },
+                            {
+                                "params": [
+                                    "t0 120 samples avg"
+                                ],
+                                "type": "alias"
+                            }
+                        ]
+                    ],
+                    "table": "LeakDetection120SamplesHourlyAverage",
+                    "timeColumn": "timestamp",
+                    "timeColumnType": "datetime",
+                    "where": [
+                        {
+                            "name": "$__timeFilter",
+                            "params": [],
+                            "type": "macro"
+                        },
+                        {
+                            "datatype": "varchar",
+                            "name": "",
+                            "params": [
+                                "_tagId",
+                                "=",
+                                "'t0'"
+                            ],
+                            "type": "expression"
+                        }
+                    ]
+                },
+                {
+                    "format": "time_series",
+                    "group": [],
+                    "metricColumn": "none",
+                    "rawQuery": false,
+                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  value AS \"t0 real-time\"\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't0'\nORDER BY timestamp",
+                    "refId": "B",
+                    "select": [
+                        [
+                            {
+                                "params": [
+                                    "value"
+                                ],
+                                "type": "column"
+                            },
+                            {
+                                "params": [
+                                    "t0 real-time"
+                                ],
+                                "type": "alias"
+                            }
+                        ]
+                    ],
+                    "table": "LeakDetectionHourlyAverage",
+                    "timeColumn": "timestamp",
+                    "timeColumnType": "datetime",
+                    "where": [
+                        {
+                            "name": "$__timeFilter",
+                            "params": [],
+                            "type": "macro"
+                        },
+                        {
+                            "datatype": "varchar",
+                            "name": "",
+                            "params": [
+                                "_tagId",
+                                "=",
+                                "'t0'"
+                            ],
+                            "type": "expression"
+                        }
+                    ]
+                }
+            ],
+            "thresholds": [],
+            "timeFrom": null,
+            "timeRegions": [],
+            "timeShift": null,
+            "title": "Hourly samples average",
+            "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": false,
+                "values": []
+            },
+            "yaxes": [
+                {
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": "500",
+                    "min": "0",
+                    "show": true
+                },
+                {
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                }
+            ],
+            "yaxis": {
+                "align": false,
+                "alignLevel": null
+            }
+        },
+        {
+            "alert": {
+                "alertRuleTags": {},
+                "conditions": [
+                    {
+                        "evaluator": {
+                            "params": [
+                                15
+                            ],
+                            "type": "gt"
+                        },
+                        "operator": {
+                            "type": "and"
+                        },
+                        "query": {
+                            "params": [
+                                "A",
+                                "1m",
+                                "now"
+                            ]
+                        },
+                        "reducer": {
+                            "params": [],
+                            "type": "max"
+                        },
+                        "type": "query"
+                    }
+                ],
+                "executionErrorState": "alerting",
+                "for": "0m",
+                "frequency": "10s",
+                "handler": 1,
+                "name": "Deviation to high",
+                "noDataState": "no_data",
+                "notifications": []
+            },
+            "aliasColors": {},
+            "bars": false,
+            "cacheTimeout": null,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": null,
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+                "h": 19,
+                "w": 24,
+                "x": 0,
+                "y": 17
+            },
+            "hiddenSeries": false,
+            "id": 8,
+            "legend": {
+                "avg": false,
+                "current": true,
+                "max": true,
+                "min": false,
+                "show": true,
+                "total": false,
+                "values": true
+            },
+            "lines": true,
+            "linewidth": 1,
+            "links": [],
+            "nullPointMode": "null",
+            "options": {
+                "dataLinks": []
+            },
+            "percentage": false,
+            "pluginVersion": "6.5.2",
+            "pointradius": 2,
+            "points": true,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": false,
+            "steppedLine": true,
+            "targets": [
+                {
+                    "format": "time_series",
+                    "group": [],
+                    "metricColumn": "none",
+                    "rawQuery": false,
+                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver10\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't0'\nORDER BY timestamp",
+                    "refId": "A",
+                    "select": [
+                        [
+                            {
+                                "params": [
+                                    "pointsOver10"
+                                ],
+                                "type": "column"
+                            }
+                        ]
+                    ],
+                    "table": "LeakDetectionAlarmPoints",
+                    "timeColumn": "timestamp",
+                    "timeColumnType": "datetime",
+                    "where": [
+                        {
+                            "name": "$__timeFilter",
+                            "params": [],
+                            "type": "macro"
+                        },
+                        {
+                            "datatype": "varchar",
+                            "name": "",
+                            "params": [
+                                "_tagId",
+                                "=",
+                                "'t0'"
+                            ],
+                            "type": "expression"
+                        }
+                    ]
+                },
+                {
+                    "format": "time_series",
+                    "group": [],
+                    "metricColumn": "none",
+                    "rawQuery": false,
+                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver20\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't0'\nORDER BY timestamp",
+                    "refId": "B",
+                    "select": [
+                        [
+                            {
+                                "params": [
+                                    "pointsOver20"
+                                ],
+                                "type": "column"
+                            }
+                        ]
+                    ],
+                    "table": "LeakDetectionAlarmPoints",
+                    "timeColumn": "timestamp",
+                    "timeColumnType": "datetime",
+                    "where": [
+                        {
+                            "name": "$__timeFilter",
+                            "params": [],
+                            "type": "macro"
+                        },
+                        {
+                            "datatype": "varchar",
+                            "name": "",
+                            "params": [
+                                "_tagId",
+                                "=",
+                                "'t0'"
+                            ],
+                            "type": "expression"
+                        }
+                    ]
+                },
+                {
+                    "format": "time_series",
+                    "group": [],
+                    "metricColumn": "none",
+                    "rawQuery": false,
+                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver30\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't0'\nORDER BY timestamp",
+                    "refId": "C",
+                    "select": [
+                        [
+                            {
+                                "params": [
+                                    "pointsOver30"
+                                ],
+                                "type": "column"
+                            }
+                        ]
+                    ],
+                    "table": "LeakDetectionAlarmPoints",
+                    "timeColumn": "timestamp",
+                    "timeColumnType": "datetime",
+                    "where": [
+                        {
+                            "name": "$__timeFilter",
+                            "params": [],
+                            "type": "macro"
+                        },
+                        {
+                            "datatype": "varchar",
+                            "name": "",
+                            "params": [
+                                "_tagId",
+                                "=",
+                                "'t0'"
+                            ],
+                            "type": "expression"
+                        }
+                    ]
+                }
+            ],
+            "thresholds": [
+                {
+                    "colorMode": "critical",
+                    "fill": true,
+                    "line": true,
+                    "op": "gt",
+                    "value": 15
+                }
+            ],
+            "timeFrom": null,
+            "timeRegions": [],
+            "timeShift": null,
+            "title": "Panel Title",
+            "tooltip": {
+                "shared": true,
+                "sort": 0,
+                "value_type": "individual"
+            },
+            "type": "graph",
+            "xaxis": {
+                "buckets": null,
+                "mode": "time",
+                "name": null,
+                "show": true,
+                "values": []
+            },
+            "yaxes": [
+                {
+                    "decimals": null,
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": "50",
+                    "min": "0",
+                    "show": true
+                },
+                {
+                    "format": "short",
+                    "label": null,
+                    "logBase": 1,
+                    "max": null,
+                    "min": null,
+                    "show": true
+                }
+            ],
+            "yaxis": {
+                "align": false,
+                "alignLevel": null
+            }
+        },
+        {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": null,
+            "fill": 1,
+            "fillGradient": 0,
+            "gridPos": {
+                "h": 6,
+                "w": 24,
+                "x": 0,
+                "y": 36
             },
             "hiddenSeries": false,
             "id": 2,
@@ -347,7 +784,7 @@
                 "buckets": null,
                 "mode": "time",
                 "name": null,
-                "show": true,
+                "show": false,
                 "values": []
             },
             "yaxes": [
@@ -355,160 +792,8 @@
                     "format": "short",
                     "label": null,
                     "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                },
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                }
-            ],
-            "yaxis": {
-                "align": false,
-                "alignLevel": null
-            }
-        },
-        {
-            "aliasColors": {},
-            "bars": false,
-            "dashLength": 10,
-            "dashes": false,
-            "datasource": "CompareQueries",
-            "fill": 1,
-            "fillGradient": 0,
-            "gridPos": {
-                "h": 17,
-                "w": 24,
-                "x": 0,
-                "y": 11
-            },
-            "hiddenSeries": false,
-            "id": 4,
-            "legend": {
-                "alignAsTable": false,
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "rightSide": false,
-                "show": true,
-                "total": false,
-                "values": false
-            },
-            "lines": true,
-            "linewidth": 1,
-            "nullPointMode": "null",
-            "options": {
-                "dataLinks": []
-            },
-            "percentage": false,
-            "pointradius": 2,
-            "points": true,
-            "renderer": "flot",
-            "seriesOverrides": [],
-            "spaceLength": 10,
-            "stack": false,
-            "steppedLine": false,
-            "targets": [
-                {
-                    "datasource": "MySQL",
-                    "format": "time_series",
-                    "group": [],
-                    "metricColumn": "none",
-                    "rawQuery": false,
-                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  value AS \"t0 realtime\"\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't0'\nORDER BY timestamp",
-                    "refId": "A",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "value"
-                                ],
-                                "type": "column"
-                            },
-                            {
-                                "params": [
-                                    "t0 realtime"
-                                ],
-                                "type": "alias"
-                            }
-                        ]
-                    ],
-                    "table": "LeakDetectionHourlyAverage",
-                    "timeColumn": "timestamp",
-                    "timeColumnType": "datetime",
-                    "where": [
-                        {
-                            "name": "$__timeFilter",
-                            "params": [],
-                            "type": "macro"
-                        },
-                        {
-                            "datatype": "varchar",
-                            "name": "",
-                            "params": [
-                                "_tagId",
-                                "=",
-                                "'t0'"
-                            ],
-                            "type": "expression"
-                        }
-                    ]
-                },
-                {
-                    "datasource": "CompareQueries",
-                    "process": true,
-                    "query": "A",
-                    "refId": "B",
-                    "timeShifts": [
-                        {
-                            "alias": "1 day",
-                            "id": 0,
-                            "value": "1m"
-                        },
-                        {
-                            "alias": "2 days",
-                            "id": 1,
-                            "value": "2m"
-                        },
-                        {
-                            "alias": "3 days",
-                            "id": 2,
-                            "value": "3m"
-                        }
-                    ]
-                }
-            ],
-            "thresholds": [],
-            "timeFrom": null,
-            "timeRegions": [],
-            "timeShift": null,
-            "title": "Hourly Average",
-            "tooltip": {
-                "shared": true,
-                "sort": 0,
-                "value_type": "individual"
-            },
-            "type": "graph",
-            "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": []
-            },
-            "yaxes": [
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
+                    "max": "500",
+                    "min": "0",
                     "show": true
                 },
                 {
@@ -526,7 +811,7 @@
             }
         }
     ],
-    "refresh": "5s",
+    "refresh": "10s",
     "schemaVersion": 21,
     "style": "dark",
     "tags": [],
@@ -554,5 +839,5 @@
     "timezone": "",
     "title": "Lekasjedeteksjon",
     "uid": "Y8mz3XuWz",
-    "version": 12
+    "version": 24
 }

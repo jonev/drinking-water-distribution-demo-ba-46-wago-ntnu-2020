@@ -7,12 +7,19 @@ Develop: [![Build Status](https://travis-ci.com/jonev/wago-demo-plc-python.svg?b
 Prerequisites: Docker and Visual Studio Code (With remote development extension)
 - Open root folder in container with VS code.
 
-## Run tests
+## Run tests local
 - Use vs code Test menu (recommended)
 - Or from root:
 ```
 python -m unittest discover test -p '*_test.py'
 ```
+## Run tests as in Travis
+1. `docker build -f Dockerfile-tests -t pythontestapp .`
+2. `docker run -d --name app pythontestapp sleep infinity`
+3. `docker ps -a`
+4. `docker exec app python -m unittest discover test -p '*_test.py' -s test -v`
+5. `docker rm -f app`
+
 
 ## Run current file, Leakdetection or Simulation program
 - Use vs code run and debug menu, choose from the dropdown
@@ -33,6 +40,8 @@ To view the documentation open `docs/_build/html/index.html` in a browser.
 - Docker settings -> Daemon -> Enable Experimental features
 - Add builder:  
 `docker buildx create --name builder-for-plc`
+- Configure to use it:
+`docker buildx use builder-for-plc`
 ### Build (and push) from root:
 `docker buildx build -f dockerfile-name --platform linux/amd64,linux/arm64,linux/arm/v7 -t username/imagename:tag --push .`  
 E.g:  
@@ -59,6 +68,15 @@ E.g:
 - Or restart only one container
 `docker-compose restart "service name"`
 
+## Instal docker manually
+1. Use a file transfer software (e.g. WinSCP) to transfer docker_xxx.ipk to the plc at /root  
+2. Install docker with: `opkg install docker_xxx.ipk`  
+Possible errors:  
+```
+Collected errors:
+ * verify_pkg_installable: Only have 17424kb available on filesystem /, pkg docker needs 115002
+ * opkg_solver_install: Cannot install package docker.
+ ```
 ### Sources:
 - [Docker on PFC200 2. Gen](https://github.com/Wago-Norge/Docker-Support)
 
@@ -68,3 +86,4 @@ Putty, or Termius (supports saving passwords and transfer files)
 ### Transfer files from Windows to Linux
 [WinSCP](https://winscp.net/eng/download.php)
 - Log inn and drag files between the two computers
+

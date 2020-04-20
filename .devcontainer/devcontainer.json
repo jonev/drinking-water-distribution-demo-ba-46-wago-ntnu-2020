@@ -25,6 +25,7 @@
     "ms-python.python",
     "njpwerner.autodocstring",
     "streetsidesoftware.code-spell-checker",
-    "formulahendry.vscode-mysql"
+    "formulahendry.vscode-mysql",
+    "oderwat.indent-rainbow"
   ]
 }

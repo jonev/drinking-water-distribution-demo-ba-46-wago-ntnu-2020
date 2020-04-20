@@ -40,7 +40,8 @@ class SimpleTaskScheduler:
     def join(self):
         """Join the scheduler task - Wait for the the scheduler to finish
         """
-        self.__starterThread.join()
+        if self.__starterThread.isAlive():
+            self.__starterThread.join()
 
     def stop(self):
         """Stop the scheduler

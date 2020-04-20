@@ -1,6 +1,7 @@
 import mysql.connector
 from datetime import timedelta, datetime, date
 import time
+import logging
 
 
 class DbLeakDetectionClient:
@@ -17,26 +18,19 @@ class DbLeakDetectionClient:
         )
         self.cursor = self.db.cursor()
 
-    def createDatabase(self, database_name):
-        try:
-            self.cursor.execute("CREATE DATABASE " + database_name)
-            print("Database " + database_name + " was created")
-        except Exception as ex:
-            print(ex)
+    def createDatabase(self, databaseName):
+        self.cursor.execute("CREATE DATABASE IF NOT EXISTS " + databaseName)
 
-    def createTable(self, table_name, table_format, database_name):
-        self.tableName = table_name
-        self.tableFormat = table_format
-        try:
-            self.cursor.execute(
-                "SELECT * FROM information_schema.tables WHERE table_name='" + self.tableName + "'"
-            )
-            all = self.cursor.fetchall()
-            if len(all) == 0:
-                self.cursor.execute("CREATE TABLE " + self.tableName + " " + self.tableFormat)
-                print("Table " + self.tableName + " was created")
-        except Exception as ex:
-            print(ex)
+    def createTable(self, tableName, tableFormat):
+        self.cursor.execute(
+            "SELECT * FROM information_schema.tables WHERE table_name='" + tableName + "'"
+        )
+        all = self.cursor.fetchall()
+        if len(all) == 0:
+            self.cursor.execute("CREATE TABLE " + tableName + " " + tableFormat)
+            logging.warning("Table " + tableName + " was created")
+        else:
+            logging.warning("Table " + tableName + " aleready exist")
 
     def deleteTable(self, table_name):
         self.cursor.execute("DROP TABLE IF EXISTS " + table_name)
@@ -81,13 +75,12 @@ class DbLeakDetectionClient:
         self.cursor.execute(
             query, (secondStart, secondEnd, _tagId, maxSamples),
         )
-        # print(self.cursor._executed)
         return self.cursor.fetchall()
 
     def getValues_BetweenTimestampsOnTime(
         self, table_name, timestamp_from, timestamp_to, on_time, _tagId
     ):
-        # TODO HOUR() must be used in real case
+        # TODO HOUR() must be used in a real case
         self.cursor.execute(
             "SELECT * FROM "
             + table_name
@@ -111,13 +104,28 @@ class DbLeakDetectionClient:
         self.cursor.execute(tableInsert, val)
         self.db.commit()
 
+    def pushPointsOnTimestamp(
+        self, tableName, datetimestamp, _tagId, pointsOver10, pointsOver20, pointsOver30
+    ):
+        tableValues = "(timestamp, _tagId, pointsOver10, pointsOver20, pointsOver30) VALUES (%s, %s, %s, %s, %s)"
+        tableInsert = "INSERT INTO " + tableName + " " + tableValues
+        val = (
+            datetimestamp,
+            _tagId,
+            pointsOver10,
+            pointsOver20,
+            pointsOver30,
+        )
+        self.cursor.execute(tableInsert, val)
+        self.db.commit()
+
     def pushValue_BetweenTimestamps(
         self, table_name, datetimestamp_from, datetimestamp_to, _tagId, value
     ):
-        self.tableValues = "(metric, datetimestamp, datestamp, timestamp, time_from, time_to, _tagId, value) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-        self.tableName = table_name
-        self.tableInsert = "INSERT INTO " + self.tableName + " " + self.tableValues
-        self.val = (
+        tableValues = "(metric, datetimestamp, datestamp, timestamp, time_from, time_to, _tagId, value) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        tableName = table_name
+        tableInsert = "INSERT INTO " + tableName + " " + tableValues
+        val = (
             "na",
             datetimestamp_from,
             datetimestamp_from.date(),
@@ -127,5 +135,5 @@ class DbLeakDetectionClient:
             _tagId,
             value,
         )
-        self.cursor.execute(self.tableInsert, self.val)
+        self.cursor.execute(tableInsert, val)
         self.db.commit()

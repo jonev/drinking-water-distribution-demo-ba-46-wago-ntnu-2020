@@ -6,7 +6,11 @@ import datetime
 import time
 import logging
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    format="%(asctime)s %(levelname)-8s %(message)s",
+    level=logging.INFO,
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
 ## MQTT
 mqttBroker = "broker.hivemq.com"
@@ -38,6 +42,9 @@ motorDigitalTableInsert = (
 
 while True:
     try:
+        logging.info("Starting DataStore in __main__")
+        logging.info("Waiting for db to start - 30 seconds")
+        time.sleep(30)
         db = mysql.connector.connect(host="db", user="root", passwd="example",)
         cursor = db.cursor()
 

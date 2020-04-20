@@ -9,20 +9,18 @@ class Water:
         USING SI units https://en.wikipedia.org/wiki/International_System_of_Units
     """
 
-    def __init__(self, sampletime_s, oneDayIsSimulatedTo_s, length_m, width_m, hightMax_m):
+    def __init__(self, sampletime_s, oneDayIsSimulatedTo_s, area_m2, hightMax_m):
         self.__sampletime_s = sampletime_s
         self.__oneDayIsSimulatoedTo_s = oneDayIsSimulatedTo_s
-        self.__length_m = length_m
-        self.__width_m = width_m
         self.__hightMax_m = hightMax_m
-        self.__area_m2 = self.__length_m * self.__width_m
+        self.__area_m2 = area_m2
         self.__volume_m3 = self.__area_m2 * self.__hightMax_m
         self.__currentVolume_m3 = (self.__volume_m3 / 3) * 2  # 2/3 full at start
         # Can empty the water in 10 days
         self.__emissionValveMaxOpening_m3_per_s = self.__volume_m3 / (
             10.0 * self.__oneDayIsSimulatoedTo_s
         )
-        self.__inflowFromRivers_m3_per_s = self.__emissionValveMaxOpening_m3_per_s / 5
+        self.__inflowFromRivers_m3_per_s = self.__emissionValveMaxOpening_m3_per_s / 3
 
     def getWaterLevel_m(self):
         return self.__currentVolume_m3 / self.__area_m2
@@ -31,14 +29,22 @@ class Water:
         return (self.getWaterLevel_m() / self.__hightMax_m) * 100.0
 
     def addCurrentRain_m_ToCurrentVolume(self, rain_m, rainPeriod_s):
-        self.__currentVolume_m3 = self.__currentVolume_m3 + (
+        newValue = self.__currentVolume_m3 + (
             ((rain_m / rainPeriod_s) * self.__area_m2) * self.__sampletime_s
         )
+        if newValue < self.__volume_m3:
+            self.__currentVolume_m3 = newValue
+        else:
+            self.__currentVolume_m3 = self.__volume_m3
 
     def addInflowFromRivers(self):
-        self.__currentVolume_m3 = self.__currentVolume_m3 + (
+        newValue = self.__currentVolume_m3 + (
             self.__inflowFromRivers_m3_per_s * self.__sampletime_s
         )
+        if newValue < self.__volume_m3:
+            self.__currentVolume_m3 = newValue
+        else:
+            self.__currentVolume_m3 = self.__volume_m3
 
     def setWantedEmission_m3_per_s(self, emission_m3_per_s):
         newCurrentVolume_m3 = self.__currentVolume_m3 - (emission_m3_per_s * self.__sampletime_s)
@@ -55,7 +61,9 @@ class RainForcast:
     def __init__(self, sampletime_s, oneDayIsSimulatedTo_s, rainForcast_m_per_day):
         self.__sampletime_s = sampletime_s
         self.__oneDayIsSimulatoedTo_s = oneDayIsSimulatedTo_s
-        self.__rainForcast_m_per_day = rainForcast_m_per_day
+        self.__rainForcast_m_per_day = (
+            rainForcast_m_per_day  # Included extra water from rivers and the area around
+        )
         self.__start = 0
         self.__day = 0
         self.__rain = 0
@@ -91,6 +99,7 @@ class WaterDistributionPipes:
         self.__samplesPerDay = oneDayIsSimulatedTo_s // sampletime_s
         self.__simulatedSampelsPerSample = simulatedSamplesPerDay // self.__samplesPerDay
         # Base - from a source online
+        # Liters per person per day
         self.__normalWaterConsumptionForADay_Per_Hour_24_samples = [
             8,
             6,
@@ -126,7 +135,7 @@ class WaterDistributionPipes:
         )
         self.__zonesResidents = [30, 50, 40, 60]
         self.__flowInPipe = [0, 0, 0, 0, 0, 0, 0]
-        self.__leakInPipe = [0, 0, 0, 0, 0, 0, 0]
+        self.__leakInPipe = [0, 0, 0, 0, 0, 100, 0]
         self.__samplesCounter = 0
         self.__leakInterval = self.__oneDayIsSimulatoedTo_s * 3
         self.__leakIntervalCounter = 0
@@ -158,16 +167,16 @@ class WaterDistributionPipes:
         flowInPipe = [0, 0, 0, 0, 0, 0, 0]
 
         flowInPipe[0] = (
-            zonesResidents[0] * normalWaterConsumption[sample] * random.uniform(0.95, 1.05)
+            zonesResidents[0] * normalWaterConsumption[sample] * random.uniform(0.90, 1.10)
         ) + leakInPipe[0]
         flowInPipe[1] = (
-            zonesResidents[1] * normalWaterConsumption[sample] * random.uniform(0.95, 1.05)
+            zonesResidents[1] * normalWaterConsumption[sample] * random.uniform(0.90, 1.10)
         ) + leakInPipe[1]
         flowInPipe[2] = (
-            zonesResidents[2] * normalWaterConsumption[sample] * random.uniform(0.95, 1.05)
+            zonesResidents[2] * normalWaterConsumption[sample] * random.uniform(0.9, 1.10)
         ) + leakInPipe[2]
         flowInPipe[3] = (
-            zonesResidents[3] * normalWaterConsumption[sample] * random.uniform(0.95, 1.05)
+            zonesResidents[3] * normalWaterConsumption[sample] * random.uniform(0.9, 1.10)
         ) + leakInPipe[3]
         # Pipes not at the end
         flowInPipe[4] = flowInPipe[3] + flowInPipe[2] + leakInPipe[4]
@@ -184,10 +193,12 @@ class WaterDistributionPipes:
             self.__leakIntervalCounter = 0
             if self.__leakInPipe[0] == 0:
                 self.__leakInPipe[0] = 100
-                logging.info("Leak activated")
             else:
                 self.__leakInPipe[0] = 0
-                logging.info("Leak de-activated")
+            if self.__leakInPipe[5] == 0:
+                self.__leakInPipe[5] = 100
+            else:
+                self.__leakInPipe[5] = 0
 
         self.__flowInPipe = self.__calulateFlowInPipes(
             self.__zonesResidents,

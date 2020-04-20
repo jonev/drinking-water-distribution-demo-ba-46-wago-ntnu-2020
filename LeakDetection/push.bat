@@ -1,2 +1,2 @@
 cd ..
-docker buildx build -f LeakDetection/Dockerfile -t jonev/leak-detection --push .
+docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -f LeakDetection/Dockerfile -t jonev/leak-detection --push .

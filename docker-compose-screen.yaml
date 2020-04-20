@@ -19,7 +19,7 @@ services:
             - simulation
 
     grafana:
-        image: grafana/grafana
+        image: jonev/grafana-with-plugins
         ports:
             - 3000:3000
         depends_on: 
