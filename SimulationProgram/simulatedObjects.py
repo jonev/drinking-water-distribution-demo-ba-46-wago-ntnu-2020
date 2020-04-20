@@ -6,19 +6,18 @@ import logging
 
 class Water:
     """ Object representing the water
-        USING SI units https://en.wikipedia.org/wiki/International_System_of_Units
     """
 
     def __init__(self, sampletime_s, oneDayIsSimulatedTo_s, area_m2, hightMax_m):
         self.__sampletime_s = sampletime_s
-        self.__oneDayIsSimulatoedTo_s = oneDayIsSimulatedTo_s
+        self.__oneDayIsSimulatedTo_s = oneDayIsSimulatedTo_s
         self.__hightMax_m = hightMax_m
         self.__area_m2 = area_m2
         self.__volume_m3 = self.__area_m2 * self.__hightMax_m
         self.__currentVolume_m3 = (self.__volume_m3 / 3) * 2  # 2/3 full at start
         # Can empty the water in 10 days
         self.__emissionValveMaxOpening_m3_per_s = self.__volume_m3 / (
-            10.0 * self.__oneDayIsSimulatoedTo_s
+            10.0 * self.__oneDayIsSimulatedTo_s
         )
         self.__inflowFromRivers_m3_per_s = self.__emissionValveMaxOpening_m3_per_s / 3
 
@@ -60,7 +59,7 @@ class Water:
 class RainForcast:
     def __init__(self, sampletime_s, oneDayIsSimulatedTo_s, rainForcast_m_per_day):
         self.__sampletime_s = sampletime_s
-        self.__oneDayIsSimulatoedTo_s = oneDayIsSimulatedTo_s
+        self.__oneDayIsSimulatedTo_s = oneDayIsSimulatedTo_s
         self.__rainForcast_m_per_day = (
             rainForcast_m_per_day  # Included extra water from rivers and the area around
         )
@@ -75,12 +74,12 @@ class RainForcast:
 
     def calculateRain(self):
         rain = (
-            self.__rainForcast_m_per_day[self.__day] / self.__oneDayIsSimulatoedTo_s
+            self.__rainForcast_m_per_day[self.__day] / self.__oneDayIsSimulatedTo_s
         ) * self.__sampletime_s
         self.__start = self.__start + self.__sampletime_s
-        if self.__start >= self.__oneDayIsSimulatoedTo_s:
+        if self.__start >= self.__oneDayIsSimulatedTo_s:
             self.__day = self.__day + 1
-            self.__start = self.__start - self.__oneDayIsSimulatoedTo_s
+            self.__start = self.__start - self.__oneDayIsSimulatedTo_s
         if self.__day >= len(self.__rainForcast_m_per_day):
             self.__day = 0
 
@@ -95,7 +94,7 @@ class WaterDistributionPipes:
         if oneDayIsSimulatedTo_s % sampletime_s != 0:
             raise Exception("One day must be simulated to a multiplum of the sampletime")
         self.__sampletime_s = sampletime_s
-        self.__oneDayIsSimulatoedTo_s = oneDayIsSimulatedTo_s
+        self.__oneDayIsSimulatedTo_s = oneDayIsSimulatedTo_s
         self.__samplesPerDay = oneDayIsSimulatedTo_s // sampletime_s
         self.__simulatedSampelsPerSample = simulatedSamplesPerDay // self.__samplesPerDay
         # Base - from a source online
@@ -137,7 +136,7 @@ class WaterDistributionPipes:
         self.__flowInPipe = [0, 0, 0, 0, 0, 0, 0]
         self.__leakInPipe = [0, 0, 0, 0, 0, 100, 0]
         self.__samplesCounter = 0
-        self.__leakInterval = self.__oneDayIsSimulatoedTo_s * 3
+        self.__leakInterval = self.__oneDayIsSimulatedTo_s * 3
         self.__leakIntervalCounter = 0
 
     def __scaleNormalWaterComsumptionForADay(self, inputlist, wantedLength):

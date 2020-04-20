@@ -23,8 +23,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN pip --disable-pip-version-check --no-cache-dir install pylint \
     && pip --disable-pip-version-check --no-cache-dir install black \
     && pip --disable-pip-version-check --no-cache-dir install rope \
-    && pip --disable-pip-version-check --no-cache-dir install sphinx \
-    && pip --disable-pip-version-check --no-cache-dir install sphinx-rtd-theme \
     && pip --disable-pip-version-check --no-cache-dir install ddt \
     && pip --disable-pip-version-check --no-cache-dir install paho-mqtt \
     && pip --disable-pip-version-check --no-cache-dir install opcua \

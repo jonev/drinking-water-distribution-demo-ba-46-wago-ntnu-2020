@@ -24,15 +24,6 @@ python -m unittest discover test -p '*_test.py'
 ## Run current file, Leakdetection or Simulation program
 - Use vs code run and debug menu, choose from the dropdown
 
-## Code Documentation with Sphinx
-### New files *.py
-- New files need to be added to `docs/modules.rst`, and `*.rst` file need to be added for each file
-### Create/Update
-To create/update the documentation, run `make html`from /docs directory.
-### View
-To view the documentation open `docs/_build/html/index.html` in a browser.
-
-
 ## Build to PLC [(source)](https://www.docker.com/blog/multi-arch-images/)
 ### Prerequisites: 
 - To avoid long pull-time, re-use image tag
@@ -46,7 +37,7 @@ To view the documentation open `docs/_build/html/index.html` in a browser.
 `docker buildx build -f dockerfile-name --platform linux/amd64,linux/arm64,linux/arm/v7 -t username/imagename:tag --push .`  
 E.g:  
 `docker buildx build -f Dockerfile-plc2-pressure --platform linux/amd64,linux/arm64,linux/arm/v7 -t jonev/ba-wago:v6 --push .`
-- For the different applications, this build and push command is simplified to a simple command `./push.bat`
+- For the different applications, this build and push command is simplified with running the file: `./push.bat` or for each plc: `./plcX.bat`
 
 ### Common errors
 - "No space left on device", run `docker system prune` and delete also images with `docker image prune -a`
@@ -68,15 +59,6 @@ E.g:
 - Or restart only one container
 `docker-compose restart "service name"`
 
-## Instal docker manually
-1. Use a file transfer software (e.g. WinSCP) to transfer docker_xxx.ipk to the plc at /root  
-2. Install docker with: `opkg install docker_xxx.ipk`  
-Possible errors:  
-```
-Collected errors:
- * verify_pkg_installable: Only have 17424kb available on filesystem /, pkg docker needs 115002
- * opkg_solver_install: Cannot install package docker.
- ```
 ### Sources:
 - [Docker on PFC200 2. Gen](https://github.com/Wago-Norge/Docker-Support)
 

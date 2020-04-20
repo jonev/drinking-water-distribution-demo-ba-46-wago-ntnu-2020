@@ -56,14 +56,14 @@ def mainloop(datetimestamp):
         }
     )
     logging.info(
-       "Waterlevel m: "
-       + str(waterLevel_m)
-       + ", Emission m3/s: "
-       + str(emission_m3_per_s)
-       + ", Forcast: "
-       + str(rainforcast)
-       + ", Rain: "
-       + str(rain_m)
+        "Waterlevel m: "
+        + str(waterLevel_m)
+        + ", Emission m3/s: "
+        + str(emission_m3_per_s)
+        + ", Forcast: "
+        + str(rainforcast)
+        + ", Rain: "
+        + str(rain_m)
     )
 
     # Simulation for leakdetection - the order is important

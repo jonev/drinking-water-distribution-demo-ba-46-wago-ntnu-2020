@@ -83,11 +83,9 @@ def handleFtBalance(dbClient, start, end, inFlowAvg, outFlowAvg, ftData):
 
 def calculateHourlyAverageValues(datetimestamp):
     global FT01, FT02, FT03, FT04, FT05, FT06, FT07
-    try:  # TODO vurder om disse try'ene skal bort og det skal feile helt opp i main
-        # print("Timestamp run: " + str(datetimestamp))
+    try:
         timetaking = datetime.datetime.now()
         datetimestamp = datetimestamp - datetime.timedelta(seconds=5)
-        # print("Timestamp this run: " + str(datetimestamp))
         start = datetimestamp - datetime.timedelta(seconds=oneHour_s)
         end = datetimestamp
 
@@ -100,9 +98,6 @@ def calculateHourlyAverageValues(datetimestamp):
         avgHourFT06 = handleFt(dbClient, start, end, FT06)
         avgHourFT07 = handleFt(dbClient, start, end, FT07)
         # Flow balance
-        # FT07_is_FT01_FT06
-        # FT06_is_FT02_FT05
-        # FT05_is_FT03_FT04
         handleFtBalance(
             dbClient, start, end, avgHourFT07, (avgHourFT01 + avgHourFT06), FT07_is_FT01_FT06,
         )
