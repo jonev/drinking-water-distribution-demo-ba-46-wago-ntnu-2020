@@ -67,9 +67,12 @@ def on_mqtt_connect(client, userdata, flags, rc):
     client.subscribe(mqttTopicSubscribeData)
 
 
+def on_mqtt_disconnect(client, userdata, rc):
+    logging.exception("PLC: MQTT disconnecting: " + str(userdata) + ", " + str(rc))
+
+
 def on_received_mqtt_message(client, userdata, msg):
     global hashsLock, hashs, nodes, tags
-    #try:
     receivedObject = json.loads(str(msg.payload, encoding="utf-8"))
     # If plc receive empty objects, it send an object with values in return, immediately
     tagname = receivedObject["_tagId"]
@@ -93,10 +96,6 @@ def on_received_mqtt_message(client, userdata, msg):
         hashs[receivedObject["_tagId"]] = newHash
     # Write to opc ua by setting the children recursive
     setValuesToNodes(receivedObject, nodes[tagname])
-    #except Exception:
-    #    logging.exception(
-    #        "PLC: Exception in on_message, msg.payload: " + str(msg.payload, encoding="utf-8")
-    #    )
 
 
 if __name__ == "__main__":
@@ -121,6 +120,7 @@ if __name__ == "__main__":
     opcUaIdPrefix = os.getenv("OPC_UA_ID_PREFIX")
     opcUaIdCounter = os.getenv("OPC_UA_ID_STATUS_COUNTER")
     opcUaIdLastRun = os.getenv("OPC_UA_ID_STATUS_LAST_RUN")
+    opcUaIdRestartCmd = os.getenv("OPC_UA_ID_STATUS_RESTART")
     ## MQTT
     mqttBroker = os.getenv("MQTT_BROKER")
     mqttPort = int(os.getenv("MQTT_PORT"))
@@ -138,25 +138,28 @@ if __name__ == "__main__":
         + mqttBroker
     )
     # OPC UA
-    clientPlc = Client("opc.tcp://" + opcUaServer + ":4840", timeout=3)
-    clientPlc.set_user(opcUaServerUsername)
-    clientPlc.set_password(opcUaServerPassword)
+    opcClient = Client("opc.tcp://" + opcUaServer + ":4840", timeout=3)
+    opcClient.set_user(opcUaServerUsername)
+    opcClient.set_password(opcUaServerPassword)
 
     # MQTT
     mqttClient = mqtt.Client()
     mqttClient.on_connect = on_mqtt_connect
+    mqttClient.on_disconnect = on_mqtt_disconnect
     mqttClient.on_message = on_received_mqtt_message
     # Ensure disconnecting on program close
     try:
         # Tries to reconnect every 10 seconds
         while True:
             try:
+                logging.warning("PLC: Waiting 10s for e!cockpit to start")
+                time.sleep(10)
                 logging.info("PLC: Connecting to Opc.")
-                clientPlc.connect()
-                if clientPlc is None:
+                opcClient.connect()
+                if opcClient is None:
                     raise Exception("PLC: Opc connection failed")
                 logging.info("PLC: OPC Connected")
-                nodesUnderPrefix = clientPlc.get_node("ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix)
+                nodesUnderPrefix = opcClient.get_node("ns=" + str(opcUaNs) + ";s=" + opcUaIdPrefix)
 
                 # Building tag and opc node trees, for better performance on publishing data
                 topLevelOpcNodes = nodesUnderPrefix.get_children()
@@ -212,18 +215,26 @@ if __name__ == "__main__":
                     logging.warning(
                         "Publish loop used [s]: " + str((time.time() - publishLoopStarttime))
                     )
-                    node = clientPlc.get_node("ns=" + str(opcUaNs) + ";s=" + opcUaIdCounter)
+                    node = opcClient.get_node("ns=" + str(opcUaNs) + ";s=" + opcUaIdCounter)
                     node.set_value(loopCounter, varianttype=ua.VariantType.Int16)
-                    node = clientPlc.get_node("ns=" + str(opcUaNs) + ";s=" + opcUaIdLastRun)
+                    node = opcClient.get_node("ns=" + str(opcUaNs) + ";s=" + opcUaIdLastRun)
                     node.set_value(time.ctime())
+                    restartCmdNode = opcClient.get_node(
+                        "ns=" + str(opcUaNs) + ";s=" + opcUaIdRestartCmd
+                    )
+                    if restartCmdNode.get_value():
+                        restartCmdNode.set_value(False)
+                        raise Exception("PLC: Restart demanded from e!Cockpit environment")
+
                     time.sleep(publishLoopWaitTime)
             except Exception:
                 logging.exception("PLC: Exception in connection loop.")
-            logging.warning("PLC: Waiting 10s before trying to reconnect.")
-            time.sleep(10)
+            finally:
+                logging.warning("PLC: Disconnecting, then reconnecting.")
+                if opcClient is not None:
+                    opcClient.disconnect()
+                mqttClient.disconnect()
+    except:
+        pass
     finally:
-        logging.warning("PLC: Disconnecting.")
-        if clientPlc is not None:
-            clientPlc.disconnect()
-        mqttClient.disconnect()
-    logging.warning("PLC: OPC UA - MQTT link is shutting down.")
+        logging.warning("PLC: OPC UA - MQTT link is shutting down.")
