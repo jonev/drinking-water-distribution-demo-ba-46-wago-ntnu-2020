@@ -165,10 +165,10 @@ if __name__ == "__main__":
     # Ensure disconnecting on program close
     try:
         # Tries to reconnect every 10 seconds
+        logging.warning("HMI: Waiting 10s for e!cockpit to start")
+        time.sleep(10)
         while True:
             try:
-                logging.warning("HMI: Waiting 10s for e!cockpit to start")
-                time.sleep(10)
                 logging.warning("HMI: Connecting to Opc.")
                 opcClient.connect()
                 if opcClient is None:
@@ -242,11 +242,18 @@ if __name__ == "__main__":
             except Exception:
                 logging.exception("HMI: Exception in connection loop.")
             finally:
-                logging.warning("HMI: Disconnecting, then reconnecting.")
-                if opcClient is not None:
-                    opcClient.disconnect()
-                mqttClient.disconnect()
+                logging.warning("HMI: Disconnecting, then reconnecting after 10s.")
+                time.sleep(10)
+                try:
+                    if opcClient is not None:
+                        opcClient.disconnect()
+                except:
+                    logging.exception("HMI: Exception when trying to disconnect OPC")
+                try:
+                    mqttClient.disconnect()
+                except:
+                    logging.exception("HMI: Exception when trying to disconnect MQTT")
     except:
-        pass
+        logging.exception("HMI: Exception in main.")
     finally:
         logging.warning("HMI: OPC UA - MQTT link is shutting down.")

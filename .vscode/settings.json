@@ -1,19 +1,10 @@
 {
   "python.formatting.provider": "black",
-  "python.formatting.blackArgs": [
-    "--line-length",
-    "100"
-  ],
+  "python.formatting.blackArgs": ["--line-length", "100"],
   "python.linting.pylintEnabled": true,
   "python.linting.flake8Enabled": false,
   "python.linting.enabled": true,
-  "python.testing.unittestArgs": [
-    "-v",
-    "-s",
-    "./test",
-    "-p",
-    "*_test.py"
-  ],
+  "python.testing.unittestArgs": ["-v", "-s", "./test", "-p", "*_test.py"],
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,

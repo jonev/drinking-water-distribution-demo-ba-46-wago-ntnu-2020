@@ -32,7 +32,6 @@ class MQTTClient:
             client.subscribe(t)
 
     def __on_message(self, client, userdata, msg):
-        # print(msg.topic + " " + str(msg.payload))
         receivedObject = json.loads(str(msg.payload, encoding="utf-8"))
         with self.__receivedDataLock:
             for key, value in receivedObject.items():

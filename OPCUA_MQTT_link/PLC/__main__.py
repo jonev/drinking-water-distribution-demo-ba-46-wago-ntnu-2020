@@ -150,10 +150,10 @@ if __name__ == "__main__":
     # Ensure disconnecting on program close
     try:
         # Tries to reconnect every 10 seconds
+        logging.warning("PLC: Waiting 10s for e!cockpit to start")
+        time.sleep(10)
         while True:
             try:
-                logging.warning("PLC: Waiting 10s for e!cockpit to start")
-                time.sleep(10)
                 logging.info("PLC: Connecting to Opc.")
                 opcClient.connect()
                 if opcClient is None:
@@ -230,11 +230,18 @@ if __name__ == "__main__":
             except Exception:
                 logging.exception("PLC: Exception in connection loop.")
             finally:
-                logging.warning("PLC: Disconnecting, then reconnecting.")
-                if opcClient is not None:
-                    opcClient.disconnect()
-                mqttClient.disconnect()
+                logging.warning("PLC: Disconnecting, then reconnecting after 10s.")
+                time.sleep(10)
+                try:
+                    if opcClient is not None:
+                        opcClient.disconnect()
+                except:
+                    logging.exception("PLC: Exception when trying to disconnect OPC")
+                try:
+                    mqttClient.disconnect()
+                except:
+                    logging.exception("PLC: Exception when trying to disconnect MQTT")
     except:
-        pass
+        logging.exception("PLC: Exception in main.")
     finally:
         logging.warning("PLC: OPC UA - MQTT link is shutting down.")

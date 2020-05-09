@@ -1,39 +1,36 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Current File",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "LeakDetection",
-            "type": "python",
-            "request": "launch",
-            "module": "LeakDetection"
-        },
-        {
-            "name": "MQTT-OPC-Hmi",
-            "type": "python",
-            "request": "launch",
-            "module": "OPCUA_MQTT_link.HMI"
-        },
-        {
-            "name": "MQTT-OPC-Plc",
-            "type": "python",
-            "request": "launch",
-            "module": "OPCUA_MQTT_link.PLC"
-        },
-        {
-            "name": "SimulationProgram",
-            "type": "python",
-            "request": "launch",
-            "module": "SimulationProgram"
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "LeakDetection",
+      "type": "python",
+      "request": "launch",
+      "module": "LeakDetection"
+    },
+    {
+      "name": "MQTT-OPC-Hmi",
+      "type": "python",
+      "request": "launch",
+      "module": "OPCUA_MQTT_link.HMI"
+    },
+    {
+      "name": "MQTT-OPC-Plc",
+      "type": "python",
+      "request": "launch",
+      "module": "OPCUA_MQTT_link.PLC"
+    },
+    {
+      "name": "SimulationProgram",
+      "type": "python",
+      "request": "launch",
+      "module": "SimulationProgram"
+    }
+  ]
 }

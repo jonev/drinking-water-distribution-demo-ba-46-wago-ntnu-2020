@@ -6,7 +6,6 @@ from SimulationProgram.simulatedObjects import Water, RainForcast, WaterDistribu
 
 @ddt
 class SimulatedObjectsTests(unittest.TestCase):
-    # TODO add more datarows
     @data((5, 60, 1000.0 * 1000.0, 100.0, (100.0 / 3) * 2))
     @unpack
     def test_water_levels(
@@ -18,7 +17,6 @@ class SimulatedObjectsTests(unittest.TestCase):
         expectedHight_percent = (w.getWaterLevel_m() / hightMax_m) * 100.0
         self.assertAlmostEqual(expectedHight_percent, w.getWaterLevel_percent(), places=3)
 
-    # TODO check these if the math is correct
     @data((0, 0.0), (25.0, 41666.6666), (50.0, 83333.3333), (100.0, 166666.6666))
     @unpack
     def test_water_emissionValve(self, opening, expectedFlow):
