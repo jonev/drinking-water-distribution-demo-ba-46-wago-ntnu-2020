@@ -7,34 +7,15 @@ FROM python:3.8
 # Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Uncomment the following COPY line and the corresponding lines in the `RUN` command if you wish to
-# include your requirements in the image itself. It is suggested that you only do this if your
-# requirements rarely (if ever) change.
-# COPY requirements.txt /tmp/pip-tmp/
-
-# Configure apt and install packages
-#RUN apt-get update \
-#RUN apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
-    #
-    # Verify git, process tools, lsb-release (common in install instructions for CLIs) installed
-    # && apt-get -y install git iproute2 procps lsb-release \
-    #
-    # Install development dependencies
 RUN pip --disable-pip-version-check --no-cache-dir install pylint \
     && pip --disable-pip-version-check --no-cache-dir install black \
     && pip --disable-pip-version-check --no-cache-dir install rope \
-    && pip --disable-pip-version-check --no-cache-dir install sphinx \
-    && pip --disable-pip-version-check --no-cache-dir install sphinx-rtd-theme \
     && pip --disable-pip-version-check --no-cache-dir install ddt \
     && pip --disable-pip-version-check --no-cache-dir install paho-mqtt \
     && pip --disable-pip-version-check --no-cache-dir install opcua \
     && pip --disable-pip-version-check --no-cache-dir install mysql-connector \
     && pip --disable-pip-version-check --no-cache-dir install python-dotenv \
     && pip --disable-pip-version-check --no-cache-dir install python-yr \
-    # Update Python environment based on requirements.txt
-    # && pip --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
-    # && rm -rf /tmp/pip-tmp \
-    #
     # Clean up
     && apt-get autoremove -y \
     && apt-get clean -y \

@@ -80,7 +80,7 @@ class DbLeakDetectionClient:
     def getValues_BetweenTimestampsOnTime(
         self, table_name, timestamp_from, timestamp_to, on_time, _tagId
     ):
-        # TODO HOUR() must be used in a real case
+        # HACK HOUR() must be used in a real case
         self.cursor.execute(
             "SELECT * FROM "
             + table_name
@@ -89,7 +89,6 @@ class DbLeakDetectionClient:
         )
 
         samples = self.cursor.fetchall()
-        # print(samples)
         return samples
 
     def pushValueOnTimestamp(self, tableName, datetimestamp, _tagId, value):

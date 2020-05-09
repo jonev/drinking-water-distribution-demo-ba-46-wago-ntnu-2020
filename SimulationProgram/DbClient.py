@@ -18,8 +18,6 @@ class DbClient:
         logging.info("Connecting to db host")
         self.__db = mysql.connector.connect(host="db", user="root", passwd="example",)
         self.__cursor = self.__db.cursor()
-        # logging.info("Adding db " + self.__dbName + " if it does not exist")
-        # self.__cursor.execute("CREATE DATABASE IF NOT EXISTS " + self.__dbName)
 
         logging.info("Creating tables if not exist")
         self.__cursor.execute(

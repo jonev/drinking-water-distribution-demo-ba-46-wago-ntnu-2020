@@ -1,6 +1,6 @@
 import queue
 
-
+# Stores data regarding calculations for a flow transmitter
 class FtData:
     def __init__(self, _tagId):
         self._tagId = _tagId

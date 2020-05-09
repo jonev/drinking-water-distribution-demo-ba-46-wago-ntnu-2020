@@ -1,7 +1,7 @@
 from SimulationProgram.mqtt_client import MQTTClient
 from utils.scheduler import SimpleTaskScheduler
 from SimulationProgram.simulatedObjects import Water, RainForcast, WaterDistributionPipes
-from SimulationProgram.dbClient import DbClient
+from SimulationProgram.DbClient import DbClient
 
 from SimulationProgram.yrForecastToHmi import YrForecastToHmi
 from SimulationProgram.battery_level import BatteryLevel
@@ -19,7 +19,7 @@ sampleTime_s = 5  # DO NOT CHANGE - One sample is in real time 2 hours. 12 sampl
 oneDayIsSimulatedTo_s = 60  # DO NOT CHANGE
 simulatedSamplesPerDay = 96  # DO NOT CHANGE
 
-version = "0.0.16"
+version = "0.0.17"
 mqttBroker = "broker.hivemq.com"
 mqttPort = 1883
 mqttTopicSubscribeData = [
@@ -56,14 +56,14 @@ def mainloop(datetimestamp):
         }
     )
     logging.info(
-       "Waterlevel m: "
-       + str(waterLevel_m)
-       + ", Emission m3/s: "
-       + str(emission_m3_per_s)
-       + ", Forcast: "
-       + str(rainforcast)
-       + ", Rain: "
-       + str(rain_m)
+        "Waterlevel m: "
+        + str(waterLevel_m)
+        + ", Emission m3/s: "
+        + str(emission_m3_per_s)
+        + ", Forcast: "
+        + str(rainforcast)
+        + ", Rain: "
+        + str(rain_m)
     )
 
     # Simulation for leakdetection - the order is important
