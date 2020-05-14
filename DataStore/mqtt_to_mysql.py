@@ -25,12 +25,12 @@ signalAnalogTableInsert = (
     + signalAnalogTableName
     + " (_tagId, metric, timestamp, Output_Pv) VALUES (%s, %s, %s, %s)"
 )
-valveAnalogTableName = "ValveAnalogHmiPv"
-valveAnalogTableFormat = "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), metric VARCHAR(3), timestamp TIMESTAMP, ControlValue_Pv FLOAT, Interlocked_Pv BOOLEAN, Position_Pv FLOAT)"
-valveAnalogTableInsert = (
+controlAnalogTableName = "ControlAnalogHmiPv"
+controlAnalogTableFormat = "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), metric VARCHAR(3), timestamp TIMESTAMP, ControlValue_Pv FLOAT, Interlocked_Pv BOOLEAN, Feedback_Pv FLOAT)"
+controlAnalogTableInsert = (
     "INSERT INTO "
-    + valveAnalogTableName
-    + " (_tagId, metric, timestamp, ControlValue_Pv, Interlocked_Pv, Position_Pv) VALUES (%s, %s, %s, %s, %s, %s)"
+    + controlAnalogTableName
+    + " (_tagId, metric, timestamp, ControlValue_Pv, Interlocked_Pv, Feedback_Pv) VALUES (%s, %s, %s, %s, %s, %s)"
 )
 motorDigitalTableName = "MotorDigitalHmiPv"
 motorDigitalTableFormat = "(id INT AUTO_INCREMENT PRIMARY KEY, _tagId VARCHAR(124), metric VARCHAR(3), timestamp TIMESTAMP, ControlValue_Pv BOOLEAN, Interlocked_Pv BOOLEAN, Started_Pv BOOLEAN, Stopped_Pv BOOLEAN)"
@@ -71,7 +71,7 @@ while True:
                 )
             cursor.execute(
                 "SELECT * FROM information_schema.tables WHERE table_name='"
-                + valveAnalogTableName
+                + controlAnalogTableName
                 + "'"
             )
             tables = cursor.fetchall()
@@ -80,9 +80,9 @@ while True:
                     "CREATE TABLE "
                     + dbName
                     + "."
-                    + valveAnalogTableName
+                    + controlAnalogTableName
                     + " "
-                    + valveAnalogTableFormat
+                    + controlAnalogTableFormat
                 )
             cursor.execute(
                 "SELECT * FROM information_schema.tables WHERE table_name='"
@@ -124,16 +124,16 @@ while True:
                     )
                     cursor.execute(signalAnalogTableInsert, val)
                     db.commit()
-                elif receivedObject["_type"] == "ValveAnalog":
+                elif receivedObject["_type"] == "ControlAnalog":
                     val = (
                         receivedObject["_tagId"],
                         "na",
                         receivedObject["_timestamp"],
                         receivedObject["ControlValue_Pv"],
                         receivedObject["Interlocked_Pv"],
-                        receivedObject["Position_Pv"],
+                        receivedObject["Feedback_Pv"],
                     )
-                    cursor.execute(valveAnalogTableInsert, val)
+                    cursor.execute(controlAnalogTableInsert, val)
                     db.commit()
                 elif receivedObject["_type"] == "MotorDigital":
                     val = (

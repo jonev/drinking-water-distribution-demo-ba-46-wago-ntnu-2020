@@ -1,38 +1,49 @@
-version: '3.1'
+version: "3.1"
 
 services:
+  mqtttomysql:
+    image: jonev/mqtt-mysql-store
+    depends_on:
+      - db
 
-    mqtttomysql:
-        image: jonev/mqtt-mysql-store
-        depends_on: 
-            - db
+  simulation:
+    image: jonev/water-simulator
+    depends_on:
+      - db
 
-    simulation:
-        image: jonev/water-simulator
-        depends_on: 
-            - db
-    
-    leakdetection:
-        image: jonev/leak-detection
-        depends_on: 
-            - db
-            - simulation
+  leakdetection:
+    image: jonev/leak-detection
+    depends_on:
+      - db
+      - simulation
 
-    grafana:
-        image: jonev/grafana-with-plugins
-        ports:
-            - 3000:3000
-        depends_on: 
-            - db
-    
-    db:
-        image: mysql
-        command: --default-authentication-plugin=mysql_native_password
-        environment:
-            MYSQL_ROOT_PASSWORD: example
-    adminer:
-        image: adminer
-        ports:
-            - 8080:8080
-        depends_on: 
-            - db
+  grafana:
+    image: jonev/grafana-with-plugins
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+  portainer:
+    image: portainer/portainer
+    command: -H unix:///var/run/Docker.sock
+    restart: always
+    ports:
+      - 9000:9000
+      - 8000:8000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - C:\ProgramData\Portainer:/data
+volumes:
+  portainer_data:

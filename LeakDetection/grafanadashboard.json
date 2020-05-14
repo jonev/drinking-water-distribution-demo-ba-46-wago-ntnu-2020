@@ -1,843 +1,5124 @@
 {
-    "annotations": {
-        "list": [
+  "annotations": {
+    "list": [
+      {
+        "$$hashKey": "object:47",
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 82,
+      "panels": [],
+      "title": "Informasjon",
+      "type": "row"
+    },
+    {
+      "content": "\n# Informasjon\n\nDashbord og brukermanual utviklet i forbindelse med bacheloroppgave **\"Styre- og overvåkingsystem for distribusjon av drikkevann\"**.\n\nOppgaven er skrevet av studentene **Johan Haukalid, Jone Vassbø, Markus Raudberget og Peder Ward** fra **NTNU** i sammerbeid med **WAGO Norge AS**.\n\n> Brukermanual for dashbordet \"Lekkasjedeteksjon\": https://drive.google.com/open?id=15-gmzFDheQc1qlsgD1KaZ4ck4yzGNBKT.\n",
+      "datasource": null,
+      "description": "",
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 1
+      },
+      "id": 80,
+      "mode": "markdown",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": false,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  id\nFROM LeakDetection120SamplesHourlyAverage\nWHERE\n  $__timeFilter(timestamp)\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
             {
-                "builtIn": 1,
-                "datasource": "-- Grafana --",
-                "enable": true,
-                "hide": true,
-                "iconColor": "rgba(0, 211, 255, 1)",
-                "name": "Annotations & Alerts",
-                "type": "dashboard"
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
             }
-        ]
-    },
-    "editable": true,
-    "gnetId": null,
-    "graphTooltip": 0,
-    "id": 1,
-    "links": [],
-    "panels": [
-        {
-            "dashboardFilter": "",
-            "dashboardTags": [],
-            "datasource": null,
-            "folderId": null,
-            "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 6,
-                "y": 0
-            },
-            "id": 10,
-            "limit": 10,
-            "nameFilter": "",
-            "onlyAlertsOnDashboard": false,
-            "options": {},
-            "show": "current",
-            "sortOrder": 1,
-            "stateFilter": [],
-            "timeFrom": null,
-            "timeShift": null,
-            "title": "Alarms",
-            "type": "alertlist"
-        },
-        {
-            "aliasColors": {},
-            "bars": false,
-            "dashLength": 10,
-            "dashes": false,
-            "datasource": null,
-            "fill": 1,
-            "fillGradient": 0,
-            "gridPos": {
-                "h": 9,
-                "w": 24,
-                "x": 0,
-                "y": 8
-            },
-            "hiddenSeries": false,
-            "id": 6,
-            "legend": {
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-            },
-            "lines": true,
-            "linewidth": 1,
-            "nullPointMode": "null",
-            "options": {
-                "dataLinks": []
-            },
-            "percentage": false,
-            "pointradius": 2,
-            "points": true,
-            "renderer": "flot",
-            "seriesOverrides": [],
-            "spaceLength": 10,
-            "stack": false,
-            "steppedLine": false,
-            "targets": [
-                {
-                    "format": "time_series",
-                    "group": [],
-                    "metricColumn": "none",
-                    "rawQuery": false,
-                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  value AS \"t0 120 samples avg\"\nFROM LeakDetection120SamplesHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't0'\nORDER BY timestamp",
-                    "refId": "A",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "value"
-                                ],
-                                "type": "column"
-                            },
-                            {
-                                "params": [
-                                    "t0 120 samples avg"
-                                ],
-                                "type": "alias"
-                            }
-                        ]
-                    ],
-                    "table": "LeakDetection120SamplesHourlyAverage",
-                    "timeColumn": "timestamp",
-                    "timeColumnType": "datetime",
-                    "where": [
-                        {
-                            "name": "$__timeFilter",
-                            "params": [],
-                            "type": "macro"
-                        },
-                        {
-                            "datatype": "varchar",
-                            "name": "",
-                            "params": [
-                                "_tagId",
-                                "=",
-                                "'t0'"
-                            ],
-                            "type": "expression"
-                        }
-                    ]
-                },
-                {
-                    "format": "time_series",
-                    "group": [],
-                    "metricColumn": "none",
-                    "rawQuery": false,
-                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  value AS \"t0 real-time\"\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't0'\nORDER BY timestamp",
-                    "refId": "B",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "value"
-                                ],
-                                "type": "column"
-                            },
-                            {
-                                "params": [
-                                    "t0 real-time"
-                                ],
-                                "type": "alias"
-                            }
-                        ]
-                    ],
-                    "table": "LeakDetectionHourlyAverage",
-                    "timeColumn": "timestamp",
-                    "timeColumnType": "datetime",
-                    "where": [
-                        {
-                            "name": "$__timeFilter",
-                            "params": [],
-                            "type": "macro"
-                        },
-                        {
-                            "datatype": "varchar",
-                            "name": "",
-                            "params": [
-                                "_tagId",
-                                "=",
-                                "'t0'"
-                            ],
-                            "type": "expression"
-                        }
-                    ]
-                }
-            ],
-            "thresholds": [],
-            "timeFrom": null,
-            "timeRegions": [],
-            "timeShift": null,
-            "title": "Hourly samples average",
-            "tooltip": {
-                "shared": true,
-                "sort": 0,
-                "value_type": "individual"
-            },
-            "type": "graph",
-            "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": false,
-                "values": []
-            },
-            "yaxes": [
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": "500",
-                    "min": "0",
-                    "show": true
-                },
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                }
-            ],
-            "yaxis": {
-                "align": false,
-                "alignLevel": null
-            }
-        },
-        {
-            "alert": {
-                "alertRuleTags": {},
-                "conditions": [
-                    {
-                        "evaluator": {
-                            "params": [
-                                15
-                            ],
-                            "type": "gt"
-                        },
-                        "operator": {
-                            "type": "and"
-                        },
-                        "query": {
-                            "params": [
-                                "A",
-                                "1m",
-                                "now"
-                            ]
-                        },
-                        "reducer": {
-                            "params": [],
-                            "type": "max"
-                        },
-                        "type": "query"
-                    }
-                ],
-                "executionErrorState": "alerting",
-                "for": "0m",
-                "frequency": "10s",
-                "handler": 1,
-                "name": "Deviation to high",
-                "noDataState": "no_data",
-                "notifications": []
-            },
-            "aliasColors": {},
-            "bars": false,
-            "cacheTimeout": null,
-            "dashLength": 10,
-            "dashes": false,
-            "datasource": null,
-            "fill": 1,
-            "fillGradient": 0,
-            "gridPos": {
-                "h": 19,
-                "w": 24,
-                "x": 0,
-                "y": 17
-            },
-            "hiddenSeries": false,
-            "id": 8,
-            "legend": {
-                "avg": false,
-                "current": true,
-                "max": true,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": true
-            },
-            "lines": true,
-            "linewidth": 1,
-            "links": [],
-            "nullPointMode": "null",
-            "options": {
-                "dataLinks": []
-            },
-            "percentage": false,
-            "pluginVersion": "6.5.2",
-            "pointradius": 2,
-            "points": true,
-            "renderer": "flot",
-            "seriesOverrides": [],
-            "spaceLength": 10,
-            "stack": false,
-            "steppedLine": true,
-            "targets": [
-                {
-                    "format": "time_series",
-                    "group": [],
-                    "metricColumn": "none",
-                    "rawQuery": false,
-                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver10\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't0'\nORDER BY timestamp",
-                    "refId": "A",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "pointsOver10"
-                                ],
-                                "type": "column"
-                            }
-                        ]
-                    ],
-                    "table": "LeakDetectionAlarmPoints",
-                    "timeColumn": "timestamp",
-                    "timeColumnType": "datetime",
-                    "where": [
-                        {
-                            "name": "$__timeFilter",
-                            "params": [],
-                            "type": "macro"
-                        },
-                        {
-                            "datatype": "varchar",
-                            "name": "",
-                            "params": [
-                                "_tagId",
-                                "=",
-                                "'t0'"
-                            ],
-                            "type": "expression"
-                        }
-                    ]
-                },
-                {
-                    "format": "time_series",
-                    "group": [],
-                    "metricColumn": "none",
-                    "rawQuery": false,
-                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver20\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't0'\nORDER BY timestamp",
-                    "refId": "B",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "pointsOver20"
-                                ],
-                                "type": "column"
-                            }
-                        ]
-                    ],
-                    "table": "LeakDetectionAlarmPoints",
-                    "timeColumn": "timestamp",
-                    "timeColumnType": "datetime",
-                    "where": [
-                        {
-                            "name": "$__timeFilter",
-                            "params": [],
-                            "type": "macro"
-                        },
-                        {
-                            "datatype": "varchar",
-                            "name": "",
-                            "params": [
-                                "_tagId",
-                                "=",
-                                "'t0'"
-                            ],
-                            "type": "expression"
-                        }
-                    ]
-                },
-                {
-                    "format": "time_series",
-                    "group": [],
-                    "metricColumn": "none",
-                    "rawQuery": false,
-                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver30\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't0'\nORDER BY timestamp",
-                    "refId": "C",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "pointsOver30"
-                                ],
-                                "type": "column"
-                            }
-                        ]
-                    ],
-                    "table": "LeakDetectionAlarmPoints",
-                    "timeColumn": "timestamp",
-                    "timeColumnType": "datetime",
-                    "where": [
-                        {
-                            "name": "$__timeFilter",
-                            "params": [],
-                            "type": "macro"
-                        },
-                        {
-                            "datatype": "varchar",
-                            "name": "",
-                            "params": [
-                                "_tagId",
-                                "=",
-                                "'t0'"
-                            ],
-                            "type": "expression"
-                        }
-                    ]
-                }
-            ],
-            "thresholds": [
-                {
-                    "colorMode": "critical",
-                    "fill": true,
-                    "line": true,
-                    "op": "gt",
-                    "value": 15
-                }
-            ],
-            "timeFrom": null,
-            "timeRegions": [],
-            "timeShift": null,
-            "title": "Panel Title",
-            "tooltip": {
-                "shared": true,
-                "sort": 0,
-                "value_type": "individual"
-            },
-            "type": "graph",
-            "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": true,
-                "values": []
-            },
-            "yaxes": [
-                {
-                    "decimals": null,
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": "50",
-                    "min": "0",
-                    "show": true
-                },
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                }
-            ],
-            "yaxis": {
-                "align": false,
-                "alignLevel": null
-            }
-        },
-        {
-            "aliasColors": {},
-            "bars": false,
-            "dashLength": 10,
-            "dashes": false,
-            "datasource": null,
-            "fill": 1,
-            "fillGradient": 0,
-            "gridPos": {
-                "h": 6,
-                "w": 24,
-                "x": 0,
-                "y": 36
-            },
-            "hiddenSeries": false,
-            "id": 2,
-            "legend": {
-                "alignAsTable": false,
-                "avg": false,
-                "current": false,
-                "max": false,
-                "min": false,
-                "show": true,
-                "total": false,
-                "values": false
-            },
-            "lines": true,
-            "linewidth": 1,
-            "nullPointMode": "null",
-            "options": {
-                "dataLinks": []
-            },
-            "percentage": false,
-            "pointradius": 2,
-            "points": false,
-            "renderer": "flot",
-            "seriesOverrides": [],
-            "spaceLength": 10,
-            "stack": false,
-            "steppedLine": false,
-            "targets": [
-                {
-                    "format": "time_series",
-                    "group": [],
-                    "metricColumn": "none",
-                    "rawQuery": false,
-                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  Output_Pv\nFROM SignalAnalogHmiPv\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't0'\nORDER BY timestamp",
-                    "refId": "C",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "Output_Pv"
-                                ],
-                                "type": "column"
-                            }
-                        ]
-                    ],
-                    "table": "SignalAnalogHmiPv",
-                    "timeColumn": "timestamp",
-                    "timeColumnType": "timestamp",
-                    "where": [
-                        {
-                            "name": "$__timeFilter",
-                            "params": [],
-                            "type": "macro"
-                        },
-                        {
-                            "datatype": "varchar",
-                            "name": "",
-                            "params": [
-                                "_tagId",
-                                "=",
-                                "'t0'"
-                            ],
-                            "type": "expression"
-                        }
-                    ]
-                },
-                {
-                    "format": "time_series",
-                    "group": [],
-                    "hide": true,
-                    "metricColumn": "none",
-                    "rawQuery": false,
-                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  Output_Pv\nFROM SignalAnalogHmiPv\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't1'\nORDER BY timestamp",
-                    "refId": "A",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "Output_Pv"
-                                ],
-                                "type": "column"
-                            }
-                        ]
-                    ],
-                    "table": "SignalAnalogHmiPv",
-                    "timeColumn": "timestamp",
-                    "timeColumnType": "timestamp",
-                    "where": [
-                        {
-                            "name": "$__timeFilter",
-                            "params": [],
-                            "type": "macro"
-                        },
-                        {
-                            "datatype": "varchar",
-                            "name": "",
-                            "params": [
-                                "_tagId",
-                                "=",
-                                "'t1'"
-                            ],
-                            "type": "expression"
-                        }
-                    ]
-                },
-                {
-                    "format": "time_series",
-                    "group": [],
-                    "hide": true,
-                    "metricColumn": "none",
-                    "rawQuery": false,
-                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  Output_Pv\nFROM SignalAnalogHmiPv\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't2'\nORDER BY timestamp",
-                    "refId": "B",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "Output_Pv"
-                                ],
-                                "type": "column"
-                            }
-                        ]
-                    ],
-                    "table": "SignalAnalogHmiPv",
-                    "timeColumn": "timestamp",
-                    "timeColumnType": "timestamp",
-                    "where": [
-                        {
-                            "name": "$__timeFilter",
-                            "params": [],
-                            "type": "macro"
-                        },
-                        {
-                            "datatype": "varchar",
-                            "name": "",
-                            "params": [
-                                "_tagId",
-                                "=",
-                                "'t2'"
-                            ],
-                            "type": "expression"
-                        }
-                    ]
-                },
-                {
-                    "format": "time_series",
-                    "group": [],
-                    "hide": true,
-                    "metricColumn": "none",
-                    "rawQuery": false,
-                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  Output_Pv\nFROM SignalAnalogHmiPv\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't3'\nORDER BY timestamp",
-                    "refId": "D",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "Output_Pv"
-                                ],
-                                "type": "column"
-                            }
-                        ]
-                    ],
-                    "table": "SignalAnalogHmiPv",
-                    "timeColumn": "timestamp",
-                    "timeColumnType": "timestamp",
-                    "where": [
-                        {
-                            "name": "$__timeFilter",
-                            "params": [],
-                            "type": "macro"
-                        },
-                        {
-                            "datatype": "varchar",
-                            "name": "",
-                            "params": [
-                                "_tagId",
-                                "=",
-                                "'t3'"
-                            ],
-                            "type": "expression"
-                        }
-                    ]
-                },
-                {
-                    "format": "time_series",
-                    "group": [],
-                    "hide": true,
-                    "metricColumn": "none",
-                    "rawQuery": false,
-                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  Output_Pv\nFROM SignalAnalogHmiPv\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't4'\nORDER BY timestamp",
-                    "refId": "E",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "Output_Pv"
-                                ],
-                                "type": "column"
-                            }
-                        ]
-                    ],
-                    "table": "SignalAnalogHmiPv",
-                    "timeColumn": "timestamp",
-                    "timeColumnType": "timestamp",
-                    "where": [
-                        {
-                            "name": "$__timeFilter",
-                            "params": [],
-                            "type": "macro"
-                        },
-                        {
-                            "datatype": "varchar",
-                            "name": "",
-                            "params": [
-                                "_tagId",
-                                "=",
-                                "'t4'"
-                            ],
-                            "type": "expression"
-                        }
-                    ]
-                },
-                {
-                    "format": "time_series",
-                    "group": [],
-                    "hide": true,
-                    "metricColumn": "none",
-                    "rawQuery": false,
-                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  Output_Pv\nFROM SignalAnalogHmiPv\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't5'\nORDER BY timestamp",
-                    "refId": "F",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "Output_Pv"
-                                ],
-                                "type": "column"
-                            }
-                        ]
-                    ],
-                    "table": "SignalAnalogHmiPv",
-                    "timeColumn": "timestamp",
-                    "timeColumnType": "timestamp",
-                    "where": [
-                        {
-                            "name": "$__timeFilter",
-                            "params": [],
-                            "type": "macro"
-                        },
-                        {
-                            "datatype": "varchar",
-                            "name": "",
-                            "params": [
-                                "_tagId",
-                                "=",
-                                "'t5'"
-                            ],
-                            "type": "expression"
-                        }
-                    ]
-                },
-                {
-                    "format": "time_series",
-                    "group": [],
-                    "hide": true,
-                    "metricColumn": "none",
-                    "rawQuery": false,
-                    "rawSql": "SELECT\n  timestamp AS \"time\",\n  Output_Pv\nFROM SignalAnalogHmiPv\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 't6'\nORDER BY timestamp",
-                    "refId": "G",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "Output_Pv"
-                                ],
-                                "type": "column"
-                            }
-                        ]
-                    ],
-                    "table": "SignalAnalogHmiPv",
-                    "timeColumn": "timestamp",
-                    "timeColumnType": "timestamp",
-                    "where": [
-                        {
-                            "name": "$__timeFilter",
-                            "params": [],
-                            "type": "macro"
-                        },
-                        {
-                            "datatype": "varchar",
-                            "name": "",
-                            "params": [
-                                "_tagId",
-                                "=",
-                                "'t6'"
-                            ],
-                            "type": "expression"
-                        }
-                    ]
-                }
-            ],
-            "thresholds": [],
-            "timeFrom": null,
-            "timeRegions": [],
-            "timeShift": null,
-            "title": "Raw values",
-            "tooltip": {
-                "shared": true,
-                "sort": 0,
-                "value_type": "individual"
-            },
-            "type": "graph",
-            "xaxis": {
-                "buckets": null,
-                "mode": "time",
-                "name": null,
-                "show": false,
-                "values": []
-            },
-            "yaxes": [
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": "500",
-                    "min": "0",
-                    "show": true
-                },
-                {
-                    "format": "short",
-                    "label": null,
-                    "logBase": 1,
-                    "max": null,
-                    "min": null,
-                    "show": true
-                }
-            ],
-            "yaxis": {
-                "align": false,
-                "alignLevel": null
-            }
+          ]
         }
-    ],
-    "refresh": "10s",
-    "schemaVersion": 21,
-    "style": "dark",
-    "tags": [],
-    "templating": {
-        "list": []
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "",
+      "transparent": true,
+      "type": "text"
     },
-    "time": {
-        "from": "now-3m",
-        "to": "now"
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 7
+      },
+      "id": 16,
+      "panels": [],
+      "title": "Oversiktsbilde",
+      "type": "row"
     },
-    "timepicker": {
-        "refresh_intervals": [
-            "5s",
-            "10s",
-            "30s",
-            "1m",
-            "5m",
-            "15m",
-            "30m",
-            "1h",
-            "2h",
-            "1d"
-        ]
+    {
+      "content": "<img src=\"https://svgshare.com/i/JXN.svg\" />\n\n\n\n",
+      "datasource": null,
+      "description": "Oversiktsbilde over distribusjonsnettverket. Tallet inn i sonene viser antall beboere i sonen. FTxx er strømningsmålere og WPxx er vannrør. FT07 er strømningsmåler ut fra vassverket.",
+      "gridPos": {
+        "h": 13,
+        "w": 8,
+        "x": 0,
+        "y": 8
+      },
+      "id": 18,
+      "mode": "html",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": false,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  id\nFROM LeakDetection120SamplesHourlyAverage\nWHERE\n  $__timeFilter(timestamp)\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Distribusjonsnettverk",
+      "type": "text"
     },
-    "timezone": "",
-    "title": "Lekasjedeteksjon",
-    "uid": "Y8mz3XuWz",
-    "version": 24
+    {
+      "dashboardFilter": "",
+      "dashboardTags": [],
+      "datasource": null,
+      "description": "Tabellen viser status for hver sone og rør.",
+      "folderId": null,
+      "gridPos": {
+        "h": 11,
+        "w": 6,
+        "x": 8,
+        "y": 8
+      },
+      "id": 20,
+      "limit": 10,
+      "nameFilter": "",
+      "onlyAlertsOnDashboard": true,
+      "show": "current",
+      "sortOrder": 1,
+      "stateFilter": [],
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": false,
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["value"],
+                "type": "column"
+              }
+            ]
+          ],
+          "timeColumn": "time",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Status",
+      "type": "alertlist"
+    },
+    {
+      "datasource": null,
+      "description": "Antall avvik over avviksgrense på 10% siste 24 timene. ",
+      "gridPos": {
+        "h": 6,
+        "w": 10,
+        "x": 14,
+        "y": 8
+      },
+      "id": 25,
+      "options": {
+        "fieldOptions": {
+          "calcs": ["lastNotNull"],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 10
+                },
+                {
+                  "color": "red",
+                  "value": 18
+                }
+              ]
+            },
+            "unit": "none"
+          },
+          "overrides": [],
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "6.7.1",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver10 as value,\n  'Antall avvik sone 1' as metric\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT01_Pv'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["pointsOver10"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetectionAlarmPoints",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver10 as value,\n  'Antall avvik sone 2' as metric\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT02_Pv'\nORDER BY timestamp",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver10 as value,\n  'Antall avvik sone 3' as metric\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT03_Pv'\nORDER BY timestamp",
+          "refId": "C",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver10 as value,\n  'Antall avvik sone 4' as metric\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT04_Pv'\nORDER BY timestamp",
+          "refId": "D",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Antall avvik siste dag.",
+      "type": "gauge"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": null,
+      "description": "Diagrammet viser nåverdien for forbruket til hver sone.",
+      "gridPos": {
+        "h": 10,
+        "w": 10,
+        "x": 14,
+        "y": 14
+      },
+      "id": 24,
+      "links": [],
+      "options": {
+        "colorMode": "value",
+        "fieldOptions": {
+          "calcs": ["lastNotNull"],
+          "defaults": {
+            "mappings": [
+              {
+                "$$hashKey": "object:27015",
+                "id": 0,
+                "op": "=",
+                "text": "N/A",
+                "type": 1,
+                "value": "null"
+              }
+            ],
+            "nullValueMode": "connected",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 300
+                },
+                {
+                  "color": "semi-dark-red",
+                  "value": 600
+                }
+              ]
+            },
+            "title": "",
+            "unit": "l/s"
+          },
+          "overrides": [],
+          "values": false
+        },
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal"
+      },
+      "pluginVersion": "6.7.1",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  Output_Pv as value,\n  'Sone 1' as metric\nFROM SignalAnalogHmiPv\nWHERE\n   $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT01_Pv'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  Output_Pv as value,\n  'Sone 2' as metric\nFROM SignalAnalogHmiPv\nWHERE\n   $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT02_Pv'\nORDER BY timestamp",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  Output_Pv as value,\n  'Sone 3' as metric\nFROM SignalAnalogHmiPv\nWHERE\n   $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT03_Pv'\nORDER BY timestamp",
+          "refId": "C",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  Output_Pv as value,\n  'Sone 4' as metric\nFROM SignalAnalogHmiPv\nWHERE\n   $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT04_Pv'\nORDER BY timestamp",
+          "refId": "D",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Soneoversikt forbruk.",
+      "type": "stat"
+    },
+    {
+      "dashboardFilter": "",
+      "dashboardTags": [],
+      "datasource": null,
+      "folderId": null,
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 8,
+        "y": 19
+      },
+      "id": 22,
+      "limit": "50",
+      "nameFilter": "",
+      "onlyAlertsOnDashboard": true,
+      "show": "changes",
+      "sortOrder": 1,
+      "stateFilter": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Alarmlogg",
+      "type": "alertlist"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "rgb(5, 5, 3)", "#3274D9"],
+      "datasource": null,
+      "format": "litre",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 0,
+        "y": 21
+      },
+      "id": 40,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT07' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT07_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "FT07 Nåverdi",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "#B877D9", "#d44a3a"],
+      "datasource": null,
+      "description": "Total mengde ut fra vassverk siste 24 timer.",
+      "format": "l/s",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 2,
+        "y": 21
+      },
+      "id": 43,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": ["1m", "0"],
+              "type": "time"
+            }
+          ],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT07' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT07_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              },
+              {
+                "params": ["avg"],
+                "type": "aggregate"
+              },
+              {
+                "params": ["Output_Pv"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "FT07 Total",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "total"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "rgb(5, 5, 3)", "#3274D9"],
+      "datasource": null,
+      "description": "Maksverdi ut fra vassverk siste 24 timer.",
+      "format": "l/s",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 4,
+        "y": 21
+      },
+      "id": 62,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT07' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT07_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "FT07 Maks",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "max"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "#B877D9", "#d44a3a"],
+      "datasource": null,
+      "description": "Minimumsverdi ut fra vassverk siste 24 timer.",
+      "format": "l/s",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 6,
+        "y": 21
+      },
+      "id": 42,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT07' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT07_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "FT07 Min",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "min"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "id": 50,
+      "panels": [],
+      "title": "Rør overvåkning",
+      "type": "row"
+    },
+    {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [10],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": ["A", "1m", "now"]
+            },
+            "reducer": {
+              "params": [],
+              "type": "max"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "0",
+        "frequency": "1s",
+        "handler": 1,
+        "name": "WP05: Avvik inn/ut",
+        "noDataState": "no_data",
+        "notifications": []
+      },
+      "aliasColors": {
+        "Avvik inn/ut": "semi-dark-yellow"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Grafen viser avviket mellom inn og ut verdi for \"WaterPipe\".",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 6,
+        "x": 0,
+        "y": 25
+      },
+      "hiddenSeries": false,
+      "id": 48,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": true,
+        "hideEmpty": false,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'Avvik inn/ut' as metric\nFROM LeakDetectionBalanceHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'FT05_is_FT03_FT04'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 10
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Avvik inn/ut WP05",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:984",
+          "decimals": null,
+          "format": "l/s",
+          "label": "",
+          "logBase": 1,
+          "max": "125",
+          "min": "-25",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:985",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [10],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": ["A", "1m", "now"]
+            },
+            "reducer": {
+              "params": [],
+              "type": "max"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "0",
+        "frequency": "1s",
+        "handler": 1,
+        "name": "WP06: Avvik inn/ut",
+        "noDataState": "no_data",
+        "notifications": []
+      },
+      "aliasColors": {
+        "Avvik inn/ut": "semi-dark-yellow"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Grafen viser avviket mellom inn og ut verdi for \"WaterPipe\".",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 6,
+        "x": 6,
+        "y": 25
+      },
+      "hiddenSeries": false,
+      "id": 46,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": true,
+        "hideEmpty": false,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'Avvik inn/ut' as metric\nFROM LeakDetectionBalanceHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'FT06_is_FT02_FT05'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 10
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Avvik inn/ut WP06",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:984",
+          "decimals": null,
+          "format": "l/s",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:985",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [10],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": ["A", "1m", "now"]
+            },
+            "reducer": {
+              "params": [],
+              "type": "max"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "0",
+        "frequency": "1s",
+        "handler": 1,
+        "name": "WP06: Avvik inn/ut",
+        "noDataState": "no_data",
+        "notifications": []
+      },
+      "aliasColors": {
+        "Avvik inn/ut": "semi-dark-yellow"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Grafen viser avviket mellom inn og ut verdi for \"WaterPipe\".",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 6,
+        "x": 12,
+        "y": 25
+      },
+      "hiddenSeries": false,
+      "id": 47,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": true,
+        "hideEmpty": false,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'Avvik inn/ut' as metric\nFROM LeakDetectionBalanceHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'FT07_is_FT01_FT06'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 10
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Avvik inn/ut WP07",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:984",
+          "decimals": null,
+          "format": "l/s",
+          "label": null,
+          "logBase": 1,
+          "max": "125",
+          "min": "-25",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:985",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "datasource": null,
+      "description": "Grafen viser avviket mellom inn og ut verdi for \"WaterPipe\".",
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 18,
+        "y": 25
+      },
+      "id": 78,
+      "options": {
+        "displayMode": "lcd",
+        "fieldOptions": {
+          "calcs": ["lastNotNull"],
+          "defaults": {
+            "decimals": 2,
+            "mappings": [],
+            "max": 20,
+            "min": 1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 2
+                },
+                {
+                  "color": "semi-dark-red",
+                  "value": 4
+                }
+              ]
+            },
+            "title": "",
+            "unit": "l/s"
+          },
+          "overrides": [],
+          "values": false
+        },
+        "orientation": "horizontal",
+        "showUnfilled": true
+      },
+      "pluginVersion": "6.7.1",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'Avvik inn/ut WP05' as metric\nFROM LeakDetectionBalanceHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'FT05_is_FT03_FT04'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'Avvik inn/ut WP06' as metric\nFROM LeakDetectionBalanceHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'FT06_is_FT02_FT05'\nORDER BY timestamp",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'Avvik inn/ut WP07' as metric\nFROM LeakDetectionBalanceHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'FT07_is_FT01_FT06'\nORDER BY timestamp",
+          "refId": "C",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Rørovervåkning",
+      "type": "bargauge"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 35
+      },
+      "id": 14,
+      "panels": [],
+      "title": "Sone 1",
+      "type": "row"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "rgb(5, 5, 3)", "#3274D9"],
+      "datasource": null,
+      "description": "",
+      "format": "litre",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 0,
+        "y": 36
+      },
+      "id": 63,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT01' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT01_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Nåverdi",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "#B877D9", "#d44a3a"],
+      "datasource": null,
+      "description": "Total mengde siste 24 timer",
+      "format": "l/s",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 2,
+        "y": 36
+      },
+      "id": 59,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": ["1m", "0"],
+              "type": "time"
+            }
+          ],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT01' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT01_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              },
+              {
+                "params": ["avg"],
+                "type": "aggregate"
+              },
+              {
+                "params": ["Output_Pv"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Total",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "total"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Diagrammet viser dagens gjennomsnittlige timesverdier og de fem siste dagene gjennomsnittlige timesverdier.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 10,
+        "x": 4,
+        "y": 36
+      },
+      "hiddenSeries": false,
+      "id": 4,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'Dagens timesverdier' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT01_Pv'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'Gjennomsnittlige timesverdier' as metric\nFROM LeakDetection120SamplesHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT01_Pv'\nORDER BY timestamp",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Dagens og gjennomsnittlig timesverdier",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:984",
+          "format": "l/s",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:985",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [18],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": ["A", "1m", "now"]
+            },
+            "reducer": {
+              "params": [],
+              "type": "max"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "0",
+        "frequency": "1s",
+        "handler": 1,
+        "name": "Sone 1: Lekkasjedeteksjon",
+        "noDataState": "no_data",
+        "notifications": []
+      },
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Antall avvik over avviksgrense på 10% siste 24 timene. ",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 10,
+        "x": 14,
+        "y": 36
+      },
+      "hiddenSeries": false,
+      "id": 8,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": true,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver10 as value,\n  'Antall avvik' as metric\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT01_Pv'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["pointsOver10"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetectionAlarmPoints",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 18
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Antall avvik siste 24 timer.",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:320",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": "30",
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:321",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "#B877D9", "#d44a3a"],
+      "datasource": null,
+      "description": "Maksverdi siste 24 timer",
+      "format": "l/s",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 0,
+        "y": 39
+      },
+      "id": 64,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": ["1m", "previous"],
+              "type": "time"
+            },
+            {
+              "params": ["_tagId"],
+              "type": "column"
+            }
+          ],
+          "metricColumn": "metric",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT01' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT01_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "name": "",
+              "params": ["value", "=", "value"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Maks",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "max"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "#B877D9", "#d44a3a"],
+      "datasource": null,
+      "description": "Minimumverdi siste 24 timer",
+      "format": "l/s",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 2,
+        "y": 39
+      },
+      "id": 57,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT01' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT01_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Min",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "min"
+    },
+    {
+      "datasource": null,
+      "description": "Antall avvik over avviksgrense på 10% siste 24 timene. ",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 42
+      },
+      "id": 60,
+      "options": {
+        "fieldOptions": {
+          "calcs": ["lastNotNull"],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 10
+                },
+                {
+                  "color": "red",
+                  "value": 18
+                }
+              ]
+            }
+          },
+          "overrides": [],
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "6.7.1",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver10 as value,\n  'Antall avvik sone 1' as metric\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT01_Pv'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["pointsOver10"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetectionAlarmPoints",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Antall avvik siste 24 timer.",
+      "type": "gauge"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 46
+      },
+      "id": 29,
+      "panels": [],
+      "title": "Sone 2",
+      "type": "row"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "rgb(5, 5, 3)", "#3274D9"],
+      "datasource": null,
+      "description": "",
+      "format": "litre",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 0,
+        "y": 47
+      },
+      "id": 67,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT02' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT02_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Nåverdi",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "#B877D9", "#d44a3a"],
+      "datasource": null,
+      "description": "Total mengde siste 24 timer",
+      "format": "l/s",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 2,
+        "y": 47
+      },
+      "id": 69,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": ["1m", "0"],
+              "type": "time"
+            }
+          ],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT02' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT02_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              },
+              {
+                "params": ["avg"],
+                "type": "aggregate"
+              },
+              {
+                "params": ["Output_Pv"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Total",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "total"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Diagrammet viser dagens gjennomsnittlige timesverdier og de fem siste dagene gjennomsnittlige timesverdier.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 10,
+        "x": 4,
+        "y": 47
+      },
+      "hiddenSeries": false,
+      "id": 26,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'Dagens timesverdier' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT02_Pv'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'Gjennomsnittlige timesverdier' as metric\nFROM LeakDetection120SamplesHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT02_Pv'\nORDER BY timestamp",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Dagens og gjennomsnittlig timesverdier.",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:984",
+          "format": "l/s",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:985",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [18],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": ["A", "1m", "now"]
+            },
+            "reducer": {
+              "params": [],
+              "type": "max"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "0",
+        "frequency": "1s",
+        "handler": 1,
+        "name": "Sone 2: Lekkasjedeteksjon",
+        "noDataState": "no_data",
+        "notifications": []
+      },
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Antall avvik over avviksgrense på 10% siste 24 timene. ",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 10,
+        "x": 14,
+        "y": 47
+      },
+      "hiddenSeries": false,
+      "id": 31,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": true,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver10 as value,\n  'Antall avvik' as metric\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT02_Pv'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["pointsOver10"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetectionAlarmPoints",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 18
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Antall avvik siste 24 timer.",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:320",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": "30",
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:321",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "#B877D9", "#d44a3a"],
+      "datasource": null,
+      "description": "Maksverdi siste 24 timer",
+      "format": "l/s",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 0,
+        "y": 50
+      },
+      "id": 41,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": ["1m", "previous"],
+              "type": "time"
+            },
+            {
+              "params": ["_tagId"],
+              "type": "column"
+            }
+          ],
+          "metricColumn": "metric",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT02' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT02_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "name": "",
+              "params": ["value", "=", "value"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Maks",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "max"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "#B877D9", "#d44a3a"],
+      "datasource": null,
+      "description": "Minimumverdi siste 24 timer",
+      "format": "l/s",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 2,
+        "y": 50
+      },
+      "id": 66,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT02' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT02_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Min",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "min"
+    },
+    {
+      "datasource": null,
+      "description": "Antall avvik over avviksgrense på 10% siste 24 timene. ",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 53
+      },
+      "id": 61,
+      "options": {
+        "fieldOptions": {
+          "calcs": ["lastNotNull"],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 10
+                },
+                {
+                  "color": "red",
+                  "value": 18
+                }
+              ]
+            }
+          },
+          "overrides": [],
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "6.7.1",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver10 as value,\n  'Antall avvik sone 2' as metric\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT02_Pv'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["pointsOver10"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetectionAlarmPoints",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Antall avvik siste 24 timer.",
+      "type": "gauge"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 57
+      },
+      "id": 33,
+      "panels": [],
+      "title": "Sone 3",
+      "type": "row"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "rgb(5, 5, 3)", "#3274D9"],
+      "datasource": null,
+      "description": "",
+      "format": "litre",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 0,
+        "y": 58
+      },
+      "id": 55,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT03' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT03_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Nåverdi",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "#B877D9", "#d44a3a"],
+      "datasource": null,
+      "description": "Total mengde siste 24 timer",
+      "format": "l/s",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 2,
+        "y": 58
+      },
+      "id": 65,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": ["1m", "0"],
+              "type": "time"
+            }
+          ],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT03' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT03_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              },
+              {
+                "params": ["avg"],
+                "type": "aggregate"
+              },
+              {
+                "params": ["Output_Pv"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Total",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "total"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Diagrammet viser dagens gjennomsnittlige timesverdier og de fem siste dagene gjennomsnittlige timesverdier.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 10,
+        "x": 4,
+        "y": 58
+      },
+      "hiddenSeries": false,
+      "id": 30,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'Dagens timesverdier' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT03_Pv'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'Gjennomsnittlige timesverdier' as metric\nFROM LeakDetection120SamplesHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT03_Pv'\nORDER BY timestamp",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Dagens og gjennomsnittlig timesverdier.",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:984",
+          "format": "l/s",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:985",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [18],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": ["A", "1m", "now"]
+            },
+            "reducer": {
+              "params": [],
+              "type": "max"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "0",
+        "frequency": "1s",
+        "handler": 1,
+        "name": "Sone 3: Lekkasjedeteksjon",
+        "noDataState": "no_data",
+        "notifications": []
+      },
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Antall avvik over avviksgrense på 10% siste 24 timene. ",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 10,
+        "x": 14,
+        "y": 58
+      },
+      "hiddenSeries": false,
+      "id": 35,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": true,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver10 as value,\n  'Antall avvik' as metric\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT03_Pv'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["pointsOver10"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetectionAlarmPoints",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": [
+        {
+          "$$hashKey": "object:30457",
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 18,
+          "yaxis": "left"
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Antall avvik siste 24 timer.",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:320",
+          "decimals": null,
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": "30",
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:321",
+          "decimals": null,
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "#B877D9", "#d44a3a"],
+      "datasource": null,
+      "description": "Maksverdi siste 24 timer",
+      "format": "l/s",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 0,
+        "y": 61
+      },
+      "id": 73,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": ["1m", "previous"],
+              "type": "time"
+            },
+            {
+              "params": ["_tagId"],
+              "type": "column"
+            }
+          ],
+          "metricColumn": "metric",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT03' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT03_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "name": "",
+              "params": ["value", "=", "value"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Maks",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "max"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "#B877D9", "#d44a3a"],
+      "datasource": null,
+      "description": "Minimumverdi siste 24 timer",
+      "format": "l/s",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 2,
+        "y": 61
+      },
+      "id": 70,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT03' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT03_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Min",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "min"
+    },
+    {
+      "datasource": null,
+      "description": "Antall avvik over avviksgrense på 10% siste 24 timene. ",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 64
+      },
+      "id": 71,
+      "options": {
+        "fieldOptions": {
+          "calcs": ["lastNotNull"],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 10
+                },
+                {
+                  "color": "red",
+                  "value": 18
+                }
+              ]
+            }
+          },
+          "overrides": [],
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "6.7.1",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver10 as value,\n  'Antall avvik sone 3' as metric\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT03_Pv'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["pointsOver10"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetectionAlarmPoints",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Antall avvik siste 24 timer.",
+      "type": "gauge"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 68
+      },
+      "id": 37,
+      "panels": [],
+      "title": "Sone 4",
+      "type": "row"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "rgb(5, 5, 3)", "#3274D9"],
+      "datasource": null,
+      "description": "",
+      "format": "litre",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 0,
+        "y": 69
+      },
+      "id": 72,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT04' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT04_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Nåverdi",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "#B877D9", "#d44a3a"],
+      "datasource": null,
+      "description": "Total mengde siste 24 timer",
+      "format": "l/s",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 2,
+        "y": 69
+      },
+      "id": 74,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": ["1m", "0"],
+              "type": "time"
+            }
+          ],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT04' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT04_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              },
+              {
+                "params": ["avg"],
+                "type": "aggregate"
+              },
+              {
+                "params": ["Output_Pv"],
+                "type": "alias"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Total",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "total"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Diagrammet viser dagens gjennomsnittlige timesverdier og de fem siste dagene gjennomsnittlige timesverdier.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 10,
+        "x": 4,
+        "y": 69
+      },
+      "hiddenSeries": false,
+      "id": 34,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'Dagens timesverdier' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT04_Pv'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'Gjennomsnittlige timesverdier' as metric\nFROM LeakDetection120SamplesHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT04_Pv'\nORDER BY timestamp",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Dagens og gjennomsnittlig timesverdier.",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:984",
+          "format": "l/s",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:985",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [18],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": ["A", "1m", "now"]
+            },
+            "reducer": {
+              "params": [],
+              "type": "max"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "0",
+        "frequency": "1s",
+        "handler": 1,
+        "name": "Sone 4: Lekkasjedeteksjon",
+        "noDataState": "no_data",
+        "notifications": []
+      },
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Antall avvik over avviksgrense på 10% siste 24 timene. ",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 10,
+        "x": 14,
+        "y": 69
+      },
+      "hiddenSeries": false,
+      "id": 27,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": true,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver10 as value,\n  'Antall avvik' as metric\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT04_Pv'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["pointsOver10"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetectionAlarmPoints",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 18
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Antall avvik siste 24 timer.",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:320",
+          "decimals": null,
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": "30",
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:321",
+          "decimals": null,
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "#B877D9", "#d44a3a"],
+      "datasource": null,
+      "description": "Maksverdi siste 24 timer",
+      "format": "l/s",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 0,
+        "y": 72
+      },
+      "id": 68,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [
+            {
+              "params": ["1m", "previous"],
+              "type": "time"
+            },
+            {
+              "params": ["_tagId"],
+              "type": "column"
+            }
+          ],
+          "metricColumn": "metric",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT04' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT04_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["id"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetection120SamplesHourlyAverage",
+          "timeColumn": "timestamp",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "name": "",
+              "params": ["value", "=", "value"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Maks",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "max"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": true,
+      "colors": ["#F2CC0C", "#B877D9", "#d44a3a"],
+      "datasource": null,
+      "description": "Minimumverdi siste 24 timer",
+      "format": "l/s",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 2,
+        "x": 2,
+        "y": 72
+      },
+      "id": 75,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "$$hashKey": "object:32130",
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "$$hashKey": "object:32131",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.7.1",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  value as value,\n  'FT04' as metric\nFROM LeakDetectionHourlyAverage\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT04_Pv' AND\n  timestamp>NOW() - INTERVAL 1 MINUTE\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["Output_Pv"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "SignalAnalogHmiPv",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Min",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "$$hashKey": "object:32133",
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "min"
+    },
+    {
+      "datasource": null,
+      "description": "Antall avvik over avviksgrense på 10% siste 24 timene. ",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 75
+      },
+      "id": 76,
+      "options": {
+        "fieldOptions": {
+          "calcs": ["lastNotNull"],
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 10
+                },
+                {
+                  "color": "red",
+                  "value": 18
+                }
+              ]
+            }
+          },
+          "overrides": [],
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "6.7.1",
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  timestamp AS \"time\",\n  pointsOver10 as value,\n  'Antall avvik sone 4' as metric\nFROM LeakDetectionAlarmPoints\nWHERE\n  $__timeFilter(timestamp) AND\n  _tagId = 'WaterFlowFT04_Pv'\nORDER BY timestamp",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": ["pointsOver10"],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "LeakDetectionAlarmPoints",
+          "timeColumn": "timestamp",
+          "timeColumnType": "datetime",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            },
+            {
+              "datatype": "varchar",
+              "name": "",
+              "params": ["_tagId", "=", "'WaterFlowFT01_Pv'"],
+              "type": "expression"
+            }
+          ]
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Antall avvik siste 24 timer.",
+      "type": "gauge"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 22,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "",
+  "title": "Lekkasjedeteksjon_v3.0",
+  "uid": "hl_2ME3Zk",
+  "variables": {
+    "list": []
+  },
+  "version": 4
 }
