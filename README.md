@@ -4,9 +4,16 @@ Develop: [![Build Status](https://travis-ci.com/jonev/wago-demo-plc-python.svg?b
 
 # README
 
-## Start development environment
+## Prerequisites
 
-Prerequisites: Docker and Visual Studio Code (With remote development extension)
+Docker, Visual Studio Code (With remote development extension) and Git Bash
+
+- Docker is used to run dependencies and development environment.
+- Visual Studio Code is used to write code etc.
+- Remote development extension is used to connect VS code to Docker development environment.
+- Git bash is used to run build and deployment scripts.
+
+## Development environment
 
 - Open root folder in container with VS code.
 
