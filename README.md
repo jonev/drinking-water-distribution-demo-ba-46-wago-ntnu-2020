@@ -1,6 +1,6 @@
-Master: [![Build Status](https://travis-ci.com/jonev/wago-demo-plc-python.svg?branch=master)](https://travis-ci.com/jonev/wago-demo-plc-python)
+Master: [![Build Status](https://travis-ci.com/jonev/drinking-water-distribution-demo-ba-46-wago-ntnu-2020.svg?branch=master)](https://travis-ci.com/jonev/drinking-water-distribution-demo-ba-46-wago-ntnu-2020)
 
-Develop: [![Build Status](https://travis-ci.com/jonev/wago-demo-plc-python.svg?branch=develop)](https://travis-ci.com/jonev/wago-demo-plc-python)
+Develop: [![Build Status](https://travis-ci.com/jonev/drinking-water-distribution-demo-ba-46-wago-ntnu-2020.svg?branch=develop)](https://travis-ci.com/jonev/drinking-water-distribution-demo-ba-46-wago-ntnu-2020)
 
 # README
 
