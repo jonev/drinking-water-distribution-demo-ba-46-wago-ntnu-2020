@@ -2,7 +2,7 @@
 
 Dette prosjektet er resultatet av en bacheloroppgave ved Norges teknisk-naturvitenskapelige universitet, NTNU i Trondheim, våren 2020.
 
-Prosjektet er et sammarbeid mellom Wago Norge og Johan Haukalid, Markus Raudberget, Jone Vassbø og Peder Ward.
+Prosjektet er et samarbeid mellom Wago Norge og Johan Haukalid, Markus Raudberget, Jone Vassbø og Peder Ward.
 
 Prosjektet omhandler utarbeidelse av et styre- og overvåkningsystem for distribusjon av drikkevann. For detaljer rundt prosjektet henvises det til hovedrapporten. Rapporten er på norsk, men all tilhørende kode er på engelsk.
 
