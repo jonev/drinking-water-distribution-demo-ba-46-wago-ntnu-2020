@@ -1,8 +1,31 @@
-Master: [![Build Status](https://travis-ci.com/jonev/wago-demo-plc-python.svg?branch=master)](https://travis-ci.com/jonev/wago-demo-plc-python)
+# README (Norwegian)
 
-Develop: [![Build Status](https://travis-ci.com/jonev/wago-demo-plc-python.svg?branch=develop)](https://travis-ci.com/jonev/wago-demo-plc-python)
+Dette prosjektet er resultatet av en bacheloroppgave ved Norges teknisk-naturvitenskapelige universitet, NTNU i Trondheim, våren 2020.
 
-# README
+Prosjektet er et sammarbeid mellom Wago Norge og Johan Haukalid, Markus Raudberget, Jone Vassbø og Peder Ward.
+
+Prosjektet omhandler utarbeidelse av et styre- og overvåkningsystem for distribusjon av drikkevann. For detaljer rundt prosjektet henvises det til hovedrapporten. Rapporten er på norsk, men all tilhørende kode er på engelsk.
+
+# README (English)
+
+This project is a result of a bachelor thesis at Norwegian University of Science and Technology, Trondheim, spring 2020.
+
+The project is a collaboration between Wago Norway and Johan Haukalid, Markus Raudberget, Jone Vassbø og Peder Ward.
+
+In the project there is developed a control and monitoring system for distribution of drinking water. The report is in Norwegian, but all code is in English. The system contains three PLCs and one HMI, with control logic developed in Wago's software, e!Cockpit. For functionality regarding simulation, leak detection, data storage and dynamic mapping between OPC UA and MQTT, there are developed applications in Python. For a quick overview, see the figures below.
+
+Overview:  
+![Overview](figures/Overview.png?raw=true "Overview")
+Topology:  
+![Topology](figures/Topology.png?raw=true "Topology")
+Communication between HMI and PLC:  
+![ComWithHMI](figures/ComWithHMI.png?raw=true "Communication between HMI and PLC")
+Communication beteen PLC and simulation:  
+![ComWithSimulation](figures/ComWithSimulation.png?raw=true "Communication beteen PLC and simulation")
+
+# README - Python software
+
+[![Build Status](https://travis-ci.com/jonev/wago-demo-plc-python.svg?branch=master)](https://travis-ci.com/jonev/wago-demo-plc-python)
 
 ## Prerequisites
 
