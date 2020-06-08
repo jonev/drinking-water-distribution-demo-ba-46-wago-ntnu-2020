@@ -16,10 +16,13 @@ In the project there is developed a control and monitoring system for distributi
 
 Overview:  
 ![Overview](figures/Overview.png?raw=true "Overview")
+
 Topology:  
 ![Topology](figures/Topology.png?raw=true "Topology")
+
 Communication between HMI and PLC:  
 ![ComWithHMI](figures/ComWithHMI.png?raw=true "Communication between HMI and PLC")
+
 Communication beteen PLC and simulation:  
 ![ComWithSimulation](figures/ComWithSimulation.png?raw=true "Communication beteen PLC and simulation")
 
