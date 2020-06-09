@@ -13,13 +13,11 @@ logging.basicConfig(
 )
 
 version = "0.0.7"
-sampleTime_s = 5  # DO NOT CHANGE - One sample is in real time 2 hours. 12 samples pr hour.
 oneDayIsSimulatedTo_s = 60  # DO NOT CHANGE
 oneHour_s = oneDayIsSimulatedTo_s / 24
-simulatedSamplesPerDay = 96  # DO NOT CHANGE
 
 # Updates the number of points over the limit
-## To increase the performance: "If the point is over the limit" is stored in a queue
+## To increase the performance: "If the point is over the limit" its stored in a queue
 ## This avoids rolling through and checking all hour values. 
 ## One is added and one is removed, and the number of points is updated.
 def updatePoints(diff, limit, points, queue):
@@ -39,24 +37,24 @@ def handleFt(dbClient, start, end, ftData):
     values = dbClient.getValuesBetweenTimestamps("SignalAnalogHmiPv", start, end, ftData._tagId,)
     avgHour = DivCalculations.avgValue(values, 4)
     dbClient.pushValueOnTimestamp("LeakDetectionHourlyAverage", start, ftData._tagId, avgHour)
-    # Collecting the last 120 samples of hourly averages values
-    values120SamplesHourlyAverages = dbClient.getAverageHourValues(
+    # Collecting the last 5 samples of hourly averages values
+    values5SamplesHourlyAverages = dbClient.getAverageHourValues(
         "LeakDetectionHourlyAverage",
         ftData._tagId,
         (start.second - 0.1) % 60,
         (end.second + 0.1) % 60,
         5,
     )
-    avg120samples = DivCalculations.avgValue(values120SamplesHourlyAverages, 4)
+    avg5samples = DivCalculations.avgValue(values5SamplesHourlyAverages, 4)
     dbClient.pushValueOnTimestamp(
-        "LeakDetection120SamplesHourlyAverage", start, ftData._tagId, avg120samples
+        "LeakDetection120SamplesHourlyAverage", start, ftData._tagId, avg5samples
     )
 
     # Calculating points over limit
-    ## Calculating % differance between average hourly and average hourly 120 last samples
+    ## Calculating % difference between average hourly and average hourly 120 last samples
     ## (Avoiding dividing on zero)
-    if avg120samples != 0.00:
-        diffNowInPercent = avgHour / avg120samples
+    if avg5samples != 0.00:
+        diffNowInPercent = avgHour / avg5samples
     else:
         diffNowInPercent = 0.0
 
