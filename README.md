@@ -23,7 +23,7 @@ Topology:
 Communication between HMI and PLC:  
 ![ComWithHMI](figures/ComWithHMI.png?raw=true "Communication between HMI and PLC")
 
-Communication between PLC and simulation:  
+Communication between PLC and applications running on cloud-server:  
 ![ComWithSimulation](figures/ComWithSimulation.png?raw=true "Communication beteen PLC and simulation")
 
 Technologies etc: Python, MQTT, MySQL, Docker, Docker-compose, OPC UA, e!Cockpit.
