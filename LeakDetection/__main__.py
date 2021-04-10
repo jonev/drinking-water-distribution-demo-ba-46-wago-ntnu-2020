@@ -8,17 +8,17 @@ import time
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)-8s %(message)s",
-    level=logging.INFO,
+    level=logging.DEBUG,
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-version = "0.0.7"
+version = "0.0.8"
 oneDayIsSimulatedTo_s = 60  # DO NOT CHANGE
 oneHour_s = oneDayIsSimulatedTo_s / 24
 
 # Updates the number of points over the limit
 ## To increase the performance: "If the point is over the limit" its stored in a queue
-## This avoids rolling through and checking all hour values. 
+## This avoids rolling through and checking all hour values.
 ## One is added and one is removed, and the number of points is updated.
 def updatePoints(diff, limit, points, queue):
     if diff > limit:
@@ -31,10 +31,16 @@ def updatePoints(diff, limit, points, queue):
         points = points - 1
     return points
 
+
 # Calculates values regarding one flow transmitter
 def handleFt(dbClient, start, end, ftData):
     # Collects sample values from database
-    values = dbClient.getValuesBetweenTimestamps("SignalAnalogHmiPv", start, end, ftData._tagId,)
+    values = dbClient.getValuesBetweenTimestamps(
+        "SignalAnalogHmiPv",
+        start,
+        end,
+        ftData._tagId,
+    )
     avgHour = DivCalculations.avgValue(values, 4)
     dbClient.pushValueOnTimestamp("LeakDetectionHourlyAverage", start, ftData._tagId, avgHour)
     # Collecting the last 5 samples of hourly averages values
@@ -85,13 +91,29 @@ def handleFtBalance(dbClient, start, end, inFlowAvg, outFlowAvg, ftData):
         "LeakDetectionBalanceHourlyAverage", start, ftData._tagId, (inFlowAvg - outFlowAvg)
     )
 
+
+def calculate6HourlyAverageValues(datetimestamp):
+    timetaking = datetime.datetime.now()
+    datetimestamp = datetimestamp - datetime.timedelta(seconds=oneHour_s * 2)
+    start = datetimestamp - datetime.timedelta(seconds=(oneHour_s * 5))
+
+    for nr in range(6):
+        calculateHourlyAverageValues(start + datetime.timedelta(seconds=(oneHour_s * nr)))
+    logging.info(
+        "Ran at: "
+        + str(datetimestamp)
+        + ", Loop used: "
+        + str(datetime.datetime.now() - timetaking)
+    )
+
+
 # Scheduled task
 def calculateHourlyAverageValues(datetimestamp):
     global FT01, FT02, FT03, FT04, FT05, FT06, FT07
     try:
-        timetaking = datetime.datetime.now()
+        # timetaking = datetime.datetime.now()
         # Adding delay to the time range, be certain that the data is present
-        datetimestamp = datetimestamp - datetime.timedelta(seconds=5)
+        # datetimestamp = datetimestamp - datetime.timedelta(seconds=oneHour_s * 2)
         # Time range: Defines which data is used in this execution
         start = datetimestamp - datetime.timedelta(seconds=oneHour_s)
         end = datetimestamp
@@ -106,36 +128,55 @@ def calculateHourlyAverageValues(datetimestamp):
         avgHourFT07 = handleFt(dbClient, start, end, FT07)
         # Flow balance
         handleFtBalance(
-            dbClient, start, end, avgHourFT07, (avgHourFT01 + avgHourFT06), FT07_is_FT01_FT06,
+            dbClient,
+            start,
+            end,
+            avgHourFT07,
+            (avgHourFT01 + avgHourFT06),
+            FT07_is_FT01_FT06,
         )
         handleFtBalance(
-            dbClient, start, end, avgHourFT06, (avgHourFT02 + avgHourFT05), FT06_is_FT02_FT05,
+            dbClient,
+            start,
+            end,
+            avgHourFT06,
+            (avgHourFT02 + avgHourFT05),
+            FT06_is_FT02_FT05,
         )
         handleFtBalance(
-            dbClient, start, end, avgHourFT05, (avgHourFT03 + avgHourFT04), FT05_is_FT03_FT04,
+            dbClient,
+            start,
+            end,
+            avgHourFT05,
+            (avgHourFT03 + avgHourFT04),
+            FT05_is_FT03_FT04,
         )
 
-        logging.info(
-            "Ran at: "
-            + str(datetimestamp)
-            + ", Loop used: "
-            + str(datetime.datetime.now() - timetaking)
-        )
+        # logging.info(
+        #    "Ran at: "
+        #    + str(datetimestamp)
+        #    + " start: "
+        #    + str(start)
+        #    + " end: "
+        #    + str(end)
+        #    + ", Loop used: "
+        #    + str(datetime.datetime.now() - timetaking)
+        # )
     except:
         logging.exception("Exception in calculateHourlyAverageValues")
 
 
 if __name__ == "__main__":
-    while True: # Automatically restart logic
+    while True:  # Automatically restart logic
         try:
             logging.info("Starting Leakdetection in __main__ version: " + version)
-            logging.info("Waiting for db to start - 30 seconds")
-            time.sleep(30)
+            logging.info("Waiting for db to start - 60 seconds")
+            time.sleep(60)
 
             # Init db
             dbClient = DbLeakDetectionClient()
-            dbClient.connectHost("db", "root", "example")
-            dbClient.createDatabase("processvalues")
+            # dbClient.connectHost("db", "root", "example")
+            dbClient.createDatabase("db", "root", "example", "processvalues")
             dbClient.connectDatabase("db", "root", "example", "processvalues")
 
             dbClient.createTable(
@@ -174,7 +215,8 @@ if __name__ == "__main__":
             FT05_is_FT03_FT04 = FtData("FT05_is_FT03_FT04")
 
             # Init and start Scheduled task "calculateHourlyAverageValues"
-            s = SimpleTaskScheduler(calculateHourlyAverageValues, oneHour_s, 0, 0.1)
+            # s = SimpleTaskScheduler(calculateHourlyAverageValues, oneHour_s, 0, 0.1)
+            s = SimpleTaskScheduler(calculate6HourlyAverageValues, oneHour_s * 6, 0, 0.3)
             s.start()
             s.join()
         except:

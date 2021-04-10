@@ -5,10 +5,10 @@ from datetime import datetime
 
 
 class SimpleTaskScheduler:
-    """ Simple task scheduler
+    """Simple task scheduler
         Schedules a task every chosen intervall (seconds)
         NB: If the task does not finish at all, the first time, there will not be raised an exception
-    
+
     :raises Exception: Last task is not done when task is started
     """
 
@@ -33,24 +33,21 @@ class SimpleTaskScheduler:
         self.__starterThread = threading.Thread(target=self.__starterThreadMethod, args=())
 
     def start(self):
-        """Start the scheduler
-        """
+        """Start the scheduler"""
         self.__starterThread.start()
 
     def join(self):
-        """Join the scheduler task - Wait for the the scheduler to finish
-        """
+        """Join the scheduler task - Wait for the the scheduler to finish"""
         if self.__starterThread.isAlive():
             self.__starterThread.join()
 
     def stop(self):
-        """Stop the scheduler
-        """
+        """Stop the scheduler"""
         self.__runflag = False
 
     def __starterThreadMethod(self):
         """Thread of the scheduler. Executes the task and insures that the interval is held.
-        
+
         :raises Exception: Raises exception if the task is taking longer time than the intervall of the task
         """
         t = time.time()
@@ -59,7 +56,9 @@ class SimpleTaskScheduler:
         )
         while self.__runflag:
             if self.__starttime < time.time():
-                raise Exception("Last task was not done -> increase the interval")
+                # logging.error("Last task used: %s ", time.time() - self.__starttime)
+                # raise Exception("Last task was not done -> increase the interval")
+                logging.error("Last task was not done -> increase the interval")
             while self.__starttime > time.time():
                 time.sleep(self.__checkIntervalInSeconds)
             worker = threading.Thread(

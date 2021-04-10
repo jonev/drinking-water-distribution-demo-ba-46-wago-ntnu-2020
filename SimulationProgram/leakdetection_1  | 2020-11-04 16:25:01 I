@@ -1,0 +1,17 @@
+leakdetection_1  | 2020-11-04 16:25:01 INFO     pushValueOnTimestamp LeakDetection120SamplesHourlyAverage 2020-11-04 16:24:42.500000 WaterFlowFT02_Pv 594.6648000000001
+leakdetection_1  | 2020-11-04 16:25:17 INFO     pushPointsOnTimestamp LeakDetectionAlarmPoints 2020-11-04 16:24:42.500000 WaterFlowFT02_Pv 0 0 0
+
+leakdetection_1  | 2020-11-04 16:32:23 INFO     pushValueOnTimestamp LeakDetection120SamplesHourlyAverage 2020-11-04 16:32:05 WaterFlowFT07_Pv 991.4516
+leakdetection_1  | 2020-11-04 16:32:39 INFO     pushPointsOnTimestamp LeakDetectionAlarmPoints 2020-11-04 16:32:05 WaterFlowFT07_Pv 0 0 0
+
+
+leakdetection_1  | 2020-11-04 16:44:34 INFO     pushValueOnTimestamp LeakDetectionBalanceHourlyAverage 2020-11-04 16:44:15 FT06_is_FT02_FT05 100.0
+leakdetection_1  | 2020-11-04 16:44:36 INFO     pushValueOnTimestamp LeakDetectionBalanceHourlyAverage 2020-11-04 16:44:15 FT05_is_FT03_FT04 -0.00025000000016461854
+leakdetection_1  | 2020-11-04 16:44:49 INFO     getValuesBetweenTimestamps SignalAnalogHmiPv 2020-11-04 16:44:17.500000 2020-11-04 16:44:20 WaterFlowFT01_Pv
+
+
+leakdetection_1  | 2020-11-04 16:45:26 INFO     pushPointsOnTimestamp LeakDetectionAlarmPoints 2020-11-04 16:45:00 WaterFlowFT07_Pv 0 0 0
+leakdetection_1  | 2020-11-04 16:45:41 INFO     pushValueOnTimestamp LeakDetectionBalanceHourlyAverage 2020-11-04 16:45:00 FT07_is_FT01_FT06 0.003000000000156433
+
+leakdetection_1  | 2020-11-04 16:46:06 INFO     pushValueOnTimestamp LeakDetectionHourlyAverage 2020-11-04 16:45:47.500000 WaterFlowFT05_Pv 1151.605
+leakdetection_1  | 2020-11-04 16:46:21 INFO     getAverageHourValues LeakDetectionHourlyAverage WaterFlowFT05_Pv 46.9 50.1 5
